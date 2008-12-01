@@ -120,9 +120,9 @@ c
 ***********************************************************************
       subroutine zgefa(a,lda,n,ipvt,info)
       integer lda,n,ipvt(1),info
-      complex*16 a(lda,1)
+      Double Complex a(lda,1)
 c
-c     zgefa factors a complex*16 matrix by gaussian elimination.
+c     zgefa factors a Double Complex matrix by gaussian elimination.
 c
 c     zgefa is usually called by zgeco, but it can be called
 c     directly with a saving in time if  rcond  is not needed.
@@ -130,7 +130,7 @@ c     (time for zgeco) = (1 + 9/n)*(time for zgefa) .
 c
 c     on entry
 c
-c        a       complex*16(lda, n)
+c        a       Double Complex(lda, n)
 c                the matrix to be factored.
 c
 c        lda     integer
@@ -168,13 +168,13 @@ c     fortran dabs
 c
 c     internal variables
 c
-      complex*16 t
+      Double Complex t
       integer izamax,j,k,kp1,l,nm1
 c
-      complex*16 zdum
+      Double Complex zdum
       double precision cabs1
       double precision dreal,dimag
-      complex*16 zdumr,zdumi
+      Double Complex zdumr,zdumi
       dreal(zdumr) = zdumr
       dimag(zdumi) = (0.0d0,-1.0d0)*zdumi
       cabs1(zdum) = dabs(dreal(zdum)) + dabs(dimag(zdum))
@@ -281,14 +281,14 @@ c       code for both increments equal to 1
 ***********************************************************************
       subroutine zgedi(a,lda,n,ipvt,det,work,job)
       integer lda,n,ipvt(1),job
-      complex*16 a(lda,1),det(2),work(1)
+      Double Complex a(lda,1),det(2),work(1)
 c
 c     zgedi computes the determinant and inverse of a matrix
 c     using the factors computed by zgeco or zgefa.
 c
 c     on entry
 c
-c        a       complex*16(lda, n)
+c        a       Double Complex(lda, n)
 c                the output from zgeco or zgefa.
 c
 c        lda     integer
@@ -300,7 +300,7 @@ c
 c        ipvt    integer(n)
 c                the pivot vector from zgeco or zgefa.
 c
-c        work    complex*16(n)
+c        work    Double Complex(n)
 c                work vector.  contents destroyed.
 c
 c        job     integer
@@ -313,7 +313,7 @@ c
 c        a       inverse of original matrix if requested.
 c                otherwise unchanged.
 c
-c        det     complex*16(2)
+c        det     Double Complex(2)
 c                determinant of original matrix if requested.
 c                otherwise not referenced.
 c                determinant = det(1) * 10.0**det(2)
@@ -338,14 +338,14 @@ c     fortran dabs,dcmplx,mod
 c
 c     internal variables
 c
-      complex*16 t
+      Double Complex t
       double precision ten
       integer i,j,k,kb,kp1,l,nm1
 c
-      complex*16 zdum
+      Double Complex zdum
       double precision cabs1
       double precision dreal,dimag
-      complex*16 zdumr,zdumi
+      Double Complex zdumr,zdumi
       dreal(zdumr) = zdumr
       dimag(zdumi) = (0.0d0,-1.0d0)*zdumi
       cabs1(zdum) = dabs(dreal(zdum)) + dabs(dimag(zdum))

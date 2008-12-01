@@ -238,7 +238,7 @@ c-------It finds the wave vector for traveling wave
 c-------(From the condition of the total energy)        
         IMPLICIT NONE
         Double precision Emod,Etot,V,al,Mass,W,hbar
-        Complex*16 kn,imu
+        Double Complex kn,imu
         Integer Nfin
         Logical logus
         common/param/V,al,Mass,W,Etot,hbar,logus,Nfin        
@@ -254,13 +254,18 @@ c-----  No, definition Tnm would be without sens.
 c=============================================================
 c==== Tight binding Hamiltonian
 
-          Subroutine Hamiltonian(Hnn)
-         complex*16 Hnn
+         Subroutine Hamiltonian(Hnn)
+         IMPLICIT NONE
+         Double Complex Hnn
          integer ii,Nfin,nfin1,jj
          integer ihelp,infin1,infin2
+         integer N1, N2
+
          double precision V,al,MAss,W ,Etot,hbar,e0,Wdis
-         double precision lstub,rashb,rashb2,Unitx,dchem
-         complex*16 Hx,EHx,Imunit
+         double precision lstub,rashb,rashb2,Unitx,dchem, Rashba
+         double precision random
+         Double Complex Hx,EHx,Imunit
+         
          logical logus
          Parameter(N1=10,N2=10,nfin1=N1*N2*2)
          Dimension Hnn(Nfin1,Nfin1),Unitx(Nfin1,Nfin1)
@@ -458,11 +463,11 @@ c=== Calculates self-energies connected with different wires
       double precision V,al,Mass,W,Etot,hbar,rashb,rashb2
       double precision Emod,AnorN1,psiN1,lstub,Wle,x
    
-      complex*16 Glp1lp1,Glp1lp1n,alpha,theta
-      complex*16 Glp1lp1up,G0lm1lm1up,Glp1lp1down,G0lm1lm1down
-      complex*16 Gxp1xp1up,Gxm1xm1up,Gxp1xp1down,Gxm1xm1down
-      complex*16 sigmR,kn
-      complex*16 Imunit,Imun0
+      Double Complex Glp1lp1,Glp1lp1n,alpha,theta
+      Double Complex Glp1lp1up,G0lm1lm1up,Glp1lp1down,G0lm1lm1down
+      Double Complex Gxp1xp1up,Gxm1xm1up,Gxp1xp1down,Gxm1xm1down
+      Double Complex sigmR,kn
+      Double Complex Imunit,Imun0
      
       parameter(N1=10,N2=10,Nle=10,Nfin1=N1*N2*2,nleads=8)
       Parameter(pi=3.14159265358979323846264d0)
@@ -621,7 +626,7 @@ c===================================================
        double precision V,al,MAss,W,Etot,hbar
        logical logus
        double precision Gamm      
-       complex*16 sigmR
+       Double Complex sigmR
        parameter(N1=10,N2=10,nfin1=N1*N2*2,nleads=8)       
        Dimension Gamm(nleads,nfin1,nfin1)
        Dimension sigmR(nleads,nfin1,nfin1)
@@ -672,14 +677,14 @@ c------and slice i (in mode m) by recursive Green function method
        Integer N1! no. of sites in slice k
        Integer N2! no. of sites in slice k+1
        Integer m,nleads,Nle             
-       Complex*16 theta
-       Complex*16 Imunit
-       COmplex*16 alpha
+       Double Complex theta
+       Double Complex Imunit
+       Double Complex alpha
        double precision Gamm
-       COmplex*16 Hnn          
-       Complex*16 sigmR 
-       Complex*16 GRinv,kn
-       Complex*16 GR       
+       Double Complex Hnn          
+       Double Complex sigmR 
+       Double Complex GRinv,kn
+       Double Complex GR       
             
        Complex GammGR 
        Complex GammGad
@@ -821,3 +826,4 @@ c== left spin up and left spin down electrodes
        end
               
               
+c       vim: ignorecase
