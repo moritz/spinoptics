@@ -12,23 +12,22 @@ c----CHECK FOR two terminal system , no stub, one channel N1=N2=1
       
 c=== Transmission T between different leads       
         Double precision Tpq,Tsum
-        Integer nleads,i,j,iii,jjj,Nle ! no.of leads
+        Integer nleads,i,j,iii,Nle ! no.of leads
 
 c=== Conductance G between different leads           
-        Double precision Gpq,Ispins,Gspins
+        Double precision Gpq
         Double precision A1,A2,A3,C1,C2,C3
         Double precision V1,V3,V4,D1,D2,D3
         Double precision I1,I3,I5,I6,I2,I4,I7,I8  
-        Double precision I1s,I2s,I3s,I4s,I5s,I6s,I7s,I8s      
         Double precision Etot ! total energy in range 0-0.2eV
         Double precision  W,Wle   ! width of main wire    
         Double precision  Mass   ! GaAs mass 0.05m_0
         Double precision  al ! lattice constant
         Double precision  V! hopping parameter
         DOuble precision  hbar,m0 ,rashb2       
-        Double precision Emod2,rashba,rashb,Ispin,Gspin
+        Double precision rashba,rashb,Ispin,Gspin
         Double precision lstub! width of stub
-        Double precision pi,echarge,Emod1,Gspin1
+        Double precision pi,echarge,Gspin1
         DOUBLE PRECISION h_planck,Cp,Cpp,Wdis,dchem
         Logical logus
         
@@ -38,7 +37,7 @@ c=== Conductance G between different leads
         Parameter(N1=10,N2=10,Nle=10,nleads=8)
         Parameter(pi=3.14159265358979323846264d0)
         Dimension Tpq(nleads,nleads),Gpq(nleads,nleads)
-        Dimension TSum(nleads),Gspin(10),Gspins(10)
+        Dimension TSum(nleads),Gspin(10)
         common/param/V,al,Mass,W,Etot,hbar,logus,Nfin
         common/stub/lstub,rashb,rashb2
         common/dlead/Wle
@@ -673,11 +672,10 @@ c------and slice i (in mode m) by recursive Green function method
        Double precision lstub
        Double precision rashb2,rashb
        Double precision n2D        
-       Integer Nfin,n,nn,mm,ii,jj,nfin1
+       Integer Nfin,n,nn,nfin1
        Integer N1! no. of sites in slice k
        Integer N2! no. of sites in slice k+1
        Integer m,nleads,Nle             
-       Double Complex theta
        Double Complex Imunit
        Double Complex alpha
        double precision Gamm
