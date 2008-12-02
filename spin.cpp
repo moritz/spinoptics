@@ -31,8 +31,7 @@ const int size       = Nx * Ny * 2;      // `Nfin'
 const num V          = 1.0;              // hopping term
 
 const num e_tot      = -2.0 * V;
-const num width_disorder  
-                        = 0.0;
+const num width_disorder  = 0.0;
 
 inline num rashba(num alpha) {
     return 2.0 * alpha * a_lead;
@@ -107,7 +106,26 @@ cmatrix* hamiltonian(num rashb) {
         H(i + Nx, i) = V;
     }
 
-    // TODO: rashba terms
+    // Rashba terms
+    // in x-direction
+    for (int i = 0; i < size/2; i++) {
+        if ((i+1) % Nx != 0) {
+            // "1 and 102"
+            H(i, i + Nx * Ny + 1) = rashba_v;
+            H(i + Nx * Ny + 1, i) = rashba_v;
+            // "101 and 2"
+            H(i + 1, i + Nx * Ny) = - rashba_v;
+            H(i + Nx * Ny, i + 1) = - rashba_v;
+        }
+    }
+
+    // in y-direction
+    for (int i = 0; i < Nx * (Ny -1); i++) {
+        // "11 and 101"
+        H(i + Nx, i) = complex(0, 1) * rashba_v;
+        // "1 and 111"
+        H(i, i + Nx) = complex(0, -1) * rashba_v;
+    }
 
     std::cout << H;
     return Hnn;
