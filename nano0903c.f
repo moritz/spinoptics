@@ -29,7 +29,6 @@ c=== Conductance G between different leads
         Double precision lstub! width of stub
         Double precision pi,echarge,Gspin1
         DOUBLE PRECISION h_planck,Cp,Cpp,Wdis,dchem
-        Logical logus
         
         Integer Nfin ! the no. of sites in finite part of T system
         Integer N1,N2,loop1
@@ -38,7 +37,7 @@ c=== Conductance G between different leads
         Parameter(pi=3.14159265358979323846264d0)
         Dimension Tpq(nleads,nleads),Gpq(nleads,nleads)
         Dimension TSum(nleads),Gspin(10)
-        common/param/V,al,Mass,W,Etot,hbar,logus,Nfin
+        common/param/V,al,Mass,W,Etot,hbar,Nfin
         common/stub/lstub,rashb,rashb2
         common/dlead/Wle
         common/dis/Wdis
@@ -49,7 +48,6 @@ c=== Conductance G between different leads
         Open(Unit=3,file='sumy2.dat')
         OPEN(UNIT=4,file='Hall.dat')
         Open(Unit=7, file='tpq.dat')
-        logus =.false.
         hbar =6.582122d-16![eV*s] Plank constant/2pi
         h_planck =4.135669d-15! [eV*s]
         m0 = 9.109389d-31! [kg] bare el. mass
@@ -190,7 +188,6 @@ c        hbar/(2d0*echarge)*(I5s-I6s)
         write(2,*) Wdis,iii,Etot,-Rashba/V,Gspin(iii)        
         write(4,*) Wdis,Gspin(iii),I5,I6,I7,I8
 
-        logus=.false.
         
 
         
@@ -212,9 +209,8 @@ c------- It calculates the transverse mode energy
         Double precision  V,al,Mass,W, Etot, hbar,Emod
         Double precision pi,Wle
         Integer n, Nfin,Nle
-        Logical logus
         Parameter(pi=3.14159265358979323846264d0)
-        common/param/V,al,Mass,W,Etot,hbar,logus,Nfin
+        common/param/V,al,Mass,W,Etot,hbar,Nfin
         common/dlead/Wle
 
 
@@ -239,8 +235,7 @@ c-------(From the condition of the total energy)
         Double precision Emod,Etot,V,al,Mass,W,hbar
         Double Complex kn,imu
         Integer Nfin
-        Logical logus
-        common/param/V,al,Mass,W,Etot,hbar,logus,Nfin        
+        common/param/V,al,Mass,W,Etot,hbar,Nfin        
 
 c----- Is it possible kn is complex? 
 c-----  No, definition Tnm would be without sens.
@@ -265,11 +260,10 @@ c==== Tight binding Hamiltonian
          double precision random
          Double Complex Hx,EHx,Imunit
          
-         logical logus
          Parameter(N1=10,N2=10,nfin1=N1*N2*2)
          Dimension Hnn(Nfin1,Nfin1),Unitx(Nfin1,Nfin1)
          Dimension Hx(Nfin1,nfin1),EHx(nfin1,nfin1)
-         common/param/V,al,Mass,W,Etot,hbar,logus,Nfin
+         common/param/V,al,Mass,W,Etot,hbar,Nfin
          common/stub/lstub,rashb,rashb2
          common/dis/Wdis
          common/dch/dchem
@@ -458,7 +452,6 @@ c=== Calculates self-energies connected with different wires
       Subroutine Selfy(sigmR)
      
       integer nn,mm,m,n,Nfin1,Nfin,Nle,nleads
-      logical logus
       double precision V,al,Mass,W,Etot,hbar,rashb,rashb2
       double precision Emod,AnorN1,psiN1,lstub,Wle,x
    
@@ -479,7 +472,7 @@ c=== Calculates self-energies connected with different wires
       Dimension Gxp1xp1down(nfin1,nfin1),Gxm1xm1down(nfin1,nfin1)
       Dimension sigmR(nleads,Nfin1,Nfin1)
      
-      common/param/V,al,Mass,W,Etot,hbar,logus,Nfin
+      common/param/V,al,Mass,W,Etot,hbar,Nfin
       common/stub/lstub,rashb,rashb2
       common/dlead/Wle
       
@@ -623,13 +616,12 @@ c===================================================
          
        integer m,n, nfin,nfin1,nleads,i  
        double precision V,al,MAss,W,Etot,hbar
-       logical logus
        double precision Gamm      
        Double Complex sigmR
        parameter(N1=10,N2=10,nfin1=N1*N2*2,nleads=8)       
        Dimension Gamm(nleads,nfin1,nfin1)
        Dimension sigmR(nleads,nfin1,nfin1)
-       common/param/V,al,Mass,W,Etot,hbar,logus,Nfin  
+       common/param/V,al,Mass,W,Etot,hbar,Nfin  
        
        Imunit=dcmplx(0d0,1d0)
      
@@ -706,10 +698,9 @@ c------and slice i (in mode m) by recursive Green function method
        Dimension GammGad(nleads,nfin1,nfin1)
        Dimension GammGR(nleads,nfin1,nfin1)
         
-       Logical logus
        Parameter(pi=3.14159265358979323846264d0)
        
-       common/param/V,al,Mass,W,Etot,hbar,logus,Nfin
+       common/param/V,al,Mass,W,Etot,hbar,Nfin
        common/stub/lstub,rashb,rashb2
       
       

@@ -33,6 +33,8 @@ const num V          = 1.0;              // hopping term
 const num e_tot      = -2.0 * V;
 const num width_disorder  = 0.0;
 
+num alpha = -0.02;
+
 inline num rashba(num alpha) {
     return 2.0 * alpha * a_lead;
 }
@@ -111,24 +113,45 @@ cmatrix* hamiltonian(num rashb) {
     for (int i = 0; i < size/2; i++) {
         if ((i+1) % Nx != 0) {
             // "1 and 102"
-            H(i, i + Nx * Ny + 1) = rashba_v;
-            H(i + Nx * Ny + 1, i) = rashba_v;
+            H(i, i + Nx * Ny + 1) = rashba(alpha);
+            H(i + Nx * Ny + 1, i) = rashba(alpha);
             // "101 and 2"
-            H(i + 1, i + Nx * Ny) = - rashba_v;
-            H(i + Nx * Ny, i + 1) = - rashba_v;
+            H(i + 1, i + Nx * Ny) = - rashba(alpha);
+            H(i + Nx * Ny, i + 1) = - rashba(alpha);
         }
     }
 
     // in y-direction
     for (int i = 0; i < Nx * (Ny -1); i++) {
         // "11 and 101"
-        H(i + Nx, i) = complex(0, 1) * rashba_v;
+        H(i + Nx, i) = cnum(0, 1) * rashba(alpha);
         // "1 and 111"
-        H(i, i + Nx) = complex(0, -1) * rashba_v;
+        H(i, i + Nx) = cnum(0, -1) * rashba(alpha);
     }
 
     std::cout << H;
     return Hnn;
+}
+
+cmatrix Selfy() {
+    for (int p = 0; p < N_leads; p++) {
+        for (int q = 0; q < N_leads; q++) {
+            for (int r = 0; r < N_leads; r++) {
+                num x = (e_tot - mods(r+1, N_leads)) / (2.0 * V) + 1.0;
+                cnum theta;
+                if (x > 1.0) {
+                    theta = cnum(0, 1)
+                        * log((cnum) (x + sqrt(x*x - 1.0)));
+                } else if (x < -1.0) {
+                    theta = cnum(0, 1)
+                        * log((cnum) (x - sqrt(x*x - 1.0)));
+                } else {
+                    theta = acos(x);
+                }
+                // TODO
+            }
+        }
+    }
 }
 
 matrix<num>* greenji(num rashba) {
