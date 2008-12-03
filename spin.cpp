@@ -11,9 +11,9 @@ typedef long double num;
 typedef complex<num> cnum;
 typedef matrix<cnum> cmatrix;
 
-const int    Nx         = 10;
-const int    Ny         = Nx;
-const int    N_leads    = Nx;
+const int Nx         = 10;
+const int Ny         = Nx;
+const int N_leads    = Nx;
 
 const num pi         = 3.14159265358979323846264;
 const num h_bar      = 6.582122E-16;     // [eV*s]
@@ -35,6 +35,15 @@ const num width_disorder  = 0.0;
 
 num alpha = -0.02;
 
+template <class T>
+void set_zero(matrix<T>* m) {
+    for (int x = 0; x < m->size1(); x++){
+        for (int y = 0; y < m->size2(); y++){
+            (*m)(x, y) = 0.0;
+        }
+    }
+}
+
 inline num rashba(num alpha) {
     return 2.0 * alpha * a_lead;
 }
@@ -54,11 +63,7 @@ num findk(num Emod) {
 cmatrix* hamiltonian(num rashb) {
     cmatrix* Hnn = new cmatrix(size, size);
     cmatrix H = (*Hnn);
-    for (int x = 0; x < size; x++) {
-        for (int y = 0; y < size; y++) {
-            H(x, y) = 0.0;
-        }
-    }
+    set_zero(Hnn);
 
     // diagonal elements
     for (int i = 0; i < size / 2; i++) {
@@ -113,6 +118,7 @@ cmatrix* hamiltonian(num rashb) {
     for (int i = 0; i < size/2; i++) {
         if ((i+1) % Nx != 0) {
             // "1 and 102"
+            // with spin flip
             H(i, i + Nx * Ny + 1) = rashba(alpha);
             H(i + Nx * Ny + 1, i) = rashba(alpha);
             // "101 and 2"
@@ -124,6 +130,7 @@ cmatrix* hamiltonian(num rashb) {
     // in y-direction
     for (int i = 0; i < Nx * (Ny -1); i++) {
         // "11 and 101"
+        // with spin flip
         H(i + Nx, i) = cnum(0, 1) * rashba(alpha);
         // "1 and 111"
         H(i, i + Nx) = cnum(0, -1) * rashba(alpha);
@@ -134,6 +141,9 @@ cmatrix* hamiltonian(num rashb) {
 }
 
 cmatrix Selfy() {
+    // Glp1lp1n = G_{l+1, l+1}n
+    cmatrix* Glp1lp1n = new cmatrix(N_leads, N_leads);
+    set_zero(Glp1lp1n);
     for (int p = 0; p < N_leads; p++) {
         for (int q = 0; q < N_leads; q++) {
             for (int r = 0; r < N_leads; r++) {
@@ -148,10 +158,27 @@ cmatrix Selfy() {
                 } else {
                     theta = acos(x);
                 }
-                // TODO
+                cnum unit = cnum(1.0, 0.0);
+                cnum tmpp = exp(cnum(0, 2.0) * pi * 
+                        ((cnum) N_leads) / ((cnum) (N_leads + 1)));
+                cnum tmpm = exp(cnum(0, -2.0) * pi * 
+                        ((cnum) N_leads) / ((cnum) (N_leads + 1)));
+                // "AnorN1(mm)" in nano0903c.f
+                cnum y = sqrt(cnum(0.5 * N_leads, 0.0) + 
+                    (unit - tmpp) / (unit-tmpp) * cnum(0.5, 0.0));
+                // "psiN1(ii)" in nano0903c.f
+                cnum y1 = y * sin(pi * (num) (p * r)/(1.0 + N_leads));
+                // "psiN1(jj)" in nano0903c.f
+                cnum y2 = y * sin(pi * (num) (q * r)/(1.0 + N_leads));
+                (*Glp1lp1n)(p, q) += exp(cnum(0.0,1.0) * theta)/V * y1 * y2;
             }
         }
     }
+
+    cmatrix *G_lp1_lp1_up   = new cmatrix(size, size); set_zero(G_lp1_lp1_up);
+    cmatrix *G_lp1_lp1_down = new cmatrix(size, size); set_zero(G_lp1_lp1_down);
+    cmatrix *G_xp1_xp1_up   = new cmatrix(size, size); set_zero(G_xp1_xp1_up);
+    cmatrix *G_xp1_xp1_down = new cmatrix(size, size); set_zero(G_xp1_xp1_down);
 }
 
 matrix<num>* greenji(num rashba) {
