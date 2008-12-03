@@ -531,11 +531,7 @@ c--------71       gowno =1d0
         enddo
       enddo
 
-         chel1=dcmplx(0d0,0d0)
 c============================================
-        
-         
-       
          
           
          Do m=1,nfin1
@@ -552,7 +548,6 @@ c============================================
          enddo
          enddo
          
-         Nx=2 ! how many points in x direction in sample
 c=== Horizontal leads in x direction in one indice notation
          
         Do ii=1,N1
