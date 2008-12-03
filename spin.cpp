@@ -177,8 +177,13 @@ cmatrix Selfy() {
 
     cmatrix *G_lp1_lp1_up   = new cmatrix(size, size); set_zero(G_lp1_lp1_up);
     cmatrix *G_lp1_lp1_down = new cmatrix(size, size); set_zero(G_lp1_lp1_down);
+    cmatrix *G_lm1_lm1_up   = new cmatrix(size, size); set_zero(G_lm1_lm1_up);
+    cmatrix *G_lm1_lm1_down = new cmatrix(size, size); set_zero(G_lm1_lm1_down);
+
     cmatrix *G_xp1_xp1_up   = new cmatrix(size, size); set_zero(G_xp1_xp1_up);
     cmatrix *G_xp1_xp1_down = new cmatrix(size, size); set_zero(G_xp1_xp1_down);
+    cmatrix *G_xm1_xm1_up   = new cmatrix(size, size); set_zero(G_xm1_xm1_up);
+    cmatrix *G_xm1_xm1_down = new cmatrix(size, size); set_zero(G_xm1_xm1_down);
 }
 
 matrix<num>* greenji(num rashba) {
