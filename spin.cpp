@@ -4,6 +4,7 @@
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/io.hpp>
 #include <stdlib.h>
+#include "invert-matrix.hpp"
 
 using namespace boost::numeric::ublas;
 using namespace std;
@@ -141,7 +142,7 @@ cmatrix* hamiltonian(num rashb) {
     return Hnn;
 };
 
-cmatrix** Selfy(void) {
+cmatrix** self_energy(void) {
     // Glp1lp1n = G_{l+1, l+1}n
     cmatrix Glp1lp1n = cmatrix(N_leads, N_leads);
     set_zero(&Glp1lp1n);
@@ -217,9 +218,9 @@ cmatrix** Selfy(void) {
     return sr;
 }
 
-matrix<num>* greenji(num rashba) {
+cmatrix* greenji(num rashba) {
     cmatrix *Hnn        = hamiltonian(rashba);
-    cmatrix **sigma_r   = Selfy();
+    cmatrix **sigma_r   = self_energy();
     cmatrix *green_inv  = new cmatrix(size, size);
     for (int i = 0; i < size; i++){
         for (int j = 0; j < size; j++){
@@ -229,8 +230,10 @@ matrix<num>* greenji(num rashba) {
             }
         }
     }
-//    cmatrix *green = invert_matrix(green_inv);
-
+    cmatrix *green = new cmatrix(size, size);
+    InvertMatrix(*green_inv, *green);
+    delete green_inv;
+    return green;
 }
 
 
