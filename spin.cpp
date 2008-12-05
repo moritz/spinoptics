@@ -205,7 +205,6 @@ cmatrix** self_energy(void) {
         }
     }
     cmatrix** sr = new cmatrix*[8];
-//    std::vector<cmatrix*> *sr = new std::vector<matrix*>();
     sr[0] = G_lp1_lp1_up;
     sr[2] = G_lp1_lp1_down;
     sr[4] = G_xp1_xp1_up;
@@ -233,6 +232,7 @@ cmatrix* greenji(num rashba) {
     cmatrix *green = new cmatrix(size, size);
     InvertMatrix(*green_inv, *green);
     delete green_inv;
+    green_inv = NULL;
 
     cmatrix *tpq = new cmatrix(N_leads, N_leads);
     set_zero(tpq);
@@ -262,6 +262,14 @@ cmatrix* greenji(num rashba) {
         gamma_g_adv[i] = g_adv;
         gamma_g_ret[i] = g_ret;
     }
+
+    // we don't need sigma_r any more
+    for (int i = 0; i < N_leads; i++){
+        delete sigma_r[i];
+    }
+    delete[] sigma_r;
+    sigma_r = NULL;
+
     // Now calculate the trace
     for (int i = 0; i < N_leads; i++){
         for (int j = 0; j < N_leads; j++){
