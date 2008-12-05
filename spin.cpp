@@ -51,7 +51,7 @@ inline num rashba(num alpha) {
 }
 
 inline num mods(int n, int nle) {
-    return 2.0 * V * (cos(pi * (double) n / ((double) N_leads + 1)) -1);
+    return 2.0 * V * (cos(pi * (double) n / ((double) nle + 1)) -1);
 }
 
 num findk(num Emod) {
@@ -233,7 +233,63 @@ cmatrix* greenji(num rashba) {
     cmatrix *green = new cmatrix(size, size);
     InvertMatrix(*green_inv, *green);
     delete green_inv;
-    return green;
+
+    cmatrix *tpq = new cmatrix(N_leads, N_leads);
+    set_zero(tpq);
+    cmatrix **gamma_g_adv = new cmatrix*[N_leads];
+    cmatrix **gamma_g_ret = new cmatrix*[N_leads];
+    cnum two = cnum(2, 0);
+
+    // T_{p, q} = Trace( \Gamma_p G^R \Gamma_q G^A )
+    // where G^A = (G^R)^* 
+    //
+    // first carry out the first two products
+    for (int i = 0; i < N_leads; i++) {
+        cmatrix *g_adv = new cmatrix(size, size);
+        cmatrix *g_ret = new cmatrix(size, size);
+        set_zero(g_adv);
+        set_zero(g_ret);
+        for (int n = 0; n < N_leads; i++){
+            for (int m = 0; n < N_leads; i++){
+                for (int nn = 0; nn < N_leads; nn++){
+                    (*g_adv)(n, m) -= two * (*green)(nn, m) 
+                                      * imag((*(sigma_r[i]))(m, n));
+                    (*g_ret)(n, m) -= two * conj((*green)(nn, m)) 
+                                      * imag((*(sigma_r[i]))(m, n));
+                }
+            }
+        }
+        gamma_g_adv[i] = g_adv;
+        gamma_g_ret[i] = g_ret;
+    }
+    // Now calculate the trace
+    for (int i = 0; i < N_leads; i++){
+        for (int j = 0; j < N_leads; j++){
+            for (int n = 0; n < size; n++){
+                for (int m = 0; m < size; m++){
+                    (*tpq)(i, j) += (*gamma_g_ret[i])(n, m)
+                                    * (*gamma_g_adv[j])(m, n);
+                }
+            }
+        }
+    }
+
+    for (int i = 0; i < N_leads; i++){
+        for (int n = 0; n < size; n++){
+            (*tpq)(i, i) += cnum(0, 1) * (*(gamma_g_adv[i]))(n, n)
+                          - cnum(0, 1) * (*(gamma_g_ret[i]))(n, n);
+
+        }
+    }
+    // clean up temporary variables
+    for (int i = 0; i < N_leads; i++){
+        delete gamma_g_adv[i];
+        delete gamma_g_ret[i];
+    }
+    delete[] gamma_g_adv;
+    delete[] gamma_g_ret;
+
+    return tpq;
 }
 
 
