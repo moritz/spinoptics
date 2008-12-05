@@ -16,3 +16,8 @@ spin: nano0903c.f inv_general_complex_mat.o Makefile
 
 cppspin: spin.cpp
 	g++ -O2 -g -Wall -o cppspin spin.cpp
+
+clean:
+	rm -f *.o *~ spin cppspin
+
+.PHONY: clean

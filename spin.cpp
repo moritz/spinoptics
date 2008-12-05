@@ -1,5 +1,6 @@
 #include <iostream>
 #include <complex>
+#include <vector>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/io.hpp>
 #include <stdlib.h>
@@ -13,7 +14,7 @@ typedef matrix<cnum> cmatrix;
 
 const int Nx         = 10;
 const int Ny         = Nx;
-const int N_leads    = Nx;
+const int N_leads    = 8;
 
 const num pi         = 3.14159265358979323846264;
 const num h_bar      = 6.582122E-16;     // [eV*s]
@@ -37,8 +38,8 @@ num alpha = -0.02;
 
 template <class T>
 void set_zero(matrix<T>* m) {
-    for (int x = 0; x < m->size1(); x++){
-        for (int y = 0; y < m->size2(); y++){
+    for (unsigned int x = 0; x < m->size1(); x++){
+        for (unsigned int y = 0; y < m->size2(); y++){
             (*m)(x, y) = 0.0;
         }
     }
@@ -138,12 +139,12 @@ cmatrix* hamiltonian(num rashb) {
 
     std::cout << H;
     return Hnn;
-}
+};
 
-cmatrix Selfy() {
+cmatrix** Selfy(void) {
     // Glp1lp1n = G_{l+1, l+1}n
-    cmatrix* Glp1lp1n = new cmatrix(N_leads, N_leads);
-    set_zero(Glp1lp1n);
+    cmatrix Glp1lp1n = cmatrix(N_leads, N_leads);
+    set_zero(&Glp1lp1n);
     for (int p = 0; p < N_leads; p++) {
         for (int q = 0; q < N_leads; q++) {
             for (int r = 0; r < N_leads; r++) {
@@ -170,7 +171,7 @@ cmatrix Selfy() {
                 cnum y1 = y * sin(pi * (num) (p * r)/(1.0 + N_leads));
                 // "psiN1(jj)" in nano0903c.f
                 cnum y2 = y * sin(pi * (num) (q * r)/(1.0 + N_leads));
-                (*Glp1lp1n)(p, q) += exp(cnum(0.0,1.0) * theta)/V * y1 * y2;
+                Glp1lp1n(p, q) += exp(cnum(0.0,1.0) * theta)/V * y1 * y2;
             }
         }
     }
@@ -184,19 +185,56 @@ cmatrix Selfy() {
     cmatrix *G_xp1_xp1_down = new cmatrix(size, size); set_zero(G_xp1_xp1_down);
     cmatrix *G_xm1_xm1_up   = new cmatrix(size, size); set_zero(G_xm1_xm1_up);
     cmatrix *G_xm1_xm1_down = new cmatrix(size, size); set_zero(G_xm1_xm1_down);
+
+    int s = size / 2;
+    for (int i = 1; i <= Nx; i++){
+        int n = Nx * i;
+        for (int j = 1; j <= Ny; j++){
+            int m = Ny * j;
+            cnum g = V * V * Glp1lp1n(i, j);
+            (*G_lp1_lp1_up)(m, n)                   = g;
+            (*G_lm1_lm1_up)(m + Nx - 1, n + Nx - 1) = g;
+            (*G_lp1_lp1_down)(m + s, n + s)         = g;
+            (*G_lm1_lm1_down)(m+s+Nx-1, n+s+Nx- 1)  = g;
+
+            (*G_xp1_xp1_up)(i, j)                   = g;
+            (*G_xp1_xp1_down)(i + s, j + s)         = g;
+            (*G_xm1_xm1_up)(i + s - Nx, i + s - Nx) = g;
+            (*G_xm1_xm1_down)(i+size-Nx, i+size-Nx) = g;
+        }
+    }
+    cmatrix** sr = new cmatrix*[8];
+//    std::vector<cmatrix*> *sr = new std::vector<matrix*>();
+    sr[0] = G_lp1_lp1_up;
+    sr[2] = G_lp1_lp1_down;
+    sr[4] = G_xp1_xp1_up;
+    sr[6] = G_xp1_xp1_down;
+
+    sr[1] = G_lm1_lm1_up;
+    sr[3] = G_lm1_lm1_down;
+    sr[5] = G_xm1_xm1_up;
+    sr[7] = G_xm1_xm1_down;
+    return sr;
 }
 
 matrix<num>* greenji(num rashba) {
-    cmatrix *Hnn = hamiltonian(rashba);
+    cmatrix *Hnn        = hamiltonian(rashba);
+    cmatrix **sigma_r   = Selfy();
+    cmatrix *green_inv  = new cmatrix(size, size);
+    for (int i = 0; i < size; i++){
+        for (int j = 0; j < size; j++){
+            (*green_inv)(i, j) = (*Hnn)(i, j);
+            for (int k = 0; k < N_leads; k++){
+                (*green_inv)(i, j) -= (*(sigma_r[k]))(i, j);
+            }
+        }
+    }
+//    cmatrix *green = invert_matrix(green_inv);
 
 }
 
 
 int main (int argc, char** argv) {
-/*    for (num alpha = 0.02; fabs(alpha) <= fabs(V); alpha *= sqrt(10.0)) {
-        num r = rashba(alpha);
-
-    } */
     return 0;
 }
 
