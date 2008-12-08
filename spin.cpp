@@ -13,7 +13,7 @@ typedef long double num;
 typedef complex<num> cnum;
 typedef matrix<cnum> cmatrix;
 
-const int Nx         = 10;
+const int Nx         = 4;
 const int Ny         = Nx;
 const int N_leads    = 8;
 
@@ -51,7 +51,7 @@ inline num rashba(num alpha) {
 }
 
 inline num mods(int n, int nle) {
-    return 2.0 * V * (cos(pi * (double) n / ((double) nle + 1)) -1);
+    return 2.0 * V * (cos(pi * (double) n / ((double) nle + 1.0)) - 1.0);
 }
 
 num findk(num Emod) {
@@ -96,7 +96,8 @@ cmatrix* hamiltonian(num rashb) {
 
     // kinetic energy in x direction
     // No distinction between spin up and spin down needed
-    for (int i = 0; i < size/2; i++) {
+    int s = size / 2;
+    for (int i = 0; i < size; i++) {
         if ((i+1) % Nx != 0) {
             H(i, i+1) = V;
             H(i+1, i) = V;
@@ -121,11 +122,11 @@ cmatrix* hamiltonian(num rashb) {
         if ((i+1) % Nx != 0) {
             // "1 and 102"
             // with spin flip
-            H(i, i + Nx * Ny + 1) = rashba(alpha);
-            H(i + Nx * Ny + 1, i) = rashba(alpha);
+            H(i, i + s + 1) = rashba(alpha);
+            H(i + s + 1, i) = rashba(alpha);
             // "101 and 2"
-            H(i + 1, i + Nx * Ny) = - rashba(alpha);
-            H(i + Nx * Ny, i + 1) = - rashba(alpha);
+            H(i + 1, i + s) = - rashba(alpha);
+            H(i + s, i + 1) = - rashba(alpha);
         }
     }
 
@@ -133,22 +134,25 @@ cmatrix* hamiltonian(num rashb) {
     for (int i = 0; i < Nx * (Ny -1); i++) {
         // "11 and 101"
         // with spin flip
-        H(i + Nx, i) = cnum(0, 1) * rashba(alpha);
+        H(i + Nx, i + s) = cnum(0, 1) * rashba(alpha);
         // "1 and 111"
-        H(i, i + Nx) = cnum(0, -1) * rashba(alpha);
+        H(i + s, i + Nx) = cnum(0, -1) * rashba(alpha);
     }
 
-    std::cout << H;
+//    std::cout << H;
+
+    std::cout << "Calculated hamiltonian\n";
+    std::cout << H << endl;
     return Hnn;
 };
 
 cmatrix** self_energy(void) {
     // Glp1lp1n = G_{l+1, l+1}n
-    cmatrix Glp1lp1n = cmatrix(N_leads, N_leads);
+    cmatrix Glp1lp1n = cmatrix(Nx, Nx);
     set_zero(&Glp1lp1n);
-    for (int p = 0; p < N_leads; p++) {
-        for (int q = 0; q < N_leads; q++) {
-            for (int r = 0; r < N_leads; r++) {
+    for (int p = 0; p < Nx; p++) {
+        for (int q = 0; q < Nx; q++) {
+            for (int r = 0; r < Nx; r++) {
                 num x = (e_tot - mods(r+1, N_leads)) / (2.0 * V) + 1.0;
                 cnum theta;
                 if (x > 1.0) {
@@ -176,6 +180,7 @@ cmatrix** self_energy(void) {
             }
         }
     }
+    cout << "Glp1lp1n initialized\n";
 
     cmatrix *G_lp1_lp1_up   = new cmatrix(size, size); set_zero(G_lp1_lp1_up);
     cmatrix *G_lp1_lp1_down = new cmatrix(size, size); set_zero(G_lp1_lp1_down);
@@ -188,23 +193,34 @@ cmatrix** self_energy(void) {
     cmatrix *G_xm1_xm1_down = new cmatrix(size, size); set_zero(G_xm1_xm1_down);
 
     int s = size / 2;
-    for (int i = 1; i <= Nx; i++){
+    for (int i = 0; i < Nx; i++){
+//        cout << "iteration " << i << endl;
         int n = Nx * i;
-        for (int j = 1; j <= Ny; j++){
+        for (int j = 0; j < Ny; j++){
+//            cout << "\titeration " << j << endl;
             int m = Ny * j;
             cnum g = V * V * Glp1lp1n(i, j);
+//            cout << "\t\t0\n";
             (*G_lp1_lp1_up)(m, n)                   = g;
+//            cout << "\t\t1\n";
             (*G_lm1_lm1_up)(m + Nx - 1, n + Nx - 1) = g;
+//            cout << "\t\t2\n";
             (*G_lp1_lp1_down)(m + s, n + s)         = g;
+//            cout << "\t\t3\n";
             (*G_lm1_lm1_down)(m+s+Nx-1, n+s+Nx- 1)  = g;
 
+//            cout << "\t\t4\n";
             (*G_xp1_xp1_up)(i, j)                   = g;
+//            cout << "\t\t5\n";
             (*G_xp1_xp1_down)(i + s, j + s)         = g;
+//            cout << "\t\t6\n";
             (*G_xm1_xm1_up)(i + s - Nx, i + s - Nx) = g;
-            (*G_xm1_xm1_down)(i+size-Nx, i+size-Nx) = g;
+//            cout << "\t\t7\n";
+            (*G_xm1_xm1_down)(i + s - Nx, i+s/2-Nx) = g;
+//            cout << "\t\t8\n";
         }
     }
-    cmatrix** sr = new cmatrix*[8];
+    cmatrix** sr = new cmatrix*[N_leads];
     sr[0] = G_lp1_lp1_up;
     sr[2] = G_lp1_lp1_down;
     sr[4] = G_xp1_xp1_up;
@@ -219,8 +235,11 @@ cmatrix** self_energy(void) {
 
 cmatrix* greenji(num rashba) {
     cmatrix *Hnn        = hamiltonian(rashba);
+    cout << "Calculating self-energy...\n";
     cmatrix **sigma_r   = self_energy();
+    cout << "\t...done\n";
     cmatrix *green_inv  = new cmatrix(size, size);
+    cout << "Calculating green_inv\n";
     for (int i = 0; i < size; i++){
         for (int j = 0; j < size; j++){
             (*green_inv)(i, j) = (*Hnn)(i, j);
@@ -229,8 +248,11 @@ cmatrix* greenji(num rashba) {
             }
         }
     }
+    cout << "\t...done\n";
     cmatrix *green = new cmatrix(size, size);
+    cout << "Inverting Matrix...\n";
     InvertMatrix(*green_inv, *green);
+    cout << "\t...done\n";
     delete green_inv;
     green_inv = NULL;
 
@@ -244,13 +266,17 @@ cmatrix* greenji(num rashba) {
     // where G^A = (G^R)^* 
     //
     // first carry out the first two products
+    cout << "products...\n";
     for (int i = 0; i < N_leads; i++) {
+        cout << "\t" << i << endl;
         cmatrix *g_adv = new cmatrix(size, size);
         cmatrix *g_ret = new cmatrix(size, size);
+        cout << "\t" << i << "." << endl;
         set_zero(g_adv);
         set_zero(g_ret);
-        for (int n = 0; n < N_leads; i++){
-            for (int m = 0; n < N_leads; i++){
+        cout << "\t" << i << ".." << endl;
+        for (int n = 0; n < N_leads; n++){
+            for (int m = 0; m < N_leads; m++){
                 for (int nn = 0; nn < N_leads; nn++){
                     (*g_adv)(n, m) -= two * (*green)(nn, m) 
                                       * imag((*(sigma_r[i]))(m, n));
@@ -259,9 +285,12 @@ cmatrix* greenji(num rashba) {
                 }
             }
         }
+        cout << "\t" << i << "..." << endl;
         gamma_g_adv[i] = g_adv;
         gamma_g_ret[i] = g_ret;
+        cout << "\t" << i << "...." << endl;
     }
+    cout << "\t...done\n";
 
     // we don't need sigma_r any more
     for (int i = 0; i < N_leads; i++){
@@ -270,6 +299,7 @@ cmatrix* greenji(num rashba) {
     delete[] sigma_r;
     sigma_r = NULL;
 
+    cout << "Trace...\n";
     // Now calculate the trace
     for (int i = 0; i < N_leads; i++){
         for (int j = 0; j < N_leads; j++){
@@ -281,6 +311,7 @@ cmatrix* greenji(num rashba) {
             }
         }
     }
+    cout << "\t...done\n";
 
     for (int i = 0; i < N_leads; i++){
         for (int n = 0; n < size; n++){
@@ -311,7 +342,8 @@ cmatrix* greenji(num rashba) {
 
 
 int main (int argc, char** argv) {
-    return 0;
+    cmatrix *tpq = greenji(0.02);
+    cout << *tpq << endl;
 }
 
 // vim: ft=cpp sw=4 ts=4 expandtab

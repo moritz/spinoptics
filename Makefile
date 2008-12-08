@@ -15,7 +15,7 @@ spin: nano0903c.f inv_general_complex_mat.o Makefile
 #	$(CC) $(CFLAGS) $(LDFLAGS) -o spin  inv_general_complex_mat.o nano0903c.f
 
 cppspin: spin.cpp
-	g++ -O2 -g -Wall -o cppspin spin.cpp
+	g++ -g -Wall -fbounds-check -o cppspin spin.cpp
 
 clean:
 	rm -f *.o *~ spin cppspin
