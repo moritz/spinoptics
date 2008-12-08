@@ -289,6 +289,15 @@ cmatrix* greenji(num rashba) {
 
         }
     }
+    for (int i = 1; i < Nx; i++){
+        cnum k = findk(mods(i, Nx));
+        if (imag(k) == 0.0) {
+            for (int j = 0; j < N_leads; j++){
+                (*tpq)(j, j) += cnum(1, 0);
+            }
+        }
+
+    }
     // clean up temporary variables
     for (int i = 0; i < N_leads; i++){
         delete gamma_g_adv[i];
