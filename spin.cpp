@@ -135,8 +135,10 @@ cmatrix* hamiltonian(num rashb) {
         // "11 and 101"
         // with spin flip
         H(i + Nx, i + s) = cnum(0, 1) * rashba(alpha);
-        // "1 and 111"
         H(i + s, i + Nx) = cnum(0, -1) * rashba(alpha);
+        // "1 and 111"
+        H(i, i + s + Nx) = cnum(0, 1) * rashba(alpha);
+        H(i + s + Nx, i) = cnum(0, -1) * rashba(alpha);
     }
 
 //    std::cout << H;
