@@ -13,7 +13,7 @@ typedef long double num;
 typedef complex<num> cnum;
 typedef matrix<cnum> cmatrix;
 
-const int Nx         = 4;
+const int Nx         = 3;
 const int Ny         = Nx;
 const int N_leads    = 8;
 
@@ -137,8 +137,8 @@ cmatrix* hamiltonian(num rashb) {
         H(i + Nx, i + s) = cnum(0, 1) * rashba(alpha);
         H(i + s, i + Nx) = cnum(0, -1) * rashba(alpha);
         // "1 and 111"
-        H(i, i + s + Nx) = cnum(0, 1) * rashba(alpha);
-        H(i + s + Nx, i) = cnum(0, -1) * rashba(alpha);
+        H(i, i + s + Nx) = cnum(0, -1) * rashba(alpha);
+        H(i + s + Nx, i) = cnum(0, 1) * rashba(alpha);
     }
 
 //    std::cout << H;
