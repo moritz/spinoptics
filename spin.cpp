@@ -32,6 +32,7 @@ const num a_lead     = width_lead / (double) (Nx + 1);
 const int size       = Nx * Ny * 2;      // `Nfin'
 const num V          = 1.0;              // hopping term
 
+// e_tot is our choice of energy zero-level.
 const num e_tot      = -2.0 * V;
 const num width_disorder  = 0.0;
 
@@ -64,7 +65,6 @@ num findk(num Emod) {
 
 cmatrix* hamiltonian(num rashb) {
     cmatrix* Hnn = new cmatrix(size, size);
-    cmatrix H = (*Hnn);
     set_zero(Hnn);
 
     // diagonal elements
@@ -73,9 +73,9 @@ cmatrix* hamiltonian(num rashb) {
         // in which case these items might be different per
         // iteration, but every two diagonal items with distance 
         // (size/2) must still have the same value
-        cnum energy = -4.0 * V;
-        H(i, i)                     = energy;
-        H(i + size/2, i + size/2)   = energy;
+        cnum energy = -4.0 * V - e_tot;
+        (*Hnn)(i, i)                     = energy;
+        (*Hnn)(i + size/2, i + size/2)   = energy;
     }
 
     /*                Nx
@@ -99,21 +99,21 @@ cmatrix* hamiltonian(num rashb) {
     int s = size / 2;
     for (int i = 0; i < size; i++) {
         if ((i+1) % Nx != 0) {
-            H(i, i+1) = V;
-            H(i+1, i) = V;
+            (*Hnn)(i, i+1) = V;
+            (*Hnn)(i+1, i) = V;
         }
     }
 
     // kinetic energy in y direction
     // spin up
     for (int i = 0; i < size / 2 - Nx; i++) {
-        H(i, i + Nx) = V;
-        H(i + Nx, i) = V;
+        (*Hnn)(i, i + Nx) = V;
+        (*Hnn)(i + Nx, i) = V;
     }
     // spin down
     for (int i = size / 2; i < size - Nx; i++) {
-        H(i, i + Nx) = V;
-        H(i + Nx, i) = V;
+        (*Hnn)(i, i + Nx) = V;
+        (*Hnn)(i + Nx, i) = V;
     }
 
     // Rashba terms
@@ -122,11 +122,11 @@ cmatrix* hamiltonian(num rashb) {
         if ((i+1) % Nx != 0) {
             // "1 and 102"
             // with spin flip
-            H(i, i + s + 1) = rashba(alpha);
-            H(i + s + 1, i) = rashba(alpha);
+            (*Hnn)(i, i + s + 1) = rashba(alpha);
+            (*Hnn)(i + s + 1, i) = rashba(alpha);
             // "101 and 2"
-            H(i + 1, i + s) = - rashba(alpha);
-            H(i + s, i + 1) = - rashba(alpha);
+            (*Hnn)(i + 1, i + s) = - rashba(alpha);
+            (*Hnn)(i + s, i + 1) = - rashba(alpha);
         }
     }
 
@@ -134,17 +134,12 @@ cmatrix* hamiltonian(num rashb) {
     for (int i = 0; i < Nx * (Ny -1); i++) {
         // "11 and 101"
         // with spin flip
-        H(i + Nx, i + s) = cnum(0, 1) * rashba(alpha);
-        H(i + s, i + Nx) = cnum(0, -1) * rashba(alpha);
+        (*Hnn)(i + Nx, i + s) = cnum(0, 1) * rashba(alpha);
+        (*Hnn)(i + s, i + Nx) = cnum(0, -1) * rashba(alpha);
         // "1 and 111"
-        H(i, i + s + Nx) = cnum(0, -1) * rashba(alpha);
-        H(i + s + Nx, i) = cnum(0, 1) * rashba(alpha);
+        (*Hnn)(i, i + s + Nx) = cnum(0, -1) * rashba(alpha);
+        (*Hnn)(i + s + Nx, i) = cnum(0, 1) * rashba(alpha);
     }
-
-//    std::cout << H;
-
-    std::cout << "Calculated hamiltonian\n";
-    std::cout << H << endl;
     return Hnn;
 };
 
@@ -232,24 +227,29 @@ cmatrix** self_energy(void) {
     sr[3] = G_lm1_lm1_down;
     sr[5] = G_xm1_xm1_up;
     sr[7] = G_xm1_xm1_down;
+    for (int i = 0; i < N_leads; i++){
+        cout << i << "\t" << *sr[i] << "\n";
+    }
     return sr;
 }
 
-cmatrix* greenji(num rashba) {
-    cmatrix *Hnn        = hamiltonian(rashba);
+cmatrix* greenji(cmatrix* Hnn) {
     cout << "Calculating self-energy...\n";
     cmatrix **sigma_r   = self_energy();
     cout << "\t...done\n";
+    cout << *Hnn << endl;
     cmatrix *green_inv  = new cmatrix(size, size);
     cout << "Calculating green_inv\n";
+    (*green_inv) = *Hnn;
     for (int i = 0; i < size; i++){
         for (int j = 0; j < size; j++){
-            (*green_inv)(i, j) = (*Hnn)(i, j);
+//            (*green_inv)(i, j) = (*Hnn)(i, j);
             for (int k = 0; k < N_leads; k++){
                 (*green_inv)(i, j) -= (*(sigma_r[k]))(i, j);
             }
         }
     }
+    cout << "\t green_inv " << *green_inv << endl;
     cout << "\t...done\n";
     cmatrix *green = new cmatrix(size, size);
     cout << "Inverting Matrix...\n";
@@ -344,7 +344,9 @@ cmatrix* greenji(num rashba) {
 
 
 int main (int argc, char** argv) {
-    cmatrix *tpq = greenji(0.02);
+    cmatrix *Hnn = hamiltonian(0.3);
+    cout << *Hnn << endl;
+    cmatrix *tpq = greenji(Hnn);
     cout << *tpq << endl;
 }
 
