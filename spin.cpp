@@ -52,7 +52,7 @@ inline num rashba(num alpha) {
 }
 
 inline num mods(int n, int nle) {
-    return 2.0 * V * (cos(pi * (double) n / ((double) nle + 1.0)) - 1.0);
+    return -2.0 * V * (cos(pi * (double) n / ((double) nle + 1.0)) - 1.0);
 }
 
 num findk(num Emod) {
@@ -73,7 +73,7 @@ cmatrix* hamiltonian(num rashb) {
         // in which case these items might be different per
         // iteration, but every two diagonal items with distance 
         // (size/2) must still have the same value
-        cnum energy = -4.0 * V - e_tot;
+        cnum energy = -4.0 * V + e_tot;
         (*Hnn)(i, i)                     = energy;
         (*Hnn)(i + size/2, i + size/2)   = energy;
     }
@@ -150,9 +150,11 @@ cmatrix** self_energy(void) {
     for (int p = 0; p < Nx; p++) {
         for (int q = 0; q < Nx; q++) {
             for (int r = 0; r < Nx; r++) {
-                num x = (e_tot - mods(r+1, N_leads)) / (2.0 * V) + 1.0;
+                cout << "E_mod " << mods(r+1, Nx) << endl;
+                num x = (e_tot - mods(r+1, Nx)) / (2.0 * V) + 1.0;
                 cnum theta;
                 if (x > 1.0) {
+                    // evanescent mode, calculate cosh^-1
                     theta = cnum(0, 1)
                         * log((cnum) (x + sqrt(x*x - 1.0)));
                 } else if (x < -1.0) {
@@ -161,18 +163,23 @@ cmatrix** self_energy(void) {
                 } else {
                     theta = acos(x);
                 }
+//                printf("\ttheta(%d, %d, %d) = ", p, q, r);
+//                cout << theta << endl;
+//
                 cnum unit = cnum(1.0, 0.0);
-                cnum tmpp = exp(cnum(0, 2.0) * pi * 
-                        ((cnum) N_leads) / ((cnum) (N_leads + 1)));
-                cnum tmpm = exp(cnum(0, -2.0) * pi * 
-                        ((cnum) N_leads) / ((cnum) (N_leads + 1)));
+                cnum tmpp = exp(cnum(0, 1) * (2.0 * pi * ((num) ((r+1) * Nx )
+                                / (num) (Nx + 1))));
+                cnum tmpm = exp(cnum(0, -1) * (2.0 * pi * ((num) (r+1)
+                                / (num) (Nx + 1))));
+
                 // "AnorN1(mm)" in nano0903c.f
-                cnum y = sqrt(cnum(0.5 * N_leads, 0.0) + 
+                cnum y = unit / sqrt(cnum(0.5 * Nx, 0.0) + 
                     (unit - tmpp) / (unit-tmpp) * cnum(0.5, 0.0));
+                cout << "\ty: " << y << endl;
                 // "psiN1(ii)" in nano0903c.f
-                cnum y1 = y * sin(pi * (num) (p * r)/(1.0 + N_leads));
+                cnum y1 = y * sin(pi * (num) (p * r)/(1.0 + Nx));
                 // "psiN1(jj)" in nano0903c.f
-                cnum y2 = y * sin(pi * (num) (q * r)/(1.0 + N_leads));
+                cnum y2 = y * sin(pi * (num) (q * r)/(1.0 + Nx));
                 Glp1lp1n(p, q) += exp(cnum(0.0,1.0) * theta)/V * y1 * y2;
             }
         }
@@ -189,6 +196,8 @@ cmatrix** self_energy(void) {
     cmatrix *G_xm1_xm1_up   = new cmatrix(size, size); set_zero(G_xm1_xm1_up);
     cmatrix *G_xm1_xm1_down = new cmatrix(size, size); set_zero(G_xm1_xm1_down);
 
+    cout << "Glp1lp1n: " << Glp1lp1n << endl;
+
     int s = size / 2;
     for (int i = 0; i < Nx; i++){
 //        cout << "iteration " << i << endl;
@@ -196,7 +205,9 @@ cmatrix** self_energy(void) {
         for (int j = 0; j < Ny; j++){
 //            cout << "\titeration " << j << endl;
             int m = Ny * j;
-            cnum g = V * V * Glp1lp1n(i, j);
+            // XXX need a factor here?
+            cnum g = Glp1lp1n(i, j);
+            cout << " g: " << g << endl;
 //            cout << "\t\t0\n";
             (*G_lp1_lp1_up)(m, n)                   = g;
 //            cout << "\t\t1\n";
@@ -227,9 +238,11 @@ cmatrix** self_energy(void) {
     sr[3] = G_lm1_lm1_down;
     sr[5] = G_xm1_xm1_up;
     sr[7] = G_xm1_xm1_down;
-    for (int i = 0; i < N_leads; i++){
-        cout << i << "\t" << *sr[i] << "\n";
-    }
+    cout << "G_lp1_lp1_up\n";
+    cout << *G_lp1_lp1_up << endl;
+//    for (int i = 0; i < N_leads; i++){
+//        cout << i << "\t" << *sr[i] << "\n";
+//    }
     return sr;
 }
 
@@ -345,8 +358,8 @@ cmatrix* greenji(cmatrix* Hnn) {
 
 int main (int argc, char** argv) {
     cmatrix *Hnn = hamiltonian(0.3);
-    cout << *Hnn << endl;
     cmatrix *tpq = greenji(Hnn);
+    delete Hnn;
     cout << *tpq << endl;
 }
 
