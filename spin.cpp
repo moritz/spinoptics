@@ -177,9 +177,10 @@ cmatrix** self_energy(void) {
                     (unit - tmpp) / (unit-tmpp) * cnum(0.5, 0.0));
                 cout << "\ty: " << y << endl;
                 // "psiN1(ii)" in nano0903c.f
-                cnum y1 = y * sin(pi * (num) (p * (r+1))/(1.0 + Nx));
+                cnum y1 = y * sin(pi * (num) ((p+1) * (r+1))/(1.0 + Nx));
                 // "psiN1(jj)" in nano0903c.f
-                cnum y2 = y * sin(pi * (num) (q * (r+1))/(1.0 + Nx));
+                cnum y2 = y * sin(pi * (num) ((q+1) * (r+1))/(1.0 + Nx));
+                cout << "\t\ty1, y2: " << y1 << "   " << y2 << endl;
                 Glp1lp1n(p, q) += exp(cnum(0.0,1.0) * theta)/V * y1 * y2;
             }
         }
