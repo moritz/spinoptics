@@ -208,15 +208,10 @@ cmatrix** self_energy(void) {
             (*G_lp1_lp1_down)(m + s, n + s)         = g;
             (*G_lm1_lm1_down)(m+s+Nx-1, n+s+Nx- 1)  = g;
 
-//            cout << "\t\t4\n";
             (*G_xp1_xp1_up)(i, j)                   = g;
-//            cout << "\t\t5\n";
             (*G_xp1_xp1_down)(i + s, j + s)         = g;
-//            cout << "\t\t6\n";
             (*G_xm1_xm1_up)(i + s - Nx, j + s - Nx) = g;
-//            cout << "\t\t7\n";
-            (*G_xm1_xm1_down)(i + s - Nx, j+s/2-Nx) = g;
-//            cout << "\t\t8\n";
+            (*G_xm1_xm1_down)(i + size - Nx, j+size-Nx) = g;
         }
     }
     cmatrix** sr = new cmatrix*[N_leads];
@@ -229,13 +224,6 @@ cmatrix** self_energy(void) {
     sr[3] = G_lm1_lm1_down;
     sr[5] = G_xm1_xm1_up;
     sr[7] = G_xm1_xm1_down;
-    // checked: G_lp1_lp1_up, G_lp1_lp1_down, G_lm1_lm1_up, G_lm1_lm1_down
-    // G_xp1_xp1_up, G_xp1_xp1_down
-    cout << "G_xm1_xm1_up  ";
-    cout << *G_xm1_xm1_up << endl;
-//    for (int i = 0; i < N_leads; i++){
-//        cout << i << "\t" << *sr[i] << "\n";
-//    }
     return sr;
 }
 
