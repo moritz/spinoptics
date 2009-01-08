@@ -13,7 +13,7 @@ typedef long double num;
 typedef complex<num> cnum;
 typedef matrix<cnum> cmatrix;
 
-const int Nx         = 3;
+const int Nx         = 4;
 const int Ny         = Nx;
 const int N_leads    = 8;
 
@@ -36,7 +36,7 @@ const num V          = 1.0;              // hopping term
 const num e_tot      = -2.0 * V;
 const num width_disorder  = 0.0;
 
-num alpha = -0.02 / 15.0;
+num alpha = -0.02 / a_lead / 2.0;
 
 template <class T>
 void set_zero(matrix<T>* m) {
@@ -191,16 +191,11 @@ cmatrix** self_energy(void) {
     cmatrix *G_xm1_xm1_up   = new cmatrix(size, size); set_zero(G_xm1_xm1_up);
     cmatrix *G_xm1_xm1_down = new cmatrix(size, size); set_zero(G_xm1_xm1_down);
 
-    cout << "Glp1lp1n: " << Glp1lp1n << endl;
-
     int s = size / 2;
     for (int i = 0; i < Nx; i++){
-//        cout << "iteration " << i << endl;
         int n = Nx * i;
         for (int j = 0; j < Ny; j++){
-//            cout << "\titeration " << j << endl;
             int m = Ny * j;
-            // XXX need a factor here?
             cnum g = Glp1lp1n(i, j);
             cout << " g: " << g << endl;
             (*G_lp1_lp1_up)(m, n)                   = g;
@@ -228,14 +223,9 @@ cmatrix** self_energy(void) {
 }
 
 cmatrix* greenji(cmatrix* Hnn) {
-    cout << "Calculating self-energy...\n";
     cmatrix **sigma_r   = self_energy();
-    cout << "\t...done\n";
-    cout << *Hnn << endl;
     cmatrix *green_inv  = new cmatrix(size, size);
-    cout << "Calculating green_inv\n";
     (*green_inv) = *Hnn;
-    cout << "Hamiltonian: " << *green_inv << "\n";
     for (int i = 0; i < size; i++){
         for (int j = 0; j < size; j++){
 //            (*green_inv)(i, j) = (*Hnn)(i, j);
@@ -244,12 +234,8 @@ cmatrix* greenji(cmatrix* Hnn) {
             }
         }
     }
-    cout << "\t green_inv " << *green_inv << endl;
-    cout << "\t...done\n";
     cmatrix *green = new cmatrix(size, size);
-    cout << "Inverting Matrix...\n";
     InvertMatrix(*green_inv, *green);
-    cout << "\t...done\n";
     delete green_inv;
     green_inv = NULL;
 
