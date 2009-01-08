@@ -1,0 +1,43 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use Math::Complex;
+use Data::Dumper;
+
+sub read_file {
+    # we ignore that the structure is a matrix, and just read it as if where a
+    # list
+    my $fn = shift;
+    open my $file, '<', $fn or die "Can't open file '$fn' for reading: $!";
+    my @list;
+    my $contents  = do { local $/; <$file> };
+    close $file or warn $!;
+    my $number_re = qr{
+        \( \s*
+            ([^\s(),]*) # real part
+            \s*,\s*
+            ([^\s(),]*) # imaginary part
+            ,?
+            \s*
+        \)
+    }x;
+
+    while ($contents =~ m/$number_re/g){
+        push @list, $1 + $2 * i;
+    }
+    return @list;
+}
+
+my @a = read_file('grinv-cpp');
+my @b = read_file('grinv-nano');
+
+print scalar(@a), "\t", scalar(@b), "\n";
+
+for (0..$#a) {
+    my $diff = abs($a[$_] - $b[$_]);
+    if ($diff > 1e-4) {
+        print "Index $_: got $a[$_], expected $b[$_]\n"
+    }
+}
+
+# vim: ft=perl expandtab ts=4 sw=4

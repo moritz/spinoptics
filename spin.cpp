@@ -36,7 +36,7 @@ const num V          = 1.0;              // hopping term
 const num e_tot      = -2.0 * V;
 const num width_disorder  = 0.0;
 
-num alpha = -0.02;
+num alpha = -0.02 / 15.0;
 
 template <class T>
 void set_zero(matrix<T>* m) {
@@ -73,7 +73,7 @@ cmatrix* hamiltonian(num rashb) {
         // in which case these items might be different per
         // iteration, but every two diagonal items with distance 
         // (size/2) must still have the same value
-        cnum energy = -4.0 * V + e_tot;
+        cnum energy = -4.0 * V - e_tot;
         (*Hnn)(i, i)                     = energy;
         (*Hnn)(i + size/2, i + size/2)   = energy;
     }
@@ -150,7 +150,6 @@ cmatrix** self_energy(void) {
     for (int p = 0; p < Nx; p++) {
         for (int q = 0; q < Nx; q++) {
             for (int r = 0; r < Nx; r++) {
-                cout << "E_mod " << mods(r+1, Nx) << endl;
                 num x = (e_tot - mods(r+1, Nx)) / (2.0 * V) + 1.0;
                 cnum theta;
                 if (x > 1.0) {
@@ -163,8 +162,6 @@ cmatrix** self_energy(void) {
                 } else {
                     theta = acos(x);
                 }
-//                printf("\ttheta(%d, %d, %d) = ", p, q, r);
-//                cout << theta << endl;
 //
                 cnum unit = cnum(1.0, 0.0);
                 cnum tmpp = exp(cnum(0, 1) * (2.0 * pi * ((num) ((r+1) * Nx )
@@ -175,17 +172,14 @@ cmatrix** self_energy(void) {
                 // "AnorN1(mm)" in nano0903c.f
                 cnum y = unit / sqrt(cnum(0.5 * Nx, 0.0) + 
                     (unit - tmpp) / (unit-tmpp) * cnum(0.5, 0.0));
-                cout << "\ty: " << y << endl;
                 // "psiN1(ii)" in nano0903c.f
                 cnum y1 = y * sin(pi * (num) ((p+1) * (r+1))/(1.0 + Nx));
                 // "psiN1(jj)" in nano0903c.f
                 cnum y2 = y * sin(pi * (num) ((q+1) * (r+1))/(1.0 + Nx));
-                cout << "\t\ty1, y2: " << y1 << "   " << y2 << endl;
-                Glp1lp1n(p, q) += exp(cnum(0.0,1.0) * theta)/V * y1 * y2;
+                Glp1lp1n(p, q) += conj(exp(cnum(0.0,1.0) * theta)/V * y1 * y2);
             }
         }
     }
-    cout << "Glp1lp1n initialized\n";
 
     cmatrix *G_lp1_lp1_up   = new cmatrix(size, size); set_zero(G_lp1_lp1_up);
     cmatrix *G_lp1_lp1_down = new cmatrix(size, size); set_zero(G_lp1_lp1_down);
@@ -209,13 +203,9 @@ cmatrix** self_energy(void) {
             // XXX need a factor here?
             cnum g = Glp1lp1n(i, j);
             cout << " g: " << g << endl;
-//            cout << "\t\t0\n";
             (*G_lp1_lp1_up)(m, n)                   = g;
-//            cout << "\t\t1\n";
             (*G_lm1_lm1_up)(m + Nx - 1, n + Nx - 1) = g;
-//            cout << "\t\t2\n";
             (*G_lp1_lp1_down)(m + s, n + s)         = g;
-//            cout << "\t\t3\n";
             (*G_lm1_lm1_down)(m+s+Nx-1, n+s+Nx- 1)  = g;
 
 //            cout << "\t\t4\n";
@@ -223,9 +213,9 @@ cmatrix** self_energy(void) {
 //            cout << "\t\t5\n";
             (*G_xp1_xp1_down)(i + s, j + s)         = g;
 //            cout << "\t\t6\n";
-            (*G_xm1_xm1_up)(i + s - Nx, i + s - Nx) = g;
+            (*G_xm1_xm1_up)(i + s - Nx, j + s - Nx) = g;
 //            cout << "\t\t7\n";
-            (*G_xm1_xm1_down)(i + s - Nx, i+s/2-Nx) = g;
+            (*G_xm1_xm1_down)(i + s - Nx, j+s/2-Nx) = g;
 //            cout << "\t\t8\n";
         }
     }
@@ -239,8 +229,10 @@ cmatrix** self_energy(void) {
     sr[3] = G_lm1_lm1_down;
     sr[5] = G_xm1_xm1_up;
     sr[7] = G_xm1_xm1_down;
-    cout << "G_lp1_lp1_up\n";
-    cout << *G_lp1_lp1_up << endl;
+    // checked: G_lp1_lp1_up, G_lp1_lp1_down, G_lm1_lm1_up, G_lm1_lm1_down
+    // G_xp1_xp1_up, G_xp1_xp1_down
+    cout << "G_xm1_xm1_up  ";
+    cout << *G_xm1_xm1_up << endl;
 //    for (int i = 0; i < N_leads; i++){
 //        cout << i << "\t" << *sr[i] << "\n";
 //    }
@@ -255,6 +247,7 @@ cmatrix* greenji(cmatrix* Hnn) {
     cmatrix *green_inv  = new cmatrix(size, size);
     cout << "Calculating green_inv\n";
     (*green_inv) = *Hnn;
+    cout << "Hamiltonian: " << *green_inv << "\n";
     for (int i = 0; i < size; i++){
         for (int j = 0; j < size; j++){
 //            (*green_inv)(i, j) = (*Hnn)(i, j);
@@ -284,13 +277,10 @@ cmatrix* greenji(cmatrix* Hnn) {
     // first carry out the first two products
     cout << "products...\n";
     for (int i = 0; i < N_leads; i++) {
-        cout << "\t" << i << endl;
         cmatrix *g_adv = new cmatrix(size, size);
         cmatrix *g_ret = new cmatrix(size, size);
-        cout << "\t" << i << "." << endl;
         set_zero(g_adv);
         set_zero(g_ret);
-        cout << "\t" << i << ".." << endl;
         for (int n = 0; n < N_leads; n++){
             for (int m = 0; m < N_leads; m++){
                 for (int nn = 0; nn < N_leads; nn++){
@@ -301,12 +291,9 @@ cmatrix* greenji(cmatrix* Hnn) {
                 }
             }
         }
-        cout << "\t" << i << "..." << endl;
         gamma_g_adv[i] = g_adv;
         gamma_g_ret[i] = g_ret;
-        cout << "\t" << i << "...." << endl;
     }
-    cout << "\t...done\n";
 
     // we don't need sigma_r any more
     for (int i = 0; i < N_leads; i++){
