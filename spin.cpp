@@ -22,13 +22,13 @@ const num h_bar      = 6.582122E-16;     // [eV*s]
 const num h_planck   = 4.135669E-15;     // [eV*s]
 const num electron_mass
                      = 9.109389E-31;     // [kg]
-const num mass       = 0.381 * electron_mass; 
+const num mass       = 0.381 * electron_mass;
 const num e_charge   = 1.60217653E-19;   // [C = A*s]
 
 const num width_lead = 30.0;             // [nm]
 
 // XXX is the +1 correct?
-const num a_lead     = width_lead / (double) (Nx + 1); 
+const num a_lead     = width_lead / (double) (Nx + 1);
 const int size       = Nx * Ny * 2;      // `Nfin'
 const num V          = 1.0;              // hopping term
 
@@ -58,7 +58,7 @@ inline num mods(int n, int nle) {
 num findk(num Emod) {
     num Etot = -2.0 * V; // ???
     return sqrt(
-            2 * mass / (h_bar * h_bar) 
+            2 * mass / (h_bar * h_bar)
             * (Etot - Emod) * 10.0 / e_charge
         );
 }
@@ -71,7 +71,7 @@ cmatrix* hamiltonian(num rashb) {
     for (int i = 0; i < size / 2; i++) {
         // later we might want to add random disorder,
         // in which case these items might be different per
-        // iteration, but every two diagonal items with distance 
+        // iteration, but every two diagonal items with distance
         // (size/2) must still have the same value
         cnum energy = -4.0 * V - e_tot;
         (*Hnn)(i, i)                     = energy;
@@ -88,10 +88,10 @@ cmatrix* hamiltonian(num rashb) {
      *      .   .   .       .   .    |
      *      X   X   X ...   X   X    /
      *      X   X   X ...   X   X  -
-     *    
+     *
      *      Numbering scheme:
      *      0   1               (Nx-1)
-     *      Nx  Nx+1            (2*Nx -1)    
+     *      Nx  Nx+1            (2*Nx -1)
      */
 
     // kinetic energy in x direction
@@ -170,7 +170,7 @@ cmatrix** self_energy(void) {
                                 / (num) (Nx + 1))));
 
                 // "AnorN1(mm)" in nano0903c.f
-                cnum y = unit / sqrt(cnum(0.5 * Nx, 0.0) + 
+                cnum y = unit / sqrt(cnum(0.5 * Nx, 0.0) +
                     (unit - tmpp) / (unit-tmpp) * cnum(0.5, 0.0));
                 // "psiN1(ii)" in nano0903c.f
                 cnum y1 = y * sin(pi * (num) ((p+1) * (r+1))/(1.0 + Nx));
@@ -197,7 +197,6 @@ cmatrix** self_energy(void) {
         for (int j = 0; j < Ny; j++){
             int m = Ny * j;
             cnum g = Glp1lp1n(i, j);
-            cout << " g: " << g << endl;
             (*G_lp1_lp1_up)(m, n)                   = g;
             (*G_lm1_lm1_up)(m + Nx - 1, n + Nx - 1) = g;
             (*G_lp1_lp1_down)(m + s, n + s)         = g;
@@ -239,35 +238,35 @@ cmatrix* greenji(cmatrix* Hnn) {
     delete green_inv;
     green_inv = NULL;
 
+    cmatrix *green_conj = new cmatrix(size, size);
+    *green_conj = conj(*green);
+
     cmatrix *tpq = new cmatrix(N_leads, N_leads);
     set_zero(tpq);
     cmatrix **gamma_g_adv = new cmatrix*[N_leads];
     cmatrix **gamma_g_ret = new cmatrix*[N_leads];
     cnum two = cnum(2, 0);
+    cout << two << "\n";
 
     // T_{p, q} = Trace( \Gamma_p G^R \Gamma_q G^A )
-    // where G^A = (G^R)^* 
+    // where G^A = (G^R)^*
     //
     // first carry out the first two products
     cout << "products...\n";
+    *green *= cnum(-2, 0);
     for (int i = 0; i < N_leads; i++) {
         cmatrix *g_adv = new cmatrix(size, size);
         cmatrix *g_ret = new cmatrix(size, size);
         set_zero(g_adv);
         set_zero(g_ret);
-        for (int n = 0; n < N_leads; n++){
-            for (int m = 0; m < N_leads; m++){
-                for (int nn = 0; nn < N_leads; nn++){
-                    (*g_adv)(n, m) -= two * (*green)(nn, m) 
-                                      * imag((*(sigma_r[i]))(m, n));
-                    (*g_ret)(n, m) -= two * conj((*green)(nn, m)) 
-                                      * imag((*(sigma_r[i]))(m, n));
-                }
-            }
-        }
+        *sigma_r[i] = imag(*sigma_r[i]);
+        *g_adv = prod(*sigma_r[i], *green);
+        *g_ret = prod(*sigma_r[i], *green_conj);
         gamma_g_adv[i] = g_adv;
         gamma_g_ret[i] = g_ret;
     }
+
+    cout << "gamma_g_adv[0]: " << *(gamma_g_adv[0]) << "\n";
 
     // we don't need sigma_r any more
     for (int i = 0; i < N_leads; i++){
