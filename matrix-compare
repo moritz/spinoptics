@@ -28,15 +28,17 @@ sub read_file {
     return @list;
 }
 
-my @a = read_file('grinv-cpp');
-my @b = read_file('grinv-nano');
+my @a = read_file($ARGV[0] || 'grinv-cpp');
+my @b = read_file($ARGV[1] || 'grinv-nano');
 
 print scalar(@a), "\t", scalar(@b), "\n";
+my $n = @a;
 
-for (0..$#a) {
+for (0..$n - 1) {
     my $diff = abs($a[$_] - $b[$_]);
     if ($diff > 1e-4) {
-        print "Index $_: got $a[$_], expected $b[$_]\n"
+        printf "Index %d (%d, %d): got %s, expected %s\n",
+            $_, $_ % sqrt($n), int($_ / sqrt($n)), $a[$_], $b[$_];
     }
 }
 
