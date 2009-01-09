@@ -221,13 +221,12 @@ cmatrix** self_energy(void) {
     return sr;
 }
 
-cmatrix* greenji(cmatrix* Hnn) {
+matrix<num>* greenji(cmatrix* Hnn) {
     cmatrix **sigma_r   = self_energy();
     cmatrix *green_inv  = new cmatrix(size, size);
     (*green_inv) = *Hnn;
     for (int i = 0; i < size; i++){
         for (int j = 0; j < size; j++){
-//            (*green_inv)(i, j) = (*Hnn)(i, j);
             for (int k = 0; k < N_leads; k++){
                 (*green_inv)(i, j) -= (*(sigma_r[k]))(i, j);
             }
@@ -241,7 +240,7 @@ cmatrix* greenji(cmatrix* Hnn) {
     cmatrix *green_conj = new cmatrix(size, size);
     *green_conj = conj(*green);
 
-    cmatrix *tpq = new cmatrix(N_leads, N_leads);
+    matrix<num> *tpq = new matrix<num>(N_leads, N_leads);
     set_zero(tpq);
     cmatrix **gamma_g_adv = new cmatrix*[N_leads];
     cmatrix **gamma_g_ret = new cmatrix*[N_leads];
@@ -253,18 +252,21 @@ cmatrix* greenji(cmatrix* Hnn) {
     //
     // first carry out the first two products
     cout << "products...\n";
-    *green *= cnum(-2, 0);
     for (int i = 0; i < N_leads; i++) {
         cmatrix *g_adv = new cmatrix(size, size);
         cmatrix *g_ret = new cmatrix(size, size);
         set_zero(g_adv);
         set_zero(g_ret);
-        *sigma_r[i] = imag(*sigma_r[i]);
-        *g_adv = prod(*sigma_r[i], *green);
-        *g_ret = prod(*sigma_r[i], *green_conj);
+        *sigma_r[i] = cnum(-2, 0) * imag(*sigma_r[i]);
+        // noalias() is a mere speed improvement, if the left hand side
+        // doesn't have the same storage location as the RHS
+        noalias(*g_adv) = prod(*sigma_r[i], *green);
+        noalias(*g_ret) = prod(*sigma_r[i], *green_conj);
         gamma_g_adv[i] = g_adv;
         gamma_g_ret[i] = g_ret;
     }
+    delete green;       green       = NULL;
+    delete green_conj;  green_conj  = NULL;
 
     cout << "gamma_g_adv[0]: " << *(gamma_g_adv[0]) << "\n";
 
@@ -281,18 +283,20 @@ cmatrix* greenji(cmatrix* Hnn) {
         for (int j = 0; j < N_leads; j++){
             for (int n = 0; n < size; n++){
                 for (int m = 0; m < size; m++){
-                    (*tpq)(i, j) += (*gamma_g_ret[i])(n, m)
-                                    * (*gamma_g_adv[j])(m, n);
+                    (*tpq)(i, j) += real((*gamma_g_ret[i])(n, m)
+                                    * (*gamma_g_adv[j])(m, n));
                 }
             }
         }
     }
     cout << "\t...done\n";
 
+    cout << "Tpq temp: " << *tpq << "\n";
+
     for (int i = 0; i < N_leads; i++){
         for (int n = 0; n < size; n++){
-            (*tpq)(i, i) += cnum(0, 1) * (*(gamma_g_adv[i]))(n, n)
-                          - cnum(0, 1) * (*(gamma_g_ret[i]))(n, n);
+            (*tpq)(i, i) += real(cnum(0, 1) * (*(gamma_g_adv[i]))(n, n)
+                          - cnum(0, 1) * (*(gamma_g_ret[i]))(n, n));
 
         }
     }
@@ -300,7 +304,7 @@ cmatrix* greenji(cmatrix* Hnn) {
         cnum k = findk(mods(i, Nx));
         if (imag(k) == 0.0) {
             for (int j = 0; j < N_leads; j++){
-                (*tpq)(j, j) += cnum(1, 0);
+                (*tpq)(j, j) += 1.0;
             }
         }
 
@@ -319,7 +323,7 @@ cmatrix* greenji(cmatrix* Hnn) {
 
 int main (int argc, char** argv) {
     cmatrix *Hnn = hamiltonian(0.3);
-    cmatrix *tpq = greenji(Hnn);
+    matrix<num> *tpq = greenji(Hnn);
     delete Hnn;
     cout << *tpq << endl;
 }
