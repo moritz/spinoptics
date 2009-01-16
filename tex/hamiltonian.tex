@@ -1,0 +1,84 @@
+\NeedsTeXFormat{LaTeX2e}
+\documentclass[11pt]{article}
+%Absaetze nicht einruecken:
+\usepackage{parskip}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{ae}
+\usepackage[intlimits, sumlimits, namelimits]{amsmath}
+\usepackage{bbm}
+%Neue Macros fuer Mathe:
+%in parentheses - gleich mit richtiger Groesse
+\newcommand{\inp}[1]{\ensuremath{\left(#1\right)}}
+\newcommand{\sqr}{\ensuremath{^{2}}}
+\newcommand{\cube}{\ensuremath{^{3}}}
+%Mengensymbole mit doppelten senkrechten Strichen:
+\newcommand{\set}[1]{\ensuremath{\mathbbm{#1}}}
+%definiert eine Norm, also zwei senkrechte Striche auf jeder Seite:
+\newcommand{\norm}[1]{\ensuremath{\left|#1\right|}}
+%Spaltenvektor - dreidimensional:
+\newcommand{\svec}[3]{\ensuremath{\inp{\hspace{-.8ex}\begin{array}{r}#1\\#2\\#3\end{array}\hspace{-.4ex}}}}
+\newcommand{\entspr}{\ensuremath{\,\,\hat{=}\,\,}}%
+\newcommand{\dx}[1][x]{\ensuremath{\textnormal d #1}}
+% Tabellen:
+\usepackage{array}
+\setlength{\extrarowheight}{.2mm}
+%Links im Text:
+\usepackage{hyperref}
+\usepackage{graphics,graphicx,fancyvrb}
+%Raender einstellen
+%\usepackage[a4paper, margin=15mm, top=30mm]{geometry}
+\usepackage[a4paper]{geometry}
+%Kopf - und Fusszeilen
+\usepackage{lastpage}
+\usepackage{fancyhdr}
+	\lhead{Moritz Lenz}
+	\chead{\bfseries{-- \thepage\ --}}
+	\rhead{\thetitle}
+	\lfoot{}
+	\rfoot{}
+	\cfoot{}
+	\pagestyle{fancy}
+\pagestyle{empty}
+
+\sffamily
+
+%Kopfzeile
+
+\author{Moritz Lenz}
+\title{Tight binding Hamiltonian}
+\begin{document}
+\maketitle
+
+For a two-dimensional electron gas with Rashba spin-orbit coupling (of
+strength $\alpha$) the Hamiltonian is
+
+\begin{equation}
+    H = \frac{1}{2 m^*} (p_x^2 + p_y^2) + 
+    \frac{\alpha}{\hbar} \inp{p_y\sigma_x - p_x\sigma_y}
+\end{equation}
+
+Taking in account only nearest neighbour interactions, and discretizing to a
+tight binding model we get
+
+\begin{eqnarray}
+    H   &&= H_0 + H_r\\
+    H_0 &&= \sum_{n,\sigma} \epsilon_0 c^{\dagger}_{n\sigma} c_{n\sigma}
+            - \sum_{n,\delta,\sigma} t c^\dagger_{n\sigma} c_{n,\sigma} +
+            \textnormal{H.c.}\\
+    H_r &&= \frac{-\alpha}{2 a_0} \sum_m
+        -i( c^\dagger_{m,\uparrow|} c_{m+a_y,\downarrow}
+            + c^\dagger_{m,\downarrow} c_{m+a_y,\uparrow})
+         + c^\dagger_{m,\uparrow|} c_{m+a_x,\downarrow}
+            + c^\dagger_{m,\downarrow} c_{m+a_x,\uparrow}
+\end{eqnarray}
+
+where $n$ runs over all latic sites, $\delta$ over $\uparrow$ and
+$\downarrow$, and $a_x$ and $a_y$ denote the shift to the nearest neighbor in
+$x$ and $y$ direction, respectively. (Note that we assume that the lattice is
+equally spaced in $x$ and $y$ direction, $+a_x$ just means "go to the next
+neighbour in $x$ direction).
+
+\end{document}
+
+% vim: ts=4 sw=4 expandtab
