@@ -30,7 +30,7 @@ const num width_lead = 30.0;             // [nm]
 // XXX is the +1 correct?
 const num a_lead     = width_lead / (double) (Nx + 1);
 const int size       = Nx * Ny * 2;      // `Nfin'
-const num V          = 1.0;              // hopping term
+const num V          = -1.0;             // hopping term
 
 // e_tot is our choice of energy zero-level.
 const num e_tot      = -2.0 * V;
@@ -47,12 +47,12 @@ void set_zero(matrix<T>* m) {
     }
 }
 
-inline num rashba(num alpha) {
+inline num rashba(const num alpha) {
     return 2.0 * alpha * a_lead;
 }
 
-inline num mods(int n, int nle) {
-    return -2.0 * V * (cos(pi * (double) n / ((double) nle + 1.0)) - 1.0);
+inline num mods(const int n, const int nle) {
+    return 2.0 * V * (cos(pi * (double) n / ((double) nle + 1.0)) - 1.0);
 }
 
 num findk(num Emod) {
@@ -73,7 +73,7 @@ cmatrix* hamiltonian(num rashb) {
         // in which case these items might be different per
         // iteration, but every two diagonal items with distance
         // (size/2) must still have the same value
-        cnum energy = -4.0 * V - e_tot;
+        cnum energy = 4.0 * V + e_tot;
         (*Hnn)(i, i)                     = energy;
         (*Hnn)(i + size/2, i + size/2)   = energy;
     }
@@ -99,21 +99,21 @@ cmatrix* hamiltonian(num rashb) {
     int s = size / 2;
     for (int i = 0; i < size; i++) {
         if ((i+1) % Nx != 0) {
-            (*Hnn)(i, i+1) = V;
-            (*Hnn)(i+1, i) = V;
+            (*Hnn)(i, i+1) = -V;
+            (*Hnn)(i+1, i) = -V;
         }
     }
 
     // kinetic energy in y direction
     // spin up
     for (int i = 0; i < size / 2 - Nx; i++) {
-        (*Hnn)(i, i + Nx) = V;
-        (*Hnn)(i + Nx, i) = V;
+        (*Hnn)(i, i + Nx) = -V;
+        (*Hnn)(i + Nx, i) = -V;
     }
     // spin down
     for (int i = size / 2; i < size - Nx; i++) {
-        (*Hnn)(i, i + Nx) = V;
-        (*Hnn)(i + Nx, i) = V;
+        (*Hnn)(i, i + Nx) = -V;
+        (*Hnn)(i + Nx, i) = -V;
     }
 
     // Rashba terms
@@ -150,7 +150,10 @@ cmatrix** self_energy(void) {
     for (int p = 0; p < Nx; p++) {
         for (int q = 0; q < Nx; q++) {
             for (int r = 0; r < Nx; r++) {
-                num x = (e_tot - mods(r+1, Nx)) / (2.0 * V) + 1.0;
+//                cout << "mods: "<< mods(r+1, Nx) << endl;
+                num x = (e_tot - mods(r+1, Nx))
+                    / (2.0 * V) + 1.0;
+//                cout << "x: " << x << endl;
                 cnum theta;
                 if (x > 1.0) {
                     // evanescent mode, calculate cosh^-1
@@ -162,7 +165,8 @@ cmatrix** self_energy(void) {
                 } else {
                     theta = acos(x);
                 }
-//
+//                cout << "theta: " << theta << endl;
+
                 cnum unit = cnum(1.0, 0.0);
                 cnum tmpp = exp(cnum(0, 1) * (2.0 * pi * ((num) ((r+1) * Nx )
                                 / (num) (Nx + 1))));
@@ -170,16 +174,18 @@ cmatrix** self_energy(void) {
                                 / (num) (Nx + 1))));
 
                 // "AnorN1(mm)" in nano0903c.f
-                cnum y = unit / sqrt(cnum(0.5 * Nx, 0.0) +
-                    (unit - tmpp) / (unit-tmpp) * cnum(0.5, 0.0));
+                num y = 1.0 / sqrt(0.5 * Nx +
+                    real((unit - tmpp) / (unit-tmpp) * cnum(0.5, 0.0)));
                 // "psiN1(ii)" in nano0903c.f
                 cnum y1 = y * sin(pi * (num) ((p+1) * (r+1))/(1.0 + Nx));
                 // "psiN1(jj)" in nano0903c.f
                 cnum y2 = y * sin(pi * (num) ((q+1) * (r+1))/(1.0 + Nx));
-                Glp1lp1n(p, q) += conj(exp(cnum(0.0,1.0) * theta)/V * y1 * y2);
+                Glp1lp1n(p, q) += exp(cnum(0.0,1.0) * theta)/V * y1 * y2;
             }
         }
     }
+//    cout << "Glp1lp1n: " << Glp1lp1n << endl;
+    // Glp1lp1n identical with that of nano0903c.f
 
     cmatrix *G_lp1_lp1_up   = new cmatrix(size, size); set_zero(G_lp1_lp1_up);
     cmatrix *G_lp1_lp1_down = new cmatrix(size, size); set_zero(G_lp1_lp1_down);
@@ -218,11 +224,26 @@ cmatrix** self_energy(void) {
     sr[3] = G_lm1_lm1_down;
     sr[5] = G_xm1_xm1_up;
     sr[7] = G_xm1_xm1_down;
+    cout << "G_lm1_lm1_up: " << *G_lm1_lm1_up << endl;
+    // re-checked: G_xm1_xm1_(up,down), G_lm1_lm1_up
+    // questionable: G_lm1_lm1_(up,down)
     return sr;
+}
+
+matrix<num>** gamms(cmatrix** sigma_r) {
+    matrix<num>** g = new matrix<num>*[N_leads];
+    for (int i = 0; i < N_leads; i++){
+        g[i] = new matrix<num>(Nx, Nx);
+        *g[i] = -2.0 * imag(*sigma_r[i]);
+    }
+    return g;
 }
 
 matrix<num>* greenji(cmatrix* Hnn) {
     cmatrix **sigma_r   = self_energy();
+//    for (int i = 0; i < N_leads; i++)
+//        cout << "self-energy " << *sigma_r[i] << endl;
+
     cmatrix *green_inv  = new cmatrix(size, size);
     (*green_inv) = *Hnn;
     for (int i = 0; i < size; i++){
@@ -231,11 +252,16 @@ matrix<num>* greenji(cmatrix* Hnn) {
                 (*green_inv)(i, j) -= (*(sigma_r[k]))(i, j);
             }
         }
+//        cout << "selfy: " << *sigma_r[i] << endl;
     }
+    matrix<num> **gamm = gamms(sigma_r);
     cmatrix *green = new cmatrix(size, size);
     InvertMatrix(*green_inv, *green);
+//    cout << "Green: " << *green << endl;
     delete green_inv;
     green_inv = NULL;
+
+    // checked up to here.
 
     cmatrix *green_conj = new cmatrix(size, size);
     *green_conj = conj(*green);
@@ -244,31 +270,44 @@ matrix<num>* greenji(cmatrix* Hnn) {
     set_zero(tpq);
     cmatrix **gamma_g_adv = new cmatrix*[N_leads];
     cmatrix **gamma_g_ret = new cmatrix*[N_leads];
-    cnum two = cnum(2, 0);
-    cout << two << "\n";
 
     // T_{p, q} = Trace( \Gamma_p G^R \Gamma_q G^A )
     // where G^A = (G^R)^*
     //
-    // first carry out the first two products
+    // first carry out the two products \Gamma_p * G^R and \Gamma_q * G^A
     cout << "products...\n";
+/*    for (int i = 0; i < N_leads; i++) {
+        cmatrix *g_adv = new cmatrix(size, size);
+        cmatrix *g_ret = new cmatrix(size, size);
+        set_zero(g_adv);
+        set_zero(g_ret);
+        *g_ret = prod(*gamm[i], *green);
+        *g_adv = prod(*gamm[i], *green_conj);
+        gamma_g_adv[i] = g_adv;
+        gamma_g_ret[i] = g_ret;
+    } */
     for (int i = 0; i < N_leads; i++) {
         cmatrix *g_adv = new cmatrix(size, size);
         cmatrix *g_ret = new cmatrix(size, size);
         set_zero(g_adv);
         set_zero(g_ret);
-        *sigma_r[i] = cnum(-2, 0) * imag(*sigma_r[i]);
-        // noalias() is a mere speed improvement, if the left hand side
-        // doesn't have the same storage location as the RHS
-        noalias(*g_adv) = prod(*sigma_r[i], *green);
-        noalias(*g_ret) = prod(*sigma_r[i], *green_conj);
+        for (int n = 0; n < size; n++){
+            for (int m = 0; m < size; m++) {
+                for (int nn = 0; nn < size; nn++){
+                    // XXX why minus, not plus?
+                    (*g_ret)(n, m) += (*gamm[i])(n, nn) * (*green)(nn, m);
+                    (*g_adv)(n, m) += (*gamm[i])(n, nn) * (*green_conj)(m, nn);
+                }
+            }
+        }
         gamma_g_adv[i] = g_adv;
         gamma_g_ret[i] = g_ret;
     }
     delete green;       green       = NULL;
     delete green_conj;  green_conj  = NULL;
 
-    cout << "gamma_g_adv[0]: " << *(gamma_g_adv[0]) << "\n";
+//    for (int i = 0; i < N_leads; i++) 
+//        cout << "gamma_g_ret: " << *(gamma_g_ret[i]) << "\n";
 
     // we don't need sigma_r any more
     for (int i = 0; i < N_leads; i++){
@@ -299,6 +338,9 @@ matrix<num>* greenji(cmatrix* Hnn) {
                           - cnum(0, 1) * (*(gamma_g_ret[i]))(n, n));
 
         }
+        delete gamma_g_adv[i];
+        delete gamma_g_ret[i];
+        delete gamm[i];
     }
     for (int i = 1; i < Nx; i++){
         cnum k = findk(mods(i, Nx));
@@ -309,11 +351,7 @@ matrix<num>* greenji(cmatrix* Hnn) {
         }
 
     }
-    // clean up temporary variables
-    for (int i = 0; i < N_leads; i++){
-        delete gamma_g_adv[i];
-        delete gamma_g_ret[i];
-    }
+
     delete[] gamma_g_adv;
     delete[] gamma_g_ret;
 
@@ -323,9 +361,11 @@ matrix<num>* greenji(cmatrix* Hnn) {
 
 int main (int argc, char** argv) {
     cmatrix *Hnn = hamiltonian(0.3);
+//    cout << "Hamiltonian: " << *Hnn << "\n";
     matrix<num> *tpq = greenji(Hnn);
     delete Hnn;
     cout << *tpq << endl;
+    delete tpq;
 }
 
 // vim: ft=cpp sw=4 ts=4 expandtab
