@@ -235,21 +235,14 @@ matrix<num>* greenji(cmatrix* Hnn) {
 
     cmatrix *green_inv  = new cmatrix(size, size);
     (*green_inv) = *Hnn;
-    for (int i = 0; i < size; i++){
-        for (int j = 0; j < size; j++){
-            for (int k = 0; k < N_leads; k++){
-                (*green_inv)(i, j) -= (*(sigma_r[k]))(i, j);
-            }
-        }
-//        cout << "selfy: " << *sigma_r[i] << endl;
+    for (int k = 0; k < N_leads; k++){
+        (*green_inv) -= *(sigma_r[k]);
     }
     cmatrix *green = new cmatrix(size, size);
     InvertMatrix(*green_inv, *green);
 //    cout << "Green: " << *green << endl;
     delete green_inv;
     green_inv = NULL;
-
-    // checked up to here.
 
     cmatrix *green_herm = new cmatrix(size, size);
     *green_herm = herm(*green);
@@ -262,6 +255,10 @@ matrix<num>* greenji(cmatrix* Hnn) {
     // T_{p, q} = Trace( \Gamma_p G^R \Gamma_q G^A )
     // where G^A = (G^R)^*
     //
+    //
+    // \Gamma = -2 * Im(\Sigma_r)   
+    // (calculate slices of \Gamma (aka gamm_i) on the fly
+    // to save memory
     // first carry out the two products \Gamma_p * G^R and \Gamma_q * G^A
     cout << "products...\n";
     cmatrix * gamm_i = new cmatrix(size, size);
