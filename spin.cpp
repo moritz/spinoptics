@@ -218,15 +218,16 @@ cmatrix** self_energy(void) {
     sr[0] = G_lp1_lp1_up;
     sr[2] = G_lp1_lp1_down;
     sr[4] = G_xp1_xp1_up;
-    sr[6] = G_xp1_xp1_down;
+    // 5, not 6
+    sr[5] = G_xp1_xp1_down;
 
     sr[1] = G_lm1_lm1_up;
     sr[3] = G_lm1_lm1_down;
-    sr[5] = G_xm1_xm1_up;
+    // 6, not 5
+    sr[6] = G_xm1_xm1_up;
     sr[7] = G_xm1_xm1_down;
-    cout << "G_lm1_lm1_up: " << *G_lm1_lm1_up << endl;
-    // re-checked: G_xm1_xm1_(up,down), G_lm1_lm1_up
-    // questionable: G_lm1_lm1_(up,down)
+//    cout << "G_xp1_xp1_up: " << *G_xp1_xp1_up << endl;
+    // re-checked: G_xp1_xp1_*
     return sr;
 }
 
@@ -294,7 +295,6 @@ matrix<num>* greenji(cmatrix* Hnn) {
         for (int n = 0; n < size; n++){
             for (int m = 0; m < size; m++) {
                 for (int nn = 0; nn < size; nn++){
-                    // XXX why minus, not plus?
                     (*g_ret)(n, m) += (*gamm[i])(n, nn) * (*green)(nn, m);
                     (*g_adv)(n, m) += (*gamm[i])(n, nn) * (*green_conj)(m, nn);
                 }
