@@ -52,14 +52,15 @@ inline num rashba(const num alpha) {
 }
 
 inline num mods(const int n, const int nle) {
-    return 2.0 * V * (cos(pi * (double) n / ((double) nle + 1.0)) - 1.0);
+    return 2.0 * V * (cos(pi * (double) (n+1) / ((double) nle + 1.0)) 
+            - 1.0);
 }
 
-num findk(num Emod) {
-    num Etot = -2.0 * V; // ???
+cnum findk(num Emod) {
+   cout << "etot " << e_tot << "  emod  " << Emod << endl; 
     return sqrt(
-            2 * mass / (h_bar * h_bar)
-            * (Etot - Emod) * 10.0 / e_charge
+            cnum(2 * mass / (h_bar * h_bar)
+            * (e_tot - Emod) * 10.0 / 1.60219, 0)
         );
 }
 
@@ -151,7 +152,7 @@ cmatrix** self_energy(void) {
         for (int q = 0; q < Nx; q++) {
             for (int r = 0; r < Nx; r++) {
 //                cout << "mods: "<< mods(r+1, Nx) << endl;
-                num x = (e_tot - mods(r+1, Nx))
+                num x = (e_tot - mods(r, Nx))
                     / (2.0 * V) + 1.0;
 //                cout << "x: " << x << endl;
                 cnum theta;
@@ -330,8 +331,6 @@ matrix<num>* greenji(cmatrix* Hnn) {
     }
     cout << "\t...done\n";
 
-    cout << "Tpq temp: " << *tpq << "\n";
-
     for (int i = 0; i < N_leads; i++){
         for (int n = 0; n < size; n++){
             (*tpq)(i, i) += real(cnum(0, 1) * (*(gamma_g_adv[i]))(n, n)
@@ -342,8 +341,10 @@ matrix<num>* greenji(cmatrix* Hnn) {
         delete gamma_g_ret[i];
         delete gamm[i];
     }
-    for (int i = 1; i < Nx; i++){
+    cout << "Tpq after first correction " << *tpq << endl;
+    for (int i = 0; i < Nx; i++){
         cnum k = findk(mods(i, Nx));
+        cout << "k: " << k << endl;
         if (imag(k) == 0.0) {
             for (int j = 0; j < N_leads; j++){
                 (*tpq)(j, j) += 1.0;
@@ -364,7 +365,7 @@ int main (int argc, char** argv) {
 //    cout << "Hamiltonian: " << *Hnn << "\n";
     matrix<num> *tpq = greenji(Hnn);
     delete Hnn;
-    cout << *tpq << endl;
+    cout << "final tpq" << *tpq << endl;
     delete tpq;
 }
 
