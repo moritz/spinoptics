@@ -57,7 +57,6 @@ inline num mods(const int n, const int nle) {
 }
 
 cnum findk(num Emod) {
-   cout << "etot " << e_tot << "  emod  " << Emod << endl; 
     return sqrt(
             cnum(2 * mass / (h_bar * h_bar)
             * (e_tot - Emod) * 10.0 / 1.60219, 0)
@@ -151,10 +150,8 @@ cmatrix** self_energy(void) {
     for (int p = 0; p < Nx; p++) {
         for (int q = 0; q < Nx; q++) {
             for (int r = 0; r < Nx; r++) {
-//                cout << "mods: "<< mods(r+1, Nx) << endl;
                 num x = (e_tot - mods(r, Nx))
                     / (2.0 * V) + 1.0;
-//                cout << "x: " << x << endl;
                 cnum theta;
                 if (x > 1.0) {
                     // evanescent mode, calculate cosh^-1
@@ -166,7 +163,6 @@ cmatrix** self_energy(void) {
                 } else {
                     theta = acos(x);
                 }
-//                cout << "theta: " << theta << endl;
 
                 cnum unit = cnum(1.0, 0.0);
                 cnum tmpp = exp(cnum(0, 1) * (2.0 * pi * ((num) ((r+1) * Nx )
@@ -341,10 +337,8 @@ matrix<num>* greenji(cmatrix* Hnn) {
         delete gamma_g_ret[i];
         delete gamm[i];
     }
-    cout << "Tpq after first correction " << *tpq << endl;
     for (int i = 0; i < Nx; i++){
         cnum k = findk(mods(i, Nx));
-        cout << "k: " << k << endl;
         if (imag(k) == 0.0) {
             for (int j = 0; j < N_leads; j++){
                 (*tpq)(j, j) += 1.0;
