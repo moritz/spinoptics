@@ -2,7 +2,9 @@
 #include <complex>
 #include <vector>
 #include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/matrix_sparse.hpp>
 #include <boost/numeric/ublas/io.hpp>
+#include <boost/numeric/ublas/operation_blocked.hpp>
 #include <stdlib.h>
 #include "invert-matrix.hpp"
 
@@ -12,8 +14,9 @@ using namespace std;
 typedef long double num;
 typedef complex<num> cnum;
 typedef matrix<cnum> cmatrix;
+typedef mapped_matrix<cnum> sparse_cmatrix;
 
-const int Nx         = 4;
+const int Nx         = 30;
 const int Ny         = Nx;
 const int N_leads    = 8;
 
@@ -56,16 +59,16 @@ inline num mods(const int n, const int nle) {
             - 1.0);
 }
 
-cnum findk(num Emod) {
+cnum findk(const num Emod) {
     return sqrt(
             cnum(2 * mass / (h_bar * h_bar)
             * (e_tot - Emod) * 10.0 / 1.60219, 0)
         );
 }
 
-cmatrix* hamiltonian(num rashb) {
-    cmatrix* Hnn = new cmatrix(size, size);
-    set_zero(Hnn);
+sparse_cmatrix* hamiltonian(const num rashb) {
+    sparse_cmatrix* Hnn = new sparse_cmatrix(size, size, 4 * size);
+//    set_zero(Hnn);
 
     // diagonal elements
     for (int i = 0; i < size / 2; i++) {
@@ -143,7 +146,7 @@ cmatrix* hamiltonian(num rashb) {
     return Hnn;
 };
 
-cmatrix** self_energy(void) {
+sparse_cmatrix** self_energy(void) {
     // Glp1lp1n = G_{l+1, l+1}n
     cmatrix Glp1lp1n = cmatrix(Nx, Nx);
     set_zero(&Glp1lp1n);
@@ -184,15 +187,15 @@ cmatrix** self_energy(void) {
 //    cout << "Glp1lp1n: " << Glp1lp1n << endl;
     // Glp1lp1n identical with that of nano0903c.f
 
-    cmatrix *G_lp1_lp1_up   = new cmatrix(size, size); set_zero(G_lp1_lp1_up);
-    cmatrix *G_lp1_lp1_down = new cmatrix(size, size); set_zero(G_lp1_lp1_down);
-    cmatrix *G_lm1_lm1_up   = new cmatrix(size, size); set_zero(G_lm1_lm1_up);
-    cmatrix *G_lm1_lm1_down = new cmatrix(size, size); set_zero(G_lm1_lm1_down);
+    sparse_cmatrix *G_lp1_lp1_up   = new sparse_cmatrix(size, size);
+    sparse_cmatrix *G_lp1_lp1_down = new sparse_cmatrix(size, size);
+    sparse_cmatrix *G_lm1_lm1_up   = new sparse_cmatrix(size, size);
+    sparse_cmatrix *G_lm1_lm1_down = new sparse_cmatrix(size, size);
 
-    cmatrix *G_xp1_xp1_up   = new cmatrix(size, size); set_zero(G_xp1_xp1_up);
-    cmatrix *G_xp1_xp1_down = new cmatrix(size, size); set_zero(G_xp1_xp1_down);
-    cmatrix *G_xm1_xm1_up   = new cmatrix(size, size); set_zero(G_xm1_xm1_up);
-    cmatrix *G_xm1_xm1_down = new cmatrix(size, size); set_zero(G_xm1_xm1_down);
+    sparse_cmatrix *G_xp1_xp1_up   = new sparse_cmatrix(size, size);
+    sparse_cmatrix *G_xp1_xp1_down = new sparse_cmatrix(size, size);
+    sparse_cmatrix *G_xm1_xm1_up   = new sparse_cmatrix(size, size);
+    sparse_cmatrix *G_xm1_xm1_down = new sparse_cmatrix(size, size);
 
     int s = size / 2;
     for (int i = 0; i < Nx; i++){
@@ -211,7 +214,7 @@ cmatrix** self_energy(void) {
             (*G_xm1_xm1_down)(i + size - Nx, j+size-Nx) = g;
         }
     }
-    cmatrix** sr = new cmatrix*[N_leads];
+    sparse_cmatrix** sr = new sparse_cmatrix*[N_leads];
     sr[0] = G_lp1_lp1_up;
     sr[2] = G_lp1_lp1_down;
     sr[4] = G_xp1_xp1_up;
@@ -228,15 +231,13 @@ cmatrix** self_energy(void) {
     return sr;
 }
 
-matrix<num>* greenji(cmatrix* Hnn) {
-    cmatrix **sigma_r   = self_energy();
-//    for (int i = 0; i < N_leads; i++)
-//        cout << "self-energy " << *sigma_r[i] << endl;
+matrix<num>* greenji(sparse_cmatrix* Hnn) {
+    sparse_cmatrix **sigma_r   = self_energy();
 
     cmatrix *green_inv  = new cmatrix(size, size);
     (*green_inv) = *Hnn;
     for (int k = 0; k < N_leads; k++){
-        (*green_inv) -= *(sigma_r[k]);
+        noalias(*green_inv) -= *(sigma_r[k]);
     }
     cmatrix *green = new cmatrix(size, size);
     InvertMatrix(*green_inv, *green);
@@ -265,11 +266,11 @@ matrix<num>* greenji(cmatrix* Hnn) {
     for (int i = 0; i < N_leads; i++) {
         cmatrix *g_adv = new cmatrix(size, size);
         cmatrix *g_ret = new cmatrix(size, size);
-        set_zero(g_adv);
-        set_zero(g_ret);
-        *gamm_i = -2 * imag(*sigma_r[i]);
-        *g_ret = prod(*gamm_i, *green);
-        *g_adv = prod(*gamm_i, *green_herm);
+        noalias(*gamm_i) = -2 * imag(*sigma_r[i]);
+//        axpy_prod(*gamm_i, *green, *g_ret, true);
+//        axpy_prod(*gamm_i, *green_herm, *g_adv, true);
+        noalias(*g_ret) = prod(*gamm_i, *green);
+        noalias(*g_adv) = prod(*gamm_i, *green_herm);
         gamma_g_adv[i] = g_adv;
         gamma_g_ret[i] = g_ret;
     }
@@ -325,7 +326,7 @@ matrix<num>* greenji(cmatrix* Hnn) {
 
 
 int main (int argc, char** argv) {
-    cmatrix *Hnn = hamiltonian(0.3);
+    sparse_cmatrix *Hnn = hamiltonian(0.3);
 //    cout << "Hamiltonian: " << *Hnn << "\n";
     matrix<num> *tpq = greenji(Hnn);
     delete Hnn;
