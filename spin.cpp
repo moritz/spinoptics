@@ -11,12 +11,12 @@
 using namespace boost::numeric::ublas;
 using namespace std;
 
-typedef long double num;
+typedef double num;
 typedef complex<num> cnum;
 typedef matrix<cnum> cmatrix;
 typedef mapped_matrix<cnum> sparse_cmatrix;
 
-const int Nx         = 30;
+const int Nx         = 4;
 const int Ny         = Nx;
 const int N_leads    = 8;
 
@@ -27,8 +27,11 @@ const num electron_mass
                      = 9.109389E-31;     // [kg]
 const num mass       = 0.381 * electron_mass;
 const num e_charge   = 1.60217653E-19;   // [C = A*s]
+const num bohr_magneton
+                     = 9.27400915E-24;   // [A * m^2]
 
 const num width_lead = 30.0;             // [nm]
+const num g_factor   = 2.0;
 
 // XXX is the +1 correct?
 const num a_lead     = width_lead / (double) (Nx + 1);
@@ -40,6 +43,10 @@ const num e_tot      = -2.0 * V;
 const num width_disorder  = 0.0;
 
 num alpha = -0.02 / a_lead / 2.0;
+
+cnum b_field(const num B, const int y) {
+    return exp(cnum(0.0, e_charge / h_bar * B * a_lead * ((num) y)) );
+}
 
 template <class T>
 void set_zero(matrix<T>* m) {
@@ -66,9 +73,12 @@ cnum findk(const num Emod) {
         );
 }
 
-sparse_cmatrix* hamiltonian(const num rashb) {
+sparse_cmatrix* hamiltonian(const num rashb, const num B) {
     sparse_cmatrix* Hnn = new sparse_cmatrix(size, size, 4 * size);
 //    set_zero(Hnn);
+
+    // division by e_charge to convert from electron volt to Joule
+    num wb = 0.5 * B * g_factor * bohr_magneton / e_charge;
 
     // diagonal elements
     for (int i = 0; i < size / 2; i++) {
@@ -77,8 +87,8 @@ sparse_cmatrix* hamiltonian(const num rashb) {
         // iteration, but every two diagonal items with distance
         // (size/2) must still have the same value
         cnum energy = 4.0 * V + e_tot;
-        (*Hnn)(i, i)                     = energy;
-        (*Hnn)(i + size/2, i + size/2)   = energy;
+        (*Hnn)(i, i)                     = energy + wb;
+        (*Hnn)(i + size/2, i + size/2)   = energy - wb;
     }
 
     /*                Nx
@@ -102,8 +112,8 @@ sparse_cmatrix* hamiltonian(const num rashb) {
     int s = size / 2;
     for (int i = 0; i < size; i++) {
         if ((i+1) % Nx != 0) {
-            (*Hnn)(i, i+1) = -V;
-            (*Hnn)(i+1, i) = -V;
+            (*Hnn)(i, i+1) = -V * b_field(B, i % Nx);
+            (*Hnn)(i+1, i) = -V * conj(b_field(B, i % Nx));
         }
     }
 
@@ -125,8 +135,8 @@ sparse_cmatrix* hamiltonian(const num rashb) {
         if ((i+1) % Nx != 0) {
             // "1 and 102"
             // with spin flip
-            (*Hnn)(i, i + s + 1) = rashba(alpha);
-            (*Hnn)(i + s + 1, i) = rashba(alpha);
+            (*Hnn)(i, i + s + 1) = rashba(alpha) * b_field(B, i % Nx);
+            (*Hnn)(i + s + 1, i) = rashba(alpha) * conj( b_field(B, i % Nx));
             // "101 and 2"
             (*Hnn)(i + 1, i + s) = - rashba(alpha);
             (*Hnn)(i + s, i + 1) = - rashba(alpha);
@@ -150,32 +160,33 @@ sparse_cmatrix** self_energy(void) {
     // Glp1lp1n = G_{l+1, l+1}n
     cmatrix Glp1lp1n = cmatrix(Nx, Nx);
     set_zero(&Glp1lp1n);
-    for (int p = 0; p < Nx; p++) {
-        for (int q = 0; q < Nx; q++) {
-            for (int r = 0; r < Nx; r++) {
-                num x = (e_tot - mods(r, Nx))
-                    / (2.0 * V) + 1.0;
-                cnum theta;
-                if (x > 1.0) {
-                    // evanescent mode, calculate cosh^-1
-                    theta = cnum(0, 1)
-                        * log((cnum) (x + sqrt(x*x - 1.0)));
-                } else if (x < -1.0) {
-                    theta = cnum(0, 1)
-                        * log((cnum) (x - sqrt(x*x - 1.0)));
-                } else {
-                    theta = acos(x);
-                }
+    for (int r = 0; r < Nx; r++) {
+        num x = (e_tot - mods(r, Nx))
+            / (2.0 * V) + 1.0;
+        cnum theta;
+        if (x > 1.0) {
+            // evanescent mode, calculate cosh^-1
+            theta = cnum(0, 1)
+                * log((cnum) (x + sqrt(x*x - 1.0)));
+        } else if (x < -1.0) {
+            theta = cnum(0, 1)
+                * log((cnum) (x - sqrt(x*x - 1.0)));
+        } else {
+            theta = acos(x);
+        }
 
-                cnum unit = cnum(1.0, 0.0);
-                cnum tmpp = exp(cnum(0, 1) * (2.0 * pi * ((num) ((r+1) * Nx )
-                                / (num) (Nx + 1))));
-                cnum tmpm = exp(cnum(0, -1) * (2.0 * pi * ((num) (r+1)
-                                / (num) (Nx + 1))));
+        cnum unit = cnum(1.0, 0.0);
+        cnum tmpp = exp(cnum(0, 1) * (2.0 * pi * ((num) ((r+1) * Nx )
+                        / (num) (Nx + 1))));
+        cnum tmpm = exp(cnum(0, -1) * (2.0 * pi * ((num) (r+1)
+                        / (num) (Nx + 1))));
 
-                // "AnorN1(mm)" in nano0903c.f
-                num y = 1.0 / sqrt(0.5 * Nx +
-                    real((unit - tmpp) / (unit-tmpp) * cnum(0.5, 0.0)));
+        // "AnorN1(mm)" in nano0903c.f
+        num y = 1.0 / sqrt(0.5 * Nx +
+            real((unit - tmpp) / (unit-tmpp) * cnum(0.5, 0.0)));
+
+        for (int p = 0; p < Nx; p++) {
+            for (int q = 0; q < Nx; q++) {
                 // "psiN1(ii)" in nano0903c.f
                 cnum y1 = y * sin(pi * (num) ((p+1) * (r+1))/(1.0 + Nx));
                 // "psiN1(jj)" in nano0903c.f
@@ -326,7 +337,7 @@ matrix<num>* greenji(sparse_cmatrix* Hnn) {
 
 
 int main (int argc, char** argv) {
-    sparse_cmatrix *Hnn = hamiltonian(0.3);
+    sparse_cmatrix *Hnn = hamiltonian(0.3, 0.0);
 //    cout << "Hamiltonian: " << *Hnn << "\n";
     matrix<num> *tpq = greenji(Hnn);
     delete Hnn;
