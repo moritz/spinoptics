@@ -6,6 +6,7 @@
 #include <boost/numeric/ublas/io.hpp>
 #include <boost/numeric/ublas/operation_blocked.hpp>
 #include <stdlib.h>
+#include <time.h>
 #include "invert-matrix.hpp"
 
 using namespace boost::numeric::ublas;
@@ -16,7 +17,7 @@ typedef complex<num> cnum;
 typedef matrix<cnum> cmatrix;
 typedef mapped_matrix<cnum> sparse_cmatrix;
 
-const int Nx         = 4;
+const int Nx         = 15;
 const int Ny         = Nx;
 const int N_leads    = 8;
 
@@ -43,6 +44,13 @@ const num e_tot      = -2.0 * V;
 const num width_disorder  = 0.0;
 
 num alpha = -0.02 / a_lead / 2.0;
+
+void log_tick(const char* desc, bool end = false) {
+    static time_t prev = time(NULL);
+    time_t t = time(NULL);
+    printf("[Tick] %06ld %s\n", t-prev, desc);
+    prev = t;
+}
 
 cnum b_field(const num B, const int y) {
     return exp(cnum(0.0, e_charge / h_bar * B * a_lead * ((num) y)) );
@@ -153,6 +161,7 @@ sparse_cmatrix* hamiltonian(const num rashb, const num B) {
         (*Hnn)(i, i + s + Nx) = cnum(0, -1) * rashba(alpha);
         (*Hnn)(i + s + Nx, i) = cnum(0, 1) * rashba(alpha);
     }
+    log_tick("hamiltonian");
     return Hnn;
 };
 
@@ -251,8 +260,10 @@ matrix<num>* greenji(sparse_cmatrix* Hnn) {
         noalias(*green_inv) -= *(sigma_r[k]);
     }
     cmatrix *green = new cmatrix(size, size);
+    log_tick("green_inv");
     InvertMatrix(*green_inv, *green);
 //    cout << "Green: " << *green << endl;
+    log_tick("matrix inversion");
     delete green_inv;
     green_inv = NULL;
 
@@ -272,7 +283,6 @@ matrix<num>* greenji(sparse_cmatrix* Hnn) {
     // (calculate slices of \Gamma (aka gamm_i) on the fly
     // to save memory
     // first carry out the two products \Gamma_p * G^R and \Gamma_q * G^A
-    cout << "products...\n";
     cmatrix * gamm_i = new cmatrix(size, size);
     for (int i = 0; i < N_leads; i++) {
         cmatrix *g_adv = new cmatrix(size, size);
@@ -285,6 +295,7 @@ matrix<num>* greenji(sparse_cmatrix* Hnn) {
         gamma_g_adv[i] = g_adv;
         gamma_g_ret[i] = g_ret;
     }
+    log_tick("products");
     delete gamm_i;      gamm_i      = NULL;
     delete green;       green       = NULL;
     delete green_herm;  green_herm  = NULL;
@@ -296,7 +307,6 @@ matrix<num>* greenji(sparse_cmatrix* Hnn) {
     delete[] sigma_r;
     sigma_r = NULL;
 
-    cout << "Trace...\n";
     // Now calculate the trace
     for (int i = 0; i < N_leads; i++){
         for (int j = 0; j < N_leads; j++){
@@ -308,7 +318,7 @@ matrix<num>* greenji(sparse_cmatrix* Hnn) {
             }
         }
     }
-    cout << "\t...done\n";
+    log_tick("trace");
 
     for (int i = 0; i < N_leads; i++){
         for (int n = 0; n < size; n++){
@@ -328,6 +338,7 @@ matrix<num>* greenji(sparse_cmatrix* Hnn) {
         }
 
     }
+    log_tick("tpq corrections");
 
     delete[] gamma_g_adv;
     delete[] gamma_g_ret;
@@ -337,6 +348,7 @@ matrix<num>* greenji(sparse_cmatrix* Hnn) {
 
 
 int main (int argc, char** argv) {
+    log_tick("start");
     sparse_cmatrix *Hnn = hamiltonian(0.3, 0.0);
 //    cout << "Hamiltonian: " << *Hnn << "\n";
     matrix<num> *tpq = greenji(Hnn);
