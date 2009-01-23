@@ -186,9 +186,9 @@ sparse_cmatrix** self_energy(void) {
             real((unit - tmpp) / (unit-tmpp) * cnum(0.5, 0.0)));
 
         for (int p = 0; p < Nx; p++) {
+            // "psiN1(ii)" in nano0903c.f
+            cnum y1 = y * sin(pi * (num) ((p+1) * (r+1))/(1.0 + Nx));
             for (int q = 0; q < Nx; q++) {
-                // "psiN1(ii)" in nano0903c.f
-                cnum y1 = y * sin(pi * (num) ((p+1) * (r+1))/(1.0 + Nx));
                 // "psiN1(jj)" in nano0903c.f
                 cnum y2 = y * sin(pi * (num) ((q+1) * (r+1))/(1.0 + Nx));
                 Glp1lp1n(p, q) += exp(cnum(0.0,1.0) * theta)/V * y1 * y2;
