@@ -1,0 +1,109 @@
+\NeedsTeXFormat{LaTeX2e}
+\documentclass[11pt]{article}
+%Absaetze nicht einruecken:
+\usepackage{parskip}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{ae}
+\usepackage[intlimits, sumlimits, namelimits]{amsmath}
+\usepackage{bbm}
+%Neue Macros fuer Mathe:
+%in parentheses - gleich mit richtiger Groesse
+\newcommand{\inp}[1]{\ensuremath{\left(#1\right)}}
+\newcommand{\sqr}{\ensuremath{^{2}}}
+\newcommand{\cube}{\ensuremath{^{3}}}
+%Mengensymbole mit doppelten senkrechten Strichen:
+\newcommand{\set}[1]{\ensuremath{\mathbbm{#1}}}
+%definiert eine Norm, also zwei senkrechte Striche auf jeder Seite:
+\newcommand{\norm}[1]{\ensuremath{\left|#1\right|}}
+%Spaltenvektor - dreidimensional:
+\newcommand{\svec}[3]{\ensuremath{\inp{\hspace{-.8ex}\begin{array}{r}#1\\#2\\#3\end{array}\hspace{-.4ex}}}}
+\newcommand{\entspr}{\ensuremath{\,\,\hat{=}\,\,}}%
+\newcommand{\dx}[1][x]{\ensuremath{\textnormal d #1}}
+\newcommand{\dell}{\partial}
+
+% For stupid thinkos:
+\newcommand{\cross}{\times}
+
+% Tabellen:
+\usepackage{array}
+\setlength{\extrarowheight}{.2mm}
+%Links im Text:
+%\usepackage{hyperref}
+\usepackage{graphics,graphicx,fancyvrb}
+%Raender einstellen
+%\usepackage[a4paper, margin=15mm, top=30mm]{geometry}
+\usepackage[a4paper]{geometry}
+%Kopf - und Fusszeilen
+\usepackage{lastpage}
+\usepackage{fancyhdr}
+	\lhead{Moritz Lenz}
+	\chead{\bfseries{-- \thepage\ --}}
+	\rhead{\thetitle}
+	\lfoot{}
+	\rfoot{}
+	\cfoot{}
+	\pagestyle{fancy}
+\pagestyle{empty}
+
+\sffamily
+
+%Kopfzeile
+
+\author{Moritz Lenz}
+\title{In-plane magnetic field}
+\begin{document}
+\maketitle
+
+We consider a perfect 2D system in the $x$-$y$-plane, to which we want to add
+a magnetic field in $y$-direction, $\vec B = (0, B, 0)^T$. We can find 
+a vector potential $\vec A = (B \cdot z, 0, 0)^T$ so that $\vec B = \nabla
+\times \vec A$.
+
+Now we want to discretize our Hamiltonian in a tight-binding model. We
+approximate the derivation as $\dell_x F(x) = (F(x+a)-F(x-a))/(2a)$, and
+obtain for the momentum operator:
+
+\begin{equation}
+    p_x \Psi(x) = \frac{\hbar}{i} \dell_x \Psi(x)=  \frac{\hbar}{i} \frac{\Psi(x+a) -
+        \Psi(x-a)}{2a}
+\end{equation}
+
+Since $\dell_x = \frac{i}{\hbar} p_x$ is the generator of the translation, we can write
+
+\begin{align}
+    \Psi(x-a)   = e^{\dell_x a)} \Psi(x)  = e^{\frac{i}{\hbar} p_x} \Psi(x) 
+\end{align}
+
+And with the Peirls' substitution for introducing the magnetic field $\vec p
+\rightarrow \vec p - q \vec A$:
+
+\begin{equation} \label{eq:inplane}
+    p_x \Psi(x) = \frac{\hbar}{i 2a} \inp{
+          e^{\frac{-i}{\hbar} q A_x a} \Psi(x+a)
+        + e^{\frac{ i}{\hbar} q A_x a} \Psi(x-a)
+    } 
+\end{equation}
+
+(Since $[A_i, p_i] = 0$ for $i = x, y, z$ we don't run into any problems
+ with this substitution).
+
+Our earlier choice of gauge implies $A_y = 0$ and $A_x = B z$. $z$ can be set
+to zero (corresponding to a translation in $z$ direction, which leaves our
+system invariant), so the exponentials in (\ref{eq:inplane}) come out as $1$,
+so there are no orbital contributions from an in-plane magnetic field.
+
+From a physical point of view this is easy to understand: an electron (or
+hole) moving parallel to the magnetic field isn't affected by the field, and
+one moving in $x$-direction will experience a force in $z$-direction. But in
+our model the electron is perfectly confined in the $x$-$y$ plane, so our
+model can't handle that force.
+
+Or putting it differently, the confinement into our plane corresponds to a
+constraining force along the $z$ axis, which completely absorbs the force
+resulting from a magnetic field.
+
+\end{document}
+
+
+% vim: ts=4 sw=4 expandtab spell spelllang=en_us
