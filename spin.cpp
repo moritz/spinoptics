@@ -248,6 +248,7 @@ sparse_cmatrix** self_energy(void) {
     sr[7] = G_xm1_xm1_down;
 //    cout << "G_xp1_xp1_up: " << *G_xp1_xp1_up << endl;
     // re-checked: G_xp1_xp1_*
+    log_tick("self-energy");
     return sr;
 }
 
