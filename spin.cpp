@@ -9,15 +9,17 @@
 #include <time.h>
 #include "invert-matrix.hpp"
 
+#define IDX(x, y) ((x) + Nx * (y))
+
 using namespace boost::numeric::ublas;
 using namespace std;
 
 typedef double num;
 typedef complex<num> cnum;
 typedef matrix<cnum> cmatrix;
-typedef mapped_matrix<cnum> sparse_cmatrix;
+typedef compressed_matrix<cnum> sparse_cmatrix;
 
-const int Nx         = 15;
+const int Nx         = 4;
 const int Ny         = Nx;
 const int N_leads    = 8;
 
@@ -111,8 +113,12 @@ sparse_cmatrix* hamiltonian(const num rashb, const num B) {
      *      X   X   X ...   X   X  -
      *
      *      Numbering scheme:
-     *      0   1               (Nx-1)
-     *      Nx  Nx+1            (2*Nx -1)
+     *      0   1     ...       (Nx-1)
+     *      Nx  Nx+1  ...       (2*Nx -1)
+     *
+     *      if the index i is given, 
+     *      y = i / Nx
+     *      x = i % Nx
      */
 
     // kinetic energy in x direction
@@ -120,8 +126,8 @@ sparse_cmatrix* hamiltonian(const num rashb, const num B) {
     int s = size / 2;
     for (int i = 0; i < size; i++) {
         if ((i+1) % Nx != 0) {
-            (*Hnn)(i, i+1) = -V * b_field(B, i % Nx);
-            (*Hnn)(i+1, i) = -V * conj(b_field(B, i % Nx));
+            (*Hnn)(i, i+1) = -V * b_field(B, i / Nx);
+            (*Hnn)(i+1, i) = -V * conj(b_field(B, i / Nx));
         }
     }
 
@@ -143,8 +149,8 @@ sparse_cmatrix* hamiltonian(const num rashb, const num B) {
         if ((i+1) % Nx != 0) {
             // "1 and 102"
             // with spin flip
-            (*Hnn)(i, i + s + 1) = rashba(alpha) * b_field(B, i % Nx);
-            (*Hnn)(i + s + 1, i) = rashba(alpha) * conj( b_field(B, i % Nx));
+            (*Hnn)(i, i + s + 1) = rashba(alpha) * b_field(B, i / Nx);
+            (*Hnn)(i + s + 1, i) = rashba(alpha) * conj( b_field(B, i / Nx));
             // "101 and 2"
             (*Hnn)(i + 1, i + s) = - rashba(alpha);
             (*Hnn)(i + s, i + 1) = - rashba(alpha);
@@ -155,11 +161,11 @@ sparse_cmatrix* hamiltonian(const num rashb, const num B) {
     for (int i = 0; i < Nx * (Ny -1); i++) {
         // "11 and 101"
         // with spin flip
-        (*Hnn)(i + Nx, i + s) = cnum(0, 1) * rashba(alpha);
+        (*Hnn)(i + Nx, i + s) = cnum(0,  1) * rashba(alpha);
         (*Hnn)(i + s, i + Nx) = cnum(0, -1) * rashba(alpha);
         // "1 and 111"
         (*Hnn)(i, i + s + Nx) = cnum(0, -1) * rashba(alpha);
-        (*Hnn)(i + s + Nx, i) = cnum(0, 1) * rashba(alpha);
+        (*Hnn)(i + s + Nx, i) = cnum(0,  1) * rashba(alpha);
     }
     log_tick("hamiltonian");
     return Hnn;
@@ -207,15 +213,15 @@ sparse_cmatrix** self_energy(void) {
 //    cout << "Glp1lp1n: " << Glp1lp1n << endl;
     // Glp1lp1n identical with that of nano0903c.f
 
-    sparse_cmatrix *G_lp1_lp1_up   = new sparse_cmatrix(size, size);
-    sparse_cmatrix *G_lp1_lp1_down = new sparse_cmatrix(size, size);
-    sparse_cmatrix *G_lm1_lm1_up   = new sparse_cmatrix(size, size);
-    sparse_cmatrix *G_lm1_lm1_down = new sparse_cmatrix(size, size);
+    sparse_cmatrix *G_lp1_lp1_up   = new sparse_cmatrix(size, size, size / 2);
+    sparse_cmatrix *G_lp1_lp1_down = new sparse_cmatrix(size, size, size / 2);
+    sparse_cmatrix *G_lm1_lm1_up   = new sparse_cmatrix(size, size, size / 2);
+    sparse_cmatrix *G_lm1_lm1_down = new sparse_cmatrix(size, size, size / 2);
 
-    sparse_cmatrix *G_xp1_xp1_up   = new sparse_cmatrix(size, size);
-    sparse_cmatrix *G_xp1_xp1_down = new sparse_cmatrix(size, size);
-    sparse_cmatrix *G_xm1_xm1_up   = new sparse_cmatrix(size, size);
-    sparse_cmatrix *G_xm1_xm1_down = new sparse_cmatrix(size, size);
+    sparse_cmatrix *G_xp1_xp1_up   = new sparse_cmatrix(size, size, size / 2);
+    sparse_cmatrix *G_xp1_xp1_down = new sparse_cmatrix(size, size, size / 2);
+    sparse_cmatrix *G_xm1_xm1_up   = new sparse_cmatrix(size, size, size / 2);
+    sparse_cmatrix *G_xm1_xm1_down = new sparse_cmatrix(size, size, size / 2);
 
     int s = size / 2;
     for (int i = 0; i < Nx; i++){
@@ -289,10 +295,9 @@ matrix<num>* greenji(sparse_cmatrix* Hnn) {
         cmatrix *g_adv = new cmatrix(size, size);
         cmatrix *g_ret = new cmatrix(size, size);
         noalias(*gamm_i) = -2 * imag(*sigma_r[i]);
-//        axpy_prod(*gamm_i, *green, *g_ret, true);
-//        axpy_prod(*gamm_i, *green_herm, *g_adv, true);
-        noalias(*g_ret) = prod(*gamm_i, *green);
-        noalias(*g_adv) = prod(*gamm_i, *green_herm);
+        // axpy_prod writes its result into the third argument
+        axpy_prod(*gamm_i, *green, *g_ret, true);
+        axpy_prod(*gamm_i, *green_herm, *g_adv, true);
         gamma_g_adv[i] = g_adv;
         gamma_g_ret[i] = g_ret;
     }
@@ -351,10 +356,23 @@ matrix<num>* greenji(sparse_cmatrix* Hnn) {
 int main (int argc, char** argv) {
     log_tick("start");
     sparse_cmatrix *Hnn = hamiltonian(0.3, 0.0);
-//    cout << "Hamiltonian: " << *Hnn << "\n";
+    cout << "Hamiltonian: " << *Hnn << "\n";
     matrix<num> *tpq = greenji(Hnn);
     delete Hnn;
     cout << "final tpq" << *tpq << endl;
+    boost::numeric::ublas::vector<num> r;
+    boost::numeric::ublas::vector<num> c;
+    for (int i = 0; i < N_leads; i++) {
+        num r_sum = 0.0;
+        num c_sum = 0.0;
+        r = row(*tpq, i);
+        c = column(*tpq, i);
+        for (int j = 0; j < N_leads; j++) {
+            r_sum += r(j);
+            c_sum += c(j);
+        }
+        cout << i <<  "\t" <<  r_sum << "\t" << c_sum << "\n";
+    }
     delete tpq;
 }
 
