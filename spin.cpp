@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "invert-matrix.hpp"
+#include "sparse_io.hpp"
 
 #define IDX(x, y) ((x) + Nx * (y))
 
@@ -34,12 +35,12 @@ const num bohr_magneton
                      = 9.27400915E-24;   // [A * m^2]
 
 const num width_lead = 30.0;             // [nm]
-const num g_factor   = 2.0;
+const num g_factor   = 20.0;
 
 // XXX is the +1 correct?
 const num a_lead     = width_lead / (double) (Nx + 1);
 const int size       = Nx * Ny * 2;      // `Nfin'
-const num V          = -1.0;             // hopping term
+const num V          = 1.0;              // hopping term
 
 // e_tot is our choice of energy zero-level.
 const num e_tot      = -2.0 * V;
@@ -54,8 +55,14 @@ void log_tick(const char* desc, bool end = false) {
     prev = t;
 }
 
-cnum b_field(const num B, const int y) {
-    return exp(cnum(0.0, e_charge / h_bar * B * a_lead * ((num) y)) );
+num flux_from_field(const num B) {
+    return 2.0 * pi * B 
+        * (a_lead * a_lead) * 1e-18 // a_lead is in nm
+        / h_planck; 
+}
+
+cnum b_factor(const num flux, const int n) {
+    return exp(cnum(0.0, -1) * flux * (num) n);
 }
 
 template <class T>
@@ -65,6 +72,19 @@ void set_zero(matrix<T>* m) {
             (*m)(x, y) = 0.0;
         }
     }
+}
+
+template <class T>
+void dump_non_zero(matrix<T> m, const char* name) {
+    for (int x = 0; x < m.size1(); x++){
+        for (int y = 0; y < m.size2(); y++){
+            if (m(x, y) != (T) 0.0){
+                cout << name  << "(" << x <<", " << y 
+                    << ") = " << m(x, y) << endl;
+            }
+        }
+    }
+
 }
 
 inline num rashba(const num alpha) {
@@ -88,7 +108,10 @@ sparse_cmatrix* hamiltonian(const num rashb, const num B) {
 //    set_zero(Hnn);
 
     // division by e_charge to convert from electron volt to Joule
-    num wb = 0.5 * B * g_factor * bohr_magneton / e_charge;
+    num zeeman = 0.5 * g_factor * bohr_magneton * B / e_charge;
+//    num zeeman = 0.0;
+    num flux = flux_from_field(B);
+    cout << "Zeeman term: " << zeeman << endl;
 
     // diagonal elements
     for (int i = 0; i < size / 2; i++) {
@@ -97,8 +120,8 @@ sparse_cmatrix* hamiltonian(const num rashb, const num B) {
         // iteration, but every two diagonal items with distance
         // (size/2) must still have the same value
         cnum energy = 4.0 * V + e_tot;
-        (*Hnn)(i, i)                     = energy + wb;
-        (*Hnn)(i + size/2, i + size/2)   = energy - wb;
+        (*Hnn)(i, i)                     = energy - zeeman;
+        (*Hnn)(i + size/2, i + size/2)   = energy + zeeman;
     }
 
     /*                Nx
@@ -126,8 +149,9 @@ sparse_cmatrix* hamiltonian(const num rashb, const num B) {
     int s = size / 2;
     for (int i = 0; i < size; i++) {
         if ((i+1) % Nx != 0) {
-            (*Hnn)(i, i+1) = -V * b_field(B, i / Nx);
-            (*Hnn)(i+1, i) = -V * conj(b_field(B, i / Nx));
+            int y = (i % (size/2)) / Nx;
+            (*Hnn)(i, i+1) = -V * conj(b_factor(flux, y));
+            (*Hnn)(i+1, i) = -V * b_factor(flux, y);
         }
     }
 
@@ -149,11 +173,12 @@ sparse_cmatrix* hamiltonian(const num rashb, const num B) {
         if ((i+1) % Nx != 0) {
             // "1 and 102"
             // with spin flip
-            (*Hnn)(i, i + s + 1) = rashba(alpha) * b_field(B, i / Nx);
-            (*Hnn)(i + s + 1, i) = rashba(alpha) * conj( b_field(B, i / Nx));
+            cnum b = b_factor(flux, i / Nx);
+            (*Hnn)(i, i + s + 1) = -rashba(rashb) * conj(b);
+            (*Hnn)(i + s + 1, i) = -rashba(rashb) * b;
             // "101 and 2"
-            (*Hnn)(i + 1, i + s) = - rashba(alpha);
-            (*Hnn)(i + s, i + 1) = - rashba(alpha);
+            (*Hnn)(i + 1, i + s) = rashba(rashb) * b;
+            (*Hnn)(i + s, i + 1) = rashba(rashb) * conj(b);
         }
     }
 
@@ -161,11 +186,11 @@ sparse_cmatrix* hamiltonian(const num rashb, const num B) {
     for (int i = 0; i < Nx * (Ny -1); i++) {
         // "11 and 101"
         // with spin flip
-        (*Hnn)(i + Nx, i + s) = cnum(0,  1) * rashba(alpha);
-        (*Hnn)(i + s, i + Nx) = cnum(0, -1) * rashba(alpha);
+        (*Hnn)(i + Nx, i + s) = cnum(0, -1) * rashba(rashb);
+        (*Hnn)(i + s, i + Nx) = cnum(0,  1) * rashba(rashb);
         // "1 and 111"
-        (*Hnn)(i, i + s + Nx) = cnum(0, -1) * rashba(alpha);
-        (*Hnn)(i + s + Nx, i) = cnum(0,  1) * rashba(alpha);
+        (*Hnn)(i, i + s + Nx) = cnum(0,  1) * rashba(rashb);
+        (*Hnn)(i + s + Nx, i) = cnum(0, -1) * rashba(rashb);
     }
     log_tick("hamiltonian");
     return Hnn;
@@ -290,7 +315,7 @@ matrix<num>* greenji(sparse_cmatrix* Hnn) {
     // (calculate slices of \Gamma (aka gamm_i) on the fly
     // to save memory
     // first carry out the two products \Gamma_p * G^R and \Gamma_q * G^A
-    cmatrix * gamm_i = new cmatrix(size, size);
+    sparse_cmatrix * gamm_i = new sparse_cmatrix(size, size);
     for (int i = 0; i < N_leads; i++) {
         cmatrix *g_adv = new cmatrix(size, size);
         cmatrix *g_ret = new cmatrix(size, size);
@@ -354,9 +379,16 @@ matrix<num>* greenji(sparse_cmatrix* Hnn) {
 
 
 int main (int argc, char** argv) {
+    cout << sizeof(long double) << endl;
     log_tick("start");
-    sparse_cmatrix *Hnn = hamiltonian(0.3, 0.0);
+    num Bz = 6;
+    num flux = flux_from_field(Bz);
+    cout << "Bz:      " << Bz << endl;
+    cout << "flux:    " << flux << endl;
+    cout << "bfactor: " << b_factor(flux, 1) << endl;
+    sparse_cmatrix *Hnn = hamiltonian(alpha, Bz);
     cout << "Hamiltonian: " << *Hnn << "\n";
+//    cout << io::sparse(*Hnn) << endl;
     matrix<num> *tpq = greenji(Hnn);
     delete Hnn;
     cout << "final tpq" << *tpq << endl;
