@@ -21,8 +21,8 @@ typedef complex<num> cnum;
 typedef matrix<cnum> cmatrix;
 typedef compressed_matrix<cnum> sparse_cm;
 
-int Nx         = 10;
-int Ny         = Nx;
+int Nx               = 4;
+int Ny               = Nx;
 const int N_leads    = 8;
 
 const num epsilon    = 1e-5;
@@ -155,21 +155,24 @@ sparse_cm* hamiltonian(const num rashb, const num B) {
     for (int i = 0; i < size; i++) {
         if ((i+1) % Nx != 0) {
             int y = (i % (size/2)) / Nx;
-            (*Hnn)(i, i+1) = -V * conj(b_factor(xflux, y));
-            (*Hnn)(i+1, i) = -V * b_factor(xflux, y);
+            cnum h = -V * conj(b_factor(xflux, y));
+            (*Hnn)(i, i+1) = h;
+            (*Hnn)(i+1, i) = conj(h);
         }
     }
 
     // kinetic energy in y direction
     // spin up
     for (int i = 0; i < size / 2 - Nx; i++) {
-        (*Hnn)(i, i + Nx) = -V * b_factor(yflux, i % Nx);
-        (*Hnn)(i + Nx, i) = -V * conj(b_factor(yflux, i % Nx));
+        cnum h = -V * b_factor(yflux, i % Nx);
+        (*Hnn)(i, i + Nx) = h;
+        (*Hnn)(i + Nx, i) = conj(h);
     }
     // spin down
     for (int i = size / 2; i < size - Nx; i++) {
-        (*Hnn)(i, i + Nx) = -V * b_factor(yflux, i % Nx);
-        (*Hnn)(i + Nx, i) = -V * conj(b_factor(yflux, i % Nx));
+        cnum h = -V * b_factor(yflux, i % Nx);
+        (*Hnn)(i, i + Nx) = h;
+        (*Hnn)(i + Nx, i) = conj(h);
     }
 
     // Rashba terms
@@ -192,11 +195,11 @@ sparse_cm* hamiltonian(const num rashb, const num B) {
         // "11 and 101"
         // with spin flip
         cnum b = b_factor(yflux, -(i % Nx));
-        (*Hnn)(i + Nx, i + s) = cnum(0, -1) * rashba(rashb) * conj(b);
-        (*Hnn)(i + s, i + Nx) = cnum(0,  1) * rashba(rashb) * b;
+        (*Hnn)(i + Nx, i + s) = cnum(0, -1) * rashba(rashb) * b;
+        (*Hnn)(i + s, i + Nx) = cnum(0,  1) * rashba(rashb) * conj(b);
         // "1 and 111"
-        (*Hnn)(i, i + s + Nx) = cnum(0,  1) * rashba(rashb) * b;
-        (*Hnn)(i + s + Nx, i) = cnum(0, -1) * rashba(rashb) * conj(b);
+        (*Hnn)(i, i + s + Nx) = cnum(0,  1) * rashba(rashb) * conj(b);
+        (*Hnn)(i + s + Nx, i) = cnum(0, -1) * rashba(rashb) * b;
     }
     log_tick("hamiltonian");
     return Hnn;
@@ -436,7 +439,7 @@ int main (int argc, char** argv) {
     }
 #endif
 
-//    cout << "Hamiltonian: " << *Hnn << "\n";
+    cout << "Hamiltonian: " << *Hnn << "\n";
 //    cout << io::sparse(*Hnn) << endl;
     matrix<num> *tpq = greenji(Hnn);
     delete Hnn;
