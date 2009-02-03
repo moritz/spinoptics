@@ -9,6 +9,7 @@
 #include <time.h>
 #include "invert-matrix.hpp"
 #include "sparse_io.hpp"
+#include <getopt.h>
 
 #define IDX(x, y) ((x) + Nx * (y))
 
@@ -18,11 +19,13 @@ using namespace std;
 typedef double num;
 typedef complex<num> cnum;
 typedef matrix<cnum> cmatrix;
-typedef compressed_matrix<cnum> sparse_cmatrix;
+typedef compressed_matrix<cnum> sparse_cm;
 
-const int Nx         = 4;
-const int Ny         = Nx;
+int Nx         = 10;
+int Ny         = Nx;
 const int N_leads    = 8;
+
+const num epsilon    = 1e-5;
 
 const num pi         = 3.14159265358979323846264;
 const num h_bar      = 6.582122E-16;     // [eV*s]
@@ -103,14 +106,16 @@ cnum findk(const num Emod) {
         );
 }
 
-sparse_cmatrix* hamiltonian(const num rashb, const num B) {
-    sparse_cmatrix* Hnn = new sparse_cmatrix(size, size, 4 * size);
-//    set_zero(Hnn);
+sparse_cm* hamiltonian(const num rashb, const num B) {
+    sparse_cm* Hnn = new sparse_cm(size, size, 4 * size);
 
     // division by e_charge to convert from electron volt to Joule
     num zeeman = 0.5 * g_factor * bohr_magneton * B / e_charge;
 //    num zeeman = 0.0;
     num flux = flux_from_field(B);
+    num gauge = 0.5;
+    num xflux = gauge * flux;
+    num yflux = (1.0 - gauge) * flux;
     cout << "Zeeman term: " << zeeman << endl;
 
     // diagonal elements
@@ -150,21 +155,21 @@ sparse_cmatrix* hamiltonian(const num rashb, const num B) {
     for (int i = 0; i < size; i++) {
         if ((i+1) % Nx != 0) {
             int y = (i % (size/2)) / Nx;
-            (*Hnn)(i, i+1) = -V * conj(b_factor(flux, y));
-            (*Hnn)(i+1, i) = -V * b_factor(flux, y);
+            (*Hnn)(i, i+1) = -V * conj(b_factor(xflux, y));
+            (*Hnn)(i+1, i) = -V * b_factor(xflux, y);
         }
     }
 
     // kinetic energy in y direction
     // spin up
     for (int i = 0; i < size / 2 - Nx; i++) {
-        (*Hnn)(i, i + Nx) = -V;
-        (*Hnn)(i + Nx, i) = -V;
+        (*Hnn)(i, i + Nx) = -V * b_factor(yflux, i % Nx);
+        (*Hnn)(i + Nx, i) = -V * conj(b_factor(yflux, i % Nx));
     }
     // spin down
     for (int i = size / 2; i < size - Nx; i++) {
-        (*Hnn)(i, i + Nx) = -V;
-        (*Hnn)(i + Nx, i) = -V;
+        (*Hnn)(i, i + Nx) = -V * b_factor(yflux, i % Nx);
+        (*Hnn)(i + Nx, i) = -V * conj(b_factor(yflux, i % Nx));
     }
 
     // Rashba terms
@@ -173,7 +178,7 @@ sparse_cmatrix* hamiltonian(const num rashb, const num B) {
         if ((i+1) % Nx != 0) {
             // "1 and 102"
             // with spin flip
-            cnum b = b_factor(flux, i / Nx);
+            cnum b = b_factor(xflux, i / Nx);
             (*Hnn)(i, i + s + 1) = -rashba(rashb) * conj(b);
             (*Hnn)(i + s + 1, i) = -rashba(rashb) * b;
             // "101 and 2"
@@ -186,17 +191,18 @@ sparse_cmatrix* hamiltonian(const num rashb, const num B) {
     for (int i = 0; i < Nx * (Ny -1); i++) {
         // "11 and 101"
         // with spin flip
-        (*Hnn)(i + Nx, i + s) = cnum(0, -1) * rashba(rashb);
-        (*Hnn)(i + s, i + Nx) = cnum(0,  1) * rashba(rashb);
+        cnum b = b_factor(yflux, -(i % Nx));
+        (*Hnn)(i + Nx, i + s) = cnum(0, -1) * rashba(rashb) * conj(b);
+        (*Hnn)(i + s, i + Nx) = cnum(0,  1) * rashba(rashb) * b;
         // "1 and 111"
-        (*Hnn)(i, i + s + Nx) = cnum(0,  1) * rashba(rashb);
-        (*Hnn)(i + s + Nx, i) = cnum(0, -1) * rashba(rashb);
+        (*Hnn)(i, i + s + Nx) = cnum(0,  1) * rashba(rashb) * b;
+        (*Hnn)(i + s + Nx, i) = cnum(0, -1) * rashba(rashb) * conj(b);
     }
     log_tick("hamiltonian");
     return Hnn;
 };
 
-sparse_cmatrix** self_energy(void) {
+sparse_cm** self_energy(void) {
     // Glp1lp1n = G_{l+1, l+1}n
     cmatrix Glp1lp1n = cmatrix(Nx, Nx);
     set_zero(&Glp1lp1n);
@@ -238,15 +244,15 @@ sparse_cmatrix** self_energy(void) {
 //    cout << "Glp1lp1n: " << Glp1lp1n << endl;
     // Glp1lp1n identical with that of nano0903c.f
 
-    sparse_cmatrix *G_lp1_lp1_up   = new sparse_cmatrix(size, size, size / 2);
-    sparse_cmatrix *G_lp1_lp1_down = new sparse_cmatrix(size, size, size / 2);
-    sparse_cmatrix *G_lm1_lm1_up   = new sparse_cmatrix(size, size, size / 2);
-    sparse_cmatrix *G_lm1_lm1_down = new sparse_cmatrix(size, size, size / 2);
+    sparse_cm *G_lp1_lp1_up   = new sparse_cm(size, size, size / 2);
+    sparse_cm *G_lp1_lp1_down = new sparse_cm(size, size, size / 2);
+    sparse_cm *G_lm1_lm1_up   = new sparse_cm(size, size, size / 2);
+    sparse_cm *G_lm1_lm1_down = new sparse_cm(size, size, size / 2);
 
-    sparse_cmatrix *G_xp1_xp1_up   = new sparse_cmatrix(size, size, size / 2);
-    sparse_cmatrix *G_xp1_xp1_down = new sparse_cmatrix(size, size, size / 2);
-    sparse_cmatrix *G_xm1_xm1_up   = new sparse_cmatrix(size, size, size / 2);
-    sparse_cmatrix *G_xm1_xm1_down = new sparse_cmatrix(size, size, size / 2);
+    sparse_cm *G_xp1_xp1_up   = new sparse_cm(size, size, size / 2);
+    sparse_cm *G_xp1_xp1_down = new sparse_cm(size, size, size / 2);
+    sparse_cm *G_xm1_xm1_up   = new sparse_cm(size, size, size / 2);
+    sparse_cm *G_xm1_xm1_down = new sparse_cm(size, size, size / 2);
 
     int s = size / 2;
     for (int i = 0; i < Nx; i++){
@@ -265,7 +271,7 @@ sparse_cmatrix** self_energy(void) {
             (*G_xm1_xm1_down)(i + size - Nx, j+size-Nx) = g;
         }
     }
-    sparse_cmatrix** sr = new sparse_cmatrix*[N_leads];
+    sparse_cm** sr = new sparse_cm*[N_leads];
     sr[0] = G_lp1_lp1_up;
     sr[2] = G_lp1_lp1_down;
     sr[4] = G_xp1_xp1_up;
@@ -283,8 +289,8 @@ sparse_cmatrix** self_energy(void) {
     return sr;
 }
 
-matrix<num>* greenji(sparse_cmatrix* Hnn) {
-    sparse_cmatrix **sigma_r   = self_energy();
+matrix<num>* greenji(sparse_cm* Hnn) {
+    sparse_cm **sigma_r   = self_energy();
 
     cmatrix *green_inv  = new cmatrix(size, size);
     (*green_inv) = *Hnn;
@@ -314,8 +320,9 @@ matrix<num>* greenji(sparse_cmatrix* Hnn) {
     // \Gamma = -2 * Im(\Sigma_r)   
     // (calculate slices of \Gamma (aka gamm_i) on the fly
     // to save memory
-    // first carry out the two products \Gamma_p * G^R and \Gamma_q * G^A
-    sparse_cmatrix * gamm_i = new sparse_cmatrix(size, size);
+    // first carry out the two products 
+    // \Gamma_p * G^R and \Gamma_q * G^A
+    sparse_cm * gamm_i = new sparse_cm(size, size);
     for (int i = 0; i < N_leads; i++) {
         cmatrix *g_adv = new cmatrix(size, size);
         cmatrix *g_ret = new cmatrix(size, size);
@@ -382,18 +389,62 @@ int main (int argc, char** argv) {
     cout << sizeof(long double) << endl;
     log_tick("start");
     num Bz = 6;
+
+    int opt;
+    while ((opt = getopt(argc, argv, "r:b:s:")) != -1) {
+       switch (opt) {
+            case 'r':
+                alpha = atof(optarg);
+                break;
+            case 's':
+                Nx = atoi(optarg);
+                Ny = Nx;
+                break;
+            case 'b':
+                Bz = atof(optarg);
+                break;
+            default:
+                cerr << "Error while processing command line args\n";
+                exit(1);
+
+        }
+    }
+
     num flux = flux_from_field(Bz);
     cout << "Bz:      " << Bz << endl;
     cout << "flux:    " << flux << endl;
     cout << "bfactor: " << b_factor(flux, 1) << endl;
-    sparse_cmatrix *Hnn = hamiltonian(alpha, Bz);
-    cout << "Hamiltonian: " << *Hnn << "\n";
+    sparse_cm *Hnn = hamiltonian(alpha, Bz);
+#ifndef NDEBUG
+    {
+        sparse_cm HH = herm(*Hnn);
+        int errors = 0;
+        for (int x = 0; x < size; x++) {
+            for (int y = 0; y < size; y++){
+                cnum c1 = (*Hnn)(x, y);
+                cnum c2 = HH(x, y);
+                if (abs(c1 - c2 ) > 1e-5) {
+                    errors++;
+                }
+            }
+        }
+        if (errors > 0) {
+            cerr << "ERROR: Hamiltonian is not hermitian ("
+                << errors << " differences)\n";
+            exit(1);
+        }
+    }
+#endif
+
+//    cout << "Hamiltonian: " << *Hnn << "\n";
 //    cout << io::sparse(*Hnn) << endl;
     matrix<num> *tpq = greenji(Hnn);
     delete Hnn;
     cout << "final tpq" << *tpq << endl;
     boost::numeric::ublas::vector<num> r;
     boost::numeric::ublas::vector<num> c;
+    bool is_first = true;
+    num ref = 0.0;
     for (int i = 0; i < N_leads; i++) {
         num r_sum = 0.0;
         num c_sum = 0.0;
@@ -403,7 +454,16 @@ int main (int argc, char** argv) {
             r_sum += r(j);
             c_sum += c(j);
         }
-        cout << i <<  "\t" <<  r_sum << "\t" << c_sum << "\n";
+        if (is_first) {
+            ref = r_sum;
+            is_first = false;
+        }
+        if (abs(r_sum - ref) > epsilon) {
+            cout << "ERROR: sum rule violated for row " << i << endl;
+        }
+        if (abs(c_sum - ref) > epsilon) {
+            cout << "ERROR: sum rule violated for column " << i << endl;
+        }
     }
     delete tpq;
 }
