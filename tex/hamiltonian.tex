@@ -20,6 +20,10 @@
 \newcommand{\svec}[3]{\ensuremath{\inp{\hspace{-.8ex}\begin{array}{r}#1\\#2\\#3\end{array}\hspace{-.4ex}}}}
 \newcommand{\entspr}{\ensuremath{\,\,\hat{=}\,\,}}%
 \newcommand{\dx}[1][x]{\ensuremath{\textnormal d #1}}
+
+% For stupid thinkos:
+\newcommand{\cross}{\times}
+
 % Tabellen:
 \usepackage{array}
 \setlength{\extrarowheight}{.2mm}
@@ -73,12 +77,67 @@ tight binding model we get
             + c^\dagger_{m,\downarrow} c_{m+a_x,\uparrow}
 \end{eqnarray}
 
-where $n$ runs over all latic sites, $\delta$ over $\uparrow$ and
+where $n$ runs over all lattice sites, $\delta$ over $\uparrow$ and
 $\downarrow$, and $a_x$ and $a_y$ denote the shift to the nearest neighbor in
 $x$ and $y$ direction, respectively. (Note that we assume that the lattice is
 equally spaced in $x$ and $y$ direction, $+a_x$ just means "go to the next
-neighbour in $x$ direction).
+neighbor in $x$ direction).
+
+Assume we have a quadratic system of $N \times N$ lattice sites.
+For a two-dimensional system we enumerate all lattice sites row by row, and
+use the result as the index to the Hamiltonian. To incorporate spin, we
+identify the indexes that were assigned so far with spin-up, and add $N^2$ to
+each index to obtain the matrix index for spin-down.
+
+For example if our system were of size $3 \times 3$, the left-most site in the
+first row has index $i = 1$, and the left-most site in the second row has
+index $j = N + 1 = 4$ (both spin down). The interaction term (without spin
+flip) between these two sites can thus be found at $H_{i,j} = H_{1,4}$. The
+interaction that involves a spin flip from $\uparrow$ to $\downarrow$ is
+described by $H_{i, j+N^2} = H_{1, 13}$.
+
+\begin{figure}
+    \label{fig:hamiltonian}
+    \begin{align*}
+        H &&= \inp{
+           \begin{array}{cc}
+                H_{kin}  & H_{spin} \\
+                H_{spin}^\dagger & H_{kin} \\
+           \end{array}} \\
+           %
+        H_{kin} &&= \inp{
+            \begin{array}{ccccccccc}
+                -4t & t &  & t\\
+                t & -4t & t &  & t &  &  & 0\\
+                & t & -4t & 0 &  & t\\
+                t &  & 0 & -4t & t &  & t\\
+                & t &  & t & -4t & t &  & t\\
+                &  & t &  & t & -4t & 0 &  & t\\
+                &  &  & t &  & 0 & -4t & t\\
+                & 0 &  &  & t &  & t & -4t & t\\
+                &  &  &  &  & t &  & t & -4t\end{array}
+        } \\
+        %
+        H_{spin} &&= \inp{
+            \begin{array}{ccccccccc}
+                0 & -r &  & r\\
+                r & 0 & -r &  & r &  &  & 0\\
+                & r & 0 & 0 &  & r\\
+                -r &  & 0 & 0 & -r &  & r\\
+                & -r &  & r & 0 & -r &  & r\\
+                &  & -r &  & r & 0 & 0 &  & r\\
+                &  &  & -r &  & 0 & 0 & -r\\
+                & 0 &  &  & -r &  & r & 0 & -r\\
+                &  &  &  &  & -r &  & r & 0\end{array}
+        } 
+    \end{align*}
+    \caption{Tight binding Hamiltonian for $ 3 \times 3 $ lattice sites}
+\end{figure}
+
+Figure \ref{fig:hamiltonian} shows an example Hamiltonian for a system of
+$3 \times 3$ lattice sites with Rashba spin-orbit coupling (and no magnetic
+field).
 
 \end{document}
 
-% vim: ts=4 sw=4 expandtab
+% vim: ts=4 sw=4 expandtab spell spelllang=en_us
