@@ -228,47 +228,46 @@ sparse_cm** self_energy(void) {
 //    cout << "Glp1lp1n: " << Glp1lp1n << endl;
     // Glp1lp1n identical with that of nano0903c.f
 
-    sparse_cm *G_lp1_lp1_up   = new sparse_cm(size, size, size / 2);
-    sparse_cm *G_lp1_lp1_down = new sparse_cm(size, size, size / 2);
-    sparse_cm *G_lm1_lm1_up   = new sparse_cm(size, size, size / 2);
-    sparse_cm *G_lm1_lm1_down = new sparse_cm(size, size, size / 2);
+    sparse_cm *G_left_up      = new sparse_cm(size, size, size / 2);
+    sparse_cm *G_left_down    = new sparse_cm(size, size, size / 2);
+    sparse_cm *G_right_up   = new sparse_cm(size, size, size / 2);
+    sparse_cm *G_right_down = new sparse_cm(size, size, size / 2);
 
-    sparse_cm *G_xp1_xp1_up   = new sparse_cm(size, size, size / 2);
-    sparse_cm *G_xp1_xp1_down = new sparse_cm(size, size, size / 2);
-    sparse_cm *G_xm1_xm1_up   = new sparse_cm(size, size, size / 2);
-    sparse_cm *G_xm1_xm1_down = new sparse_cm(size, size, size / 2);
+    sparse_cm *G_top_up       = new sparse_cm(size, size, size / 2);
+    sparse_cm *G_top_down     = new sparse_cm(size, size, size / 2);
+    sparse_cm *G_bottom_up   = new sparse_cm(size, size, size / 2);
+    sparse_cm *G_bottom_down = new sparse_cm(size, size, size / 2);
 
     int s = size / 2;
-    for (int i = 0; i < Nx; i++){
-        int n = Nx * i;
-        for (int j = 0; j < Ny; j++){
-            int m = Ny * j;
-            cnum g = Glp1lp1n(i, j);
-            (*G_lp1_lp1_up)(m, n)                   = g;
-            (*G_lm1_lm1_up)(m + Nx - 1, n + Nx - 1) = g;
-            (*G_lp1_lp1_down)(m + s, n + s)         = g;
-            (*G_lm1_lm1_down)(m+s+Nx-1, n+s+Nx- 1)  = g;
 
-            (*G_xp1_xp1_up)(i, j)                   = g;
-            (*G_xp1_xp1_down)(i + s, j + s)         = g;
-            (*G_xm1_xm1_up)(i + s - Nx, j + s - Nx) = g;
-            (*G_xm1_xm1_down)(i + size - Nx, j+size-Nx) = g;
+    for (int i = 0; i < Nx; i++){
+        for (int j = 0; j < Ny; j++){
+            cnum g = Glp1lp1n(i, j);
+            (*G_left_up)  (IDX(0, i)    , IDX(0, j)    ) = g;
+            (*G_left_down)(IDX(0, i) + s, IDX(0, j) + s) = g;
+            (*G_top_up)   (IDX(i, 0)    , IDX(j, 0)    ) = g;
+            (*G_top_down) (IDX(i, 0) + s, IDX(j, 0) + s) = g;
+
+            (*G_right_up)   (IDX(Nx-1, j)    , IDX(Nx-1, i)    ) = g;
+            (*G_right_down) (IDX(Nx-1, j) + s, IDX(Nx-1, i) + s) = g;
+            (*G_bottom_up)  (IDX(i, Ny-1)    , IDX(j, Ny-1)    ) = g;
+            (*G_bottom_down)(IDX(i, Ny-1) + s, IDX(j, Ny-1) + s) = g;
         }
     }
-    sparse_cm** sr = new sparse_cm*[N_leads];
-    sr[0] = G_lp1_lp1_up;
-    sr[2] = G_lp1_lp1_down;
-    sr[4] = G_xp1_xp1_up;
-    // 5, not 6
-    sr[5] = G_xp1_xp1_down;
 
-    sr[1] = G_lm1_lm1_up;
-    sr[3] = G_lm1_lm1_down;
+    sparse_cm** sr = new sparse_cm*[N_leads];
+    sr[0] = G_left_up;
+    sr[2] = G_left_down;
+
+    sr[4] = G_top_up;
+    // 5, not 6
+    sr[5] = G_top_down;
+
+    sr[1] = G_right_up;
+    sr[3] = G_right_down;
     // 6, not 5
-    sr[6] = G_xm1_xm1_up;
-    sr[7] = G_xm1_xm1_down;
-//    cout << "G_xp1_xp1_up: " << *G_xp1_xp1_up << endl;
-    // re-checked: G_xp1_xp1_*
+    sr[6] = G_bottom_up;
+    sr[7] = G_bottom_down;
     log_tick("self-energy");
     return sr;
 }
