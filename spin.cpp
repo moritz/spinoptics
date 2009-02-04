@@ -136,17 +136,27 @@ sparse_cm* hamiltonian(const num rashb, const num B) {
      *      x = i % Nx
      */
 
-    // kinetic energy in x direction
-    // No distinction between spin up and spin down needed
+    // interaction in x direction
     int s = size / 2;
 
+    cnum r = rashba(rashb);
     for (int x = 0; x < Nx - 1; x++) {
         for (int y = 0; y < Ny; y++) {
             cnum h = -V * conj(b_factor(xflux, y));
+            // kinetic energy
             (*Hnn)(    IDX(x,   y),     IDX(x+1, y)) = h;
             (*Hnn)(    IDX(x+1, y),     IDX(x,   y)) = conj(h);
             (*Hnn)(s + IDX(x,   y), s + IDX(x+1, y)) = h;
             (*Hnn)(s + IDX(x+1, y), s + IDX(x,   y)) = conj(h);
+            // Rashba terms
+            // "1 and 102"
+            // with spin flip
+            cnum b = b_factor(xflux, y);
+            (*Hnn)(IDX(x, y)      , IDX(x+1, y) + s) = -r * conj(b);
+            (*Hnn)(IDX(x+1, y) + s, IDX(x,  y)     ) = -r * b;
+            // "101 and 2"
+            (*Hnn)(IDX(x+1, y)    , IDX(x, y) + s  ) = r * b;
+            (*Hnn)(IDX(x, y) + s  , IDX(x+1, y)    ) = r * conj(b);
         }
     }
 
@@ -155,40 +165,23 @@ sparse_cm* hamiltonian(const num rashb, const num B) {
 
     for (int x = 0; x < Nx; x++){
         for (int y = 0; y < Ny - 1; y++) {
-            cnum h = -V * b_factor(yflux, x);
-            (*Hnn)(    IDX(x, y)  ,      IDX(x, y+1)) = h;
-            (*Hnn)(    IDX(x, y+1),      IDX(x, y  )) = conj(h);
-            (*Hnn)(s + IDX(x, y)  , s +  IDX(x, y+1)) = h;
-            (*Hnn)(s + IDX(x, y+1), s +  IDX(x, y  )) = conj(h);
+            cnum b = b_factor(yflux, x);
+            cnum h = -V * b;
+            (*Hnn)(IDX(x, y)      , IDX(x, y+1)    ) = h;
+            (*Hnn)(IDX(x, y+1)    , IDX(x, y  )    ) = conj(h);
+            (*Hnn)(IDX(x, y)   + s, IDX(x, y+1) + s) = h;
+            (*Hnn)(IDX(x, y+1) + s, IDX(x, y  ) + s) = conj(h);
+            // Rashba terms
+            // "11 and 101"
+            h = cnum(0, 1) * b * r;
+            (*Hnn)(IDX(x, y+1)    , IDX(x, y  ) + s) = conj(h);
+            (*Hnn)(IDX(x, y  ) + s, IDX(x, y+1)    ) = h;
+            // "1 and 111"
+            (*Hnn)(IDX(x, y  )    , IDX(x, y+1) + s) = h;
+            (*Hnn)(IDX(x, y+1) + s, IDX(x, y  )    ) = conj(h);
         }
     }
 
-    // Rashba terms
-    // in x-direction
-    for (int i = 0; i < size/2; i++) {
-        if ((i+1) % Nx != 0) {
-            // "1 and 102"
-            // with spin flip
-            cnum b = b_factor(xflux, i / Nx);
-            (*Hnn)(i, i + s + 1) = -rashba(rashb) * conj(b);
-            (*Hnn)(i + s + 1, i) = -rashba(rashb) * b;
-            // "101 and 2"
-            (*Hnn)(i + 1, i + s) = rashba(rashb) * b;
-            (*Hnn)(i + s, i + 1) = rashba(rashb) * conj(b);
-        }
-    }
-
-    // in y-direction
-    for (int i = 0; i < Nx * (Ny -1); i++) {
-        // "11 and 101"
-        // with spin flip
-        cnum b = b_factor(yflux, -(i % Nx));
-        (*Hnn)(i + Nx, i + s) = cnum(0, -1) * rashba(rashb) * b;
-        (*Hnn)(i + s, i + Nx) = cnum(0,  1) * rashba(rashb) * conj(b);
-        // "1 and 111"
-        (*Hnn)(i, i + s + Nx) = cnum(0,  1) * rashba(rashb) * conj(b);
-        (*Hnn)(i + s + Nx, i) = cnum(0, -1) * rashba(rashb) * b;
-    }
     log_tick("hamiltonian");
     return Hnn;
 };
