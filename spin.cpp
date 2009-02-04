@@ -139,27 +139,28 @@ sparse_cm* hamiltonian(const num rashb, const num B) {
     // kinetic energy in x direction
     // No distinction between spin up and spin down needed
     int s = size / 2;
-    for (int i = 0; i < size; i++) {
-        if ((i+1) % Nx != 0) {
-            int y = (i % (size/2)) / Nx;
+
+    for (int x = 0; x < Nx - 1; x++) {
+        for (int y = 0; y < Ny; y++) {
             cnum h = -V * conj(b_factor(xflux, y));
-            (*Hnn)(i, i+1) = h;
-            (*Hnn)(i+1, i) = conj(h);
+            (*Hnn)(    IDX(x,   y),     IDX(x+1, y)) = h;
+            (*Hnn)(    IDX(x+1, y),     IDX(x,   y)) = conj(h);
+            (*Hnn)(s + IDX(x,   y), s + IDX(x+1, y)) = h;
+            (*Hnn)(s + IDX(x+1, y), s + IDX(x,   y)) = conj(h);
         }
     }
 
     // kinetic energy in y direction
     // spin up
-    for (int i = 0; i < size / 2 - Nx; i++) {
-        cnum h = -V * b_factor(yflux, i % Nx);
-        (*Hnn)(i, i + Nx) = h;
-        (*Hnn)(i + Nx, i) = conj(h);
-    }
-    // spin down
-    for (int i = size / 2; i < size - Nx; i++) {
-        cnum h = -V * b_factor(yflux, i % Nx);
-        (*Hnn)(i, i + Nx) = h;
-        (*Hnn)(i + Nx, i) = conj(h);
+
+    for (int x = 0; x < Nx; x++){
+        for (int y = 0; y < Ny - 1; y++) {
+            cnum h = -V * b_factor(yflux, x);
+            (*Hnn)(    IDX(x, y)  ,      IDX(x, y+1)) = h;
+            (*Hnn)(    IDX(x, y+1),      IDX(x, y  )) = conj(h);
+            (*Hnn)(s + IDX(x, y)  , s +  IDX(x, y+1)) = h;
+            (*Hnn)(s + IDX(x, y+1), s +  IDX(x, y  )) = conj(h);
+        }
     }
 
     // Rashba terms
