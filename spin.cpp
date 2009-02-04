@@ -21,7 +21,7 @@ typedef complex<num> cnum;
 typedef matrix<cnum> cmatrix;
 typedef compressed_matrix<cnum> sparse_cm;
 
-int Nx               = 4;
+int Nx               = 10;
 int Ny               = Nx;
 const int N_leads    = 8;
 
@@ -77,19 +77,6 @@ void set_zero(matrix<T>* m) {
     }
 }
 
-template <class T>
-void dump_non_zero(matrix<T> m, const char* name) {
-    for (int x = 0; x < m.size1(); x++){
-        for (int y = 0; y < m.size2(); y++){
-            if (m(x, y) != (T) 0.0){
-                cout << name  << "(" << x <<", " << y 
-                    << ") = " << m(x, y) << endl;
-            }
-        }
-    }
-
-}
-
 inline num rashba(const num alpha) {
     return 2.0 * alpha * a_lead;
 }
@@ -113,7 +100,7 @@ sparse_cm* hamiltonian(const num rashb, const num B) {
     num zeeman = 0.5 * g_factor * bohr_magneton * B / e_charge;
 //    num zeeman = 0.0;
     num flux = flux_from_field(B);
-    num gauge = 0.5;
+    num gauge = 1.0;
     num xflux = gauge * flux;
     num yflux = (1.0 - gauge) * flux;
     cout << "Zeeman term: " << zeeman << endl;
@@ -439,7 +426,7 @@ int main (int argc, char** argv) {
     }
 #endif
 
-    cout << "Hamiltonian: " << *Hnn << "\n";
+//    cout << "Hamiltonian: " << *Hnn << "\n";
 //    cout << io::sparse(*Hnn) << endl;
     matrix<num> *tpq = greenji(Hnn);
     delete Hnn;
