@@ -228,13 +228,13 @@ sparse_cm** self_energy(void) {
 //    cout << "Glp1lp1n: " << Glp1lp1n << endl;
     // Glp1lp1n identical with that of nano0903c.f
 
-    sparse_cm *G_left_up      = new sparse_cm(size, size, size / 2);
-    sparse_cm *G_left_down    = new sparse_cm(size, size, size / 2);
-    sparse_cm *G_right_up   = new sparse_cm(size, size, size / 2);
-    sparse_cm *G_right_down = new sparse_cm(size, size, size / 2);
+    sparse_cm *G_left_up     = new sparse_cm(size, size, size / 2);
+    sparse_cm *G_left_down   = new sparse_cm(size, size, size / 2);
+    sparse_cm *G_right_up    = new sparse_cm(size, size, size / 2);
+    sparse_cm *G_right_down  = new sparse_cm(size, size, size / 2);
 
-    sparse_cm *G_top_up       = new sparse_cm(size, size, size / 2);
-    sparse_cm *G_top_down     = new sparse_cm(size, size, size / 2);
+    sparse_cm *G_top_up      = new sparse_cm(size, size, size / 2);
+    sparse_cm *G_top_down    = new sparse_cm(size, size, size / 2);
     sparse_cm *G_bottom_up   = new sparse_cm(size, size, size / 2);
     sparse_cm *G_bottom_down = new sparse_cm(size, size, size / 2);
 
@@ -243,13 +243,15 @@ sparse_cm** self_energy(void) {
     for (int i = 0; i < Nx; i++){
         for (int j = 0; j < Ny; j++){
             cnum g = Glp1lp1n(i, j);
-            (*G_left_up)  (IDX(0, i)    , IDX(0, j)    ) = g;
-            (*G_left_down)(IDX(0, i) + s, IDX(0, j) + s) = g;
-            (*G_top_up)   (IDX(i, 0)    , IDX(j, 0)    ) = g;
-            (*G_top_down) (IDX(i, 0) + s, IDX(j, 0) + s) = g;
+            (*G_left_up)    (IDX(0, i)       , IDX(0, j)       ) = g;
+            (*G_left_down)  (IDX(0, i) + s   , IDX(0, j) + s   ) = g;
 
             (*G_right_up)   (IDX(Nx-1, j)    , IDX(Nx-1, i)    ) = g;
             (*G_right_down) (IDX(Nx-1, j) + s, IDX(Nx-1, i) + s) = g;
+
+            (*G_top_up)     (IDX(i, 0)       , IDX(j, 0)       ) = g;
+            (*G_top_down)   (IDX(i, 0) + s   , IDX(j, 0) + s   ) = g;
+
             (*G_bottom_up)  (IDX(i, Ny-1)    , IDX(j, Ny-1)    ) = g;
             (*G_bottom_down)(IDX(i, Ny-1) + s, IDX(j, Ny-1) + s) = g;
         }
