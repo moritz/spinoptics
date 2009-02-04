@@ -10,6 +10,7 @@
 #include "invert-matrix.hpp"
 #include "sparse_io.hpp"
 #include <getopt.h>
+#include <assert.h>
 
 #define IDX(x, y) ((x) + Nx * (y))
 
@@ -190,8 +191,6 @@ sparse_cm** self_energy(void) {
     // Glp1lp1n = G_{l+1, l+1}n
     cmatrix Glp1lp1n = cmatrix(Nx, Nx);
     set_zero(&Glp1lp1n);
-    //cnum random_phase = exp(cnum(0, 0.4));
-    cnum random_phase = cnum(1, 0);
     for (int r = 0; r < Nx; r++) {
         num x = (e_tot - mods(r, Nx))
             / (2.0 * V) + 1.0;
@@ -223,8 +222,7 @@ sparse_cm** self_energy(void) {
             for (int q = 0; q < Nx; q++) {
                 // "psiN1(jj)" in nano0903c.f
                 cnum y2 = y * sin(pi * (num) ((q+1) * (r+1))/(1.0 + Nx));
-                Glp1lp1n(p, q) += exp(cnum(0.0,1.0) * theta)/V * y1 * y2
-                                * random_phase;
+                Glp1lp1n(p, q) += exp(cnum(0.0,1.0) * theta)/V * y1 * y2;
             }
         }
     }
@@ -313,6 +311,7 @@ matrix<num>* greenji(sparse_cm* Hnn) {
     for (int i = 0; i < N_leads; i++) {
         cmatrix *g_adv = new cmatrix(size, size);
         cmatrix *g_ret = new cmatrix(size, size);
+        assert(V * V == 1);
         noalias(*gamm_i) = -2 * imag(*sigma_r[i]);
         // axpy_prod writes its result into the third argument
         axpy_prod(*gamm_i, *green, *g_ret, true);
