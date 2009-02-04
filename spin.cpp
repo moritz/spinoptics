@@ -190,6 +190,8 @@ sparse_cm** self_energy(void) {
     // Glp1lp1n = G_{l+1, l+1}n
     cmatrix Glp1lp1n = cmatrix(Nx, Nx);
     set_zero(&Glp1lp1n);
+    //cnum random_phase = exp(cnum(0, 0.4));
+    cnum random_phase = cnum(1, 0);
     for (int r = 0; r < Nx; r++) {
         num x = (e_tot - mods(r, Nx))
             / (2.0 * V) + 1.0;
@@ -221,24 +223,24 @@ sparse_cm** self_energy(void) {
             for (int q = 0; q < Nx; q++) {
                 // "psiN1(jj)" in nano0903c.f
                 cnum y2 = y * sin(pi * (num) ((q+1) * (r+1))/(1.0 + Nx));
-                Glp1lp1n(p, q) += exp(cnum(0.0,1.0) * theta)/V * y1 * y2;
+                Glp1lp1n(p, q) += exp(cnum(0.0,1.0) * theta)/V * y1 * y2
+                                * random_phase;
             }
         }
     }
-//    cout << "Glp1lp1n: " << Glp1lp1n << endl;
-    // Glp1lp1n identical with that of nano0903c.f
-
-    sparse_cm *G_left_up     = new sparse_cm(size, size, size / 2);
-    sparse_cm *G_left_down   = new sparse_cm(size, size, size / 2);
-    sparse_cm *G_right_up    = new sparse_cm(size, size, size / 2);
-    sparse_cm *G_right_down  = new sparse_cm(size, size, size / 2);
-
-    sparse_cm *G_top_up      = new sparse_cm(size, size, size / 2);
-    sparse_cm *G_top_down    = new sparse_cm(size, size, size / 2);
-    sparse_cm *G_bottom_up   = new sparse_cm(size, size, size / 2);
-    sparse_cm *G_bottom_down = new sparse_cm(size, size, size / 2);
 
     int s = size / 2;
+
+    sparse_cm *G_left_up     = new sparse_cm(size, size, s);
+    sparse_cm *G_left_down   = new sparse_cm(size, size, s);
+    sparse_cm *G_right_up    = new sparse_cm(size, size, s);
+    sparse_cm *G_right_down  = new sparse_cm(size, size, s);
+
+    sparse_cm *G_top_up      = new sparse_cm(size, size, s);
+    sparse_cm *G_top_down    = new sparse_cm(size, size, s);
+    sparse_cm *G_bottom_up   = new sparse_cm(size, size, s);
+    sparse_cm *G_bottom_down = new sparse_cm(size, size, s);
+
 
     for (int i = 0; i < Nx; i++){
         for (int j = 0; j < Ny; j++){
@@ -246,8 +248,8 @@ sparse_cm** self_energy(void) {
             (*G_left_up)    (IDX(0, i)       , IDX(0, j)       ) = g;
             (*G_left_down)  (IDX(0, i) + s   , IDX(0, j) + s   ) = g;
 
-            (*G_right_up)   (IDX(Nx-1, j)    , IDX(Nx-1, i)    ) = g;
-            (*G_right_down) (IDX(Nx-1, j) + s, IDX(Nx-1, i) + s) = g;
+            (*G_right_up)   (IDX(Nx-1, i)    , IDX(Nx-1, j)    ) = g;
+            (*G_right_down) (IDX(Nx-1, i) + s, IDX(Nx-1, j) + s) = g;
 
             (*G_top_up)     (IDX(i, 0)       , IDX(j, 0)       ) = g;
             (*G_top_down)   (IDX(i, 0) + s   , IDX(j, 0) + s   ) = g;
