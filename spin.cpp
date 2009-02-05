@@ -299,7 +299,7 @@ matrix<num>* greenji(sparse_cm* Hnn) {
     cmatrix **gamma_g_ret = new cmatrix*[N_leads];
 
     // T_{p, q} = Trace( \Gamma_p G^R \Gamma_q G^A )
-    // where G^A = (G^R)^*
+    // where G^A = (G^R)^\dagger
     //
     //
     // \Gamma = -2 * Im(\Sigma_r)   
@@ -313,8 +313,10 @@ matrix<num>* greenji(sparse_cm* Hnn) {
         cmatrix *g_ret = new cmatrix(size, size);
         assert(V * V == 1);
         noalias(*gamm_i) = -2 * imag(*sigma_r[i]);
+        delete sigma_r[i];
+        sigma_r[i] = NULL;
         // axpy_prod writes its result into the third argument
-        axpy_prod(*gamm_i, *green, *g_ret, true);
+        axpy_prod(*gamm_i, *green,      *g_ret, true);
         axpy_prod(*gamm_i, *green_herm, *g_adv, true);
         gamma_g_adv[i] = g_adv;
         gamma_g_ret[i] = g_ret;
@@ -324,10 +326,6 @@ matrix<num>* greenji(sparse_cm* Hnn) {
     delete green;       green       = NULL;
     delete green_herm;  green_herm  = NULL;
 
-    // we don't need sigma_r any more
-    for (int i = 0; i < N_leads; i++){
-        delete sigma_r[i];
-    }
     delete[] sigma_r;
     sigma_r = NULL;
 
