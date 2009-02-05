@@ -42,7 +42,7 @@ const num width_lead = 30.0;             // [nm]
 const num g_factor   = 20.0;
 
 // XXX is the +1 correct?
-const num a_lead     = width_lead / (double) (Nx + 1);
+const num a_lead     = width_lead / (num) (Nx + 1);
 const int size       = Nx * Ny * 2;      // `Nfin'
 const num V          = 1.0;              // hopping term
 
@@ -83,7 +83,7 @@ inline num rashba(const num alpha) {
 }
 
 inline num mods(const int n, const int nle) {
-    return 2.0 * V * (cos(pi * (double) (n+1) / ((double) nle + 1.0)) 
+    return 2.0 * V * (cos(pi * (num) (n+1) / ((num) nle + 1.0)) 
             - 1.0);
 }
 
@@ -370,7 +370,6 @@ matrix<num>* greenji(sparse_cm* Hnn) {
 
 
 int main (int argc, char** argv) {
-    cout << sizeof(long double) << endl;
     log_tick("start");
     num Bz = 6;
 
