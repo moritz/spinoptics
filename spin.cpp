@@ -21,8 +21,9 @@ typedef double num;
 typedef complex<num> cnum;
 typedef matrix<cnum> cmatrix;
 typedef compressed_matrix<cnum> sparse_cm;
+typedef unsigned int idx_t;
 
-int Nx               = 10;
+int Nx               = 20;
 int Ny               = Nx;
 const int N_leads    = 8;
 
@@ -76,6 +77,53 @@ void set_zero(matrix<T>* m) {
             (*m)(x, y) = 0.0;
         }
     }
+}
+
+template <class T>
+idx_t count_nonzero(matrix<T> &m) {
+    idx_t i = 0;
+    for (idx_t x = 0; x < m.size1(); x++){
+        for (idx_t y = 0; y < m.size2(); y++){
+            if (m(x, y) != 0.0) 
+                i++;
+        }
+    }
+    return i;
+}
+
+idx_t count_nonzero(sparse_cm &m) {
+    idx_t i = 0;
+    sparse_cm::const_iterator1 x = m.begin1();
+    sparse_cm::const_iterator1 x_end = m.end1();
+    for (; x != x_end; ++x) {
+        sparse_cm::const_iterator2 y = x.begin();
+        sparse_cm::const_iterator2 y_end = x.end();
+        for (; y != y_end; y++) {
+            if ( *y != 0.0) 
+                i++;
+        }
+    }
+
+    return i;
+}
+
+void sparse_product(const sparse_cm &m1, const cmatrix &m2, cmatrix &r) {
+    sparse_cm::const_iterator1 x = m1.begin1();
+    sparse_cm::const_iterator1 x_end = m1.end1();
+    r.clear();
+    idx_t s = m2.size1();
+    for (; x != x_end; ++x) {
+        sparse_cm::const_iterator2 y = x.begin();
+        sparse_cm::const_iterator2 y_end = x.end();
+        for (; y != y_end; y++) {
+            for (idx_t j = 0; j < s; j++){
+                idx_t xi = y.index1();
+                idx_t yi = y.index2();
+                r(xi, j) += (*y) * m2(yi, j);
+            }
+        }
+    }
+
 }
 
 inline num rashba(const num alpha) {
@@ -316,8 +364,12 @@ matrix<num>* greenji(sparse_cm* Hnn) {
         delete sigma_r[i];
         sigma_r[i] = NULL;
         // axpy_prod writes its result into the third argument
-        axpy_prod(*gamm_i, *green,      *g_ret, true);
-        axpy_prod(*gamm_i, *green_herm, *g_adv, true);
+//        axpy_prod(*gamm_i, *green,      *g_ret, true);
+//        axpy_prod(*gamm_i, *green_herm, *g_adv, true);
+        sparse_product(*gamm_i, *green,      *g_ret);
+        sparse_product(*gamm_i, *green_herm, *g_adv);
+//        cout << count_nonzero(*g_adv) << "\n";
+//        cout << count_nonzero(*gamm_i) << "\n";
         gamma_g_adv[i] = g_adv;
         gamma_g_ret[i] = g_ret;
     }
