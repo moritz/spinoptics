@@ -1,0 +1,30 @@
+cppspin execution times
+
+# long double
+size: 12x12, flags: -g -O2, normal	2m12.360s
+size: 12x12, flags: -g -O2, sparse 	1m12.042s
+size: 20x20, flags: -g -O2, sparse	33m29.128s
+
+# double
+size: 12x12, flags: -g -O3, sparse	0m11.222s
+size: 17x17, flags: -g -O3, sparse	1m39.662s
+size: 20x20, flags: -g -O3, sparse	5m37.963s
+size: 30x30, flags: -g -O3, sparse	72m24
+
+# double, with axpy_prod(), and sparse matrices
+size: 15x15, flags: -g -O3		0m15.753s
+size: 17x17, flags: -g -O3		0m34.284s
+size: 20x20, flags: -g -O3		1m31.373s
+size: 25x25, flags: -g -O3		5m25.196s
+size: 30x30, flags: -g -O3		16m47.059s	mem: 853m
+size: 35x35, flags: -g -O3		47m52.492s
+size: 40x40, flags: -g -O3		156m18.156s
+size: 50x50, flags: -g -O3		706m7.276s
+
+
+
+nano execution times
+
+size: 12x12, flags: -g -O2		0m15.596s
+size: 20x20, flags: -g -O2		7m50.786s
+
