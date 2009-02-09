@@ -20,10 +20,10 @@ using namespace std;
 typedef double num;
 typedef complex<num> cnum;
 typedef matrix<cnum> cmatrix;
-typedef compressed_matrix<cnum> sparse_cm;
+typedef compressed_matrix<cnum, row_major> sparse_cm;
 typedef unsigned int idx_t;
 
-int Nx               = 20;
+int Nx               = 10;
 int Ny               = Nx;
 const int N_leads    = 8;
 
@@ -107,6 +107,10 @@ idx_t count_nonzero(sparse_cm &m) {
     return i;
 }
 
+// sparse_product(a, b, c) computes the matrix product
+// a * b where a is a sparse matrix and c is a full one,
+// and assumes that c has a different storage location than
+// a and b
 void sparse_product(const sparse_cm &m1, const cmatrix &m2, cmatrix &r) {
     sparse_cm::const_iterator1 x = m1.begin1();
     sparse_cm::const_iterator1 x_end = m1.end1();
@@ -120,6 +124,30 @@ void sparse_product(const sparse_cm &m1, const cmatrix &m2, cmatrix &r) {
                 idx_t xi = y.index1();
                 idx_t yi = y.index2();
                 r(xi, j) += (*y) * m2(yi, j);
+            }
+        }
+    }
+}
+
+// sparse_herm_product(a, b, c) computes the matrix product
+// a * herm(b) where a is a sparse matrix and c is a full one,
+// (herm(b) is the hermitian conjugate, ie complex conjugation
+// and transposition).
+// It assumes that c has a different storage location than
+// a and b
+void sparse_herm_product(const sparse_cm &m1, const cmatrix &m2, cmatrix &r) {
+    sparse_cm::const_iterator1 x = m1.begin1();
+    sparse_cm::const_iterator1 x_end = m1.end1();
+    r.clear();
+    idx_t s = m2.size1();
+    for (; x != x_end; ++x) {
+        sparse_cm::const_iterator2 y = x.begin();
+        sparse_cm::const_iterator2 y_end = x.end();
+        for (; y != y_end; y++) {
+            for (idx_t j = 0; j < s; j++){
+                idx_t xi = y.index1();
+                idx_t yi = y.index2();
+                r(xi, j) += (*y) * conj(m2(j, yi));
             }
         }
     }
@@ -338,8 +366,8 @@ matrix<num>* greenji(sparse_cm* Hnn) {
     delete green_inv;
     green_inv = NULL;
 
-    cmatrix *green_herm = new cmatrix(size, size);
-    *green_herm = herm(*green);
+//    cmatrix *green_herm = new cmatrix(size, size);
+//    *green_herm = herm(*green);
 
     matrix<num> *tpq = new matrix<num>(N_leads, N_leads);
     set_zero(tpq);
@@ -367,7 +395,7 @@ matrix<num>* greenji(sparse_cm* Hnn) {
 //        axpy_prod(*gamm_i, *green,      *g_ret, true);
 //        axpy_prod(*gamm_i, *green_herm, *g_adv, true);
         sparse_product(*gamm_i, *green,      *g_ret);
-        sparse_product(*gamm_i, *green_herm, *g_adv);
+        sparse_herm_product(*gamm_i, *green, *g_adv);
 //        cout << count_nonzero(*g_adv) << "\n";
 //        cout << count_nonzero(*gamm_i) << "\n";
         gamma_g_adv[i] = g_adv;
@@ -376,7 +404,6 @@ matrix<num>* greenji(sparse_cm* Hnn) {
     log_tick("products");
     delete gamm_i;      gamm_i      = NULL;
     delete green;       green       = NULL;
-    delete green_herm;  green_herm  = NULL;
 
     delete[] sigma_r;
     sigma_r = NULL;
