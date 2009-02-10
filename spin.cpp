@@ -362,12 +362,11 @@ matrix<num>* greenji(sparse_cm* Hnn) {
     log_tick("green_inv");
     InvertMatrix(*green_inv, *green);
 //    cout << "Green: " << *green << endl;
+    cout << count_nonzero(*green) << endl;
     log_tick("matrix inversion");
     delete green_inv;
     green_inv = NULL;
 
-//    cmatrix *green_herm = new cmatrix(size, size);
-//    *green_herm = herm(*green);
 
     matrix<num> *tpq = new matrix<num>(N_leads, N_leads);
     set_zero(tpq);
@@ -385,18 +384,18 @@ matrix<num>* greenji(sparse_cm* Hnn) {
     // \Gamma_p * G^R and \Gamma_q * G^A
     sparse_cm * gamm_i = new sparse_cm(size, size);
     for (int i = 0; i < N_leads; i++) {
+        cout << "allocating memory for (g_adv|g_ret)[" << i << "]...\n";
         cmatrix *g_adv = new cmatrix(size, size);
         cmatrix *g_ret = new cmatrix(size, size);
+        cout << "... done\n";
         assert(V * V == 1);
         noalias(*gamm_i) = -2 * imag(*sigma_r[i]);
         delete sigma_r[i];
         sigma_r[i] = NULL;
-        // axpy_prod writes its result into the third argument
-//        axpy_prod(*gamm_i, *green,      *g_ret, true);
-//        axpy_prod(*gamm_i, *green_herm, *g_adv, true);
         sparse_product(*gamm_i, *green,      *g_ret);
         sparse_herm_product(*gamm_i, *green, *g_adv);
-//        cout << count_nonzero(*g_adv) << "\n";
+//        cout << count_nonzero(*g_adv) << "\t";
+//        cout << g_adv->size1() * g_adv->size2() << endl;
 //        cout << count_nonzero(*gamm_i) << "\n";
         gamma_g_adv[i] = g_adv;
         gamma_g_ret[i] = g_ret;
