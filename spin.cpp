@@ -6,11 +6,15 @@
 #include <boost/numeric/ublas/io.hpp>
 #include <boost/numeric/ublas/operation_blocked.hpp>
 #include <stdlib.h>
-#include <time.h>
 #include "invert-matrix.hpp"
 #include "sparse_io.hpp"
 #include <getopt.h>
 #include <assert.h>
+#include <time.h>
+// for getpid();
+#include <sys/types.h>
+#include <unistd.h>
+
 
 #define IDX(x, y) ((x) + Nx * (y))
 
@@ -99,7 +103,7 @@ idx_t count_nonzero(sparse_cm &m) {
         sparse_cm::const_iterator2 y = x.begin();
         sparse_cm::const_iterator2 y_end = x.end();
         for (; y != y_end; y++) {
-            if ( *y != 0.0) 
+            if ( (*y) != (num) 0.0) 
                 i++;
         }
     }
@@ -283,10 +287,11 @@ sparse_cm** self_energy(void) {
         }
 
         cnum unit = cnum(1.0, 0.0);
-        cnum tmpp = exp(cnum(0, 1) * (2.0 * pi * ((num) ((r+1) * Nx )
-                        / (num) (Nx + 1))));
-        cnum tmpm = exp(cnum(0, -1) * (2.0 * pi * ((num) (r+1)
-                        / (num) (Nx + 1))));
+        num  f    = (num) (Nx + 1);
+        cnum tmpp = exp(cnum(0, 1) * (num) (2.0 * pi 
+                    * (((num) ((r+1) * Nx )) / f)));
+        cnum tmpm = exp(cnum(0, -1) *(num)  (2.0 * pi 
+                    * ((num) (r+1) / f)));
 
         // "AnorN1(mm)" in nano0903c.f
         num y = 1.0 / sqrt(0.5 * Nx +
@@ -469,10 +474,9 @@ int main (int argc, char** argv) {
         }
     }
 
-    num flux = flux_from_field(Bz);
+    cout << "PID:     " << getpid() << endl;
+    cout << "Size:    " << Nx << "x" << Ny << endl;
     cout << "Bz:      " << Bz << endl;
-    cout << "flux:    " << flux << endl;
-    cout << "bfactor: " << b_factor(flux, 1) << endl;
     sparse_cm *Hnn = hamiltonian(alpha, Bz);
 #ifndef NDEBUG
     {
