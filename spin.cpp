@@ -108,10 +108,10 @@ idx_t count_nonzero(sparse_cm &m) {
 }
 
 // sparse_product(a, b, c) computes the matrix product
-// a * b where a is a sparse matrix and c is a full one,
+// a * b where a is a sparse matrix and b is a full one,
 // and assumes that c has a different storage location than
 // a and b
-void sparse_product(const sparse_cm &m1, const cmatrix &m2, cmatrix &r) {
+void sparse_product(const sparse_cm &m1, const cmatrix &m2, sparse_cm &r) {
     sparse_cm::const_iterator1 x = m1.begin1();
     sparse_cm::const_iterator1 x_end = m1.end1();
     r.clear();
@@ -130,12 +130,12 @@ void sparse_product(const sparse_cm &m1, const cmatrix &m2, cmatrix &r) {
 }
 
 // sparse_herm_product(a, b, c) computes the matrix product
-// a * herm(b) where a is a sparse matrix and c is a full one,
+// a * herm(b) where a is a sparse matrix and b is a full one,
 // (herm(b) is the hermitian conjugate, ie complex conjugation
 // and transposition).
 // It assumes that c has a different storage location than
 // a and b
-void sparse_herm_product(const sparse_cm &m1, const cmatrix &m2, cmatrix &r) {
+void sparse_herm_product(const sparse_cm &m1, const cmatrix &m2, sparse_cm &r) {
     sparse_cm::const_iterator1 x = m1.begin1();
     sparse_cm::const_iterator1 x_end = m1.end1();
     r.clear();
@@ -362,7 +362,8 @@ matrix<num>* greenji(sparse_cm* Hnn) {
     log_tick("green_inv");
     InvertMatrix(*green_inv, *green);
 //    cout << "Green: " << *green << endl;
-    cout << count_nonzero(*green) << endl;
+//    cout << green->size1() * green->size2() << "\t";
+//    cout << count_nonzero(*green) << endl;
     log_tick("matrix inversion");
     delete green_inv;
     green_inv = NULL;
@@ -370,8 +371,8 @@ matrix<num>* greenji(sparse_cm* Hnn) {
 
     matrix<num> *tpq = new matrix<num>(N_leads, N_leads);
     set_zero(tpq);
-    cmatrix **gamma_g_adv = new cmatrix*[N_leads];
-    cmatrix **gamma_g_ret = new cmatrix*[N_leads];
+    sparse_cm **gamma_g_adv = new sparse_cm*[N_leads];
+    sparse_cm **gamma_g_ret = new sparse_cm*[N_leads];
 
     // T_{p, q} = Trace( \Gamma_p G^R \Gamma_q G^A )
     // where G^A = (G^R)^\dagger
@@ -384,19 +385,14 @@ matrix<num>* greenji(sparse_cm* Hnn) {
     // \Gamma_p * G^R and \Gamma_q * G^A
     sparse_cm * gamm_i = new sparse_cm(size, size);
     for (int i = 0; i < N_leads; i++) {
-        cout << "allocating memory for (g_adv|g_ret)[" << i << "]...\n";
-        cmatrix *g_adv = new cmatrix(size, size);
-        cmatrix *g_ret = new cmatrix(size, size);
-        cout << "... done\n";
+        sparse_cm *g_adv = new sparse_cm(size, size);
+        sparse_cm *g_ret = new sparse_cm(size, size);
         assert(V * V == 1);
         noalias(*gamm_i) = -2 * imag(*sigma_r[i]);
         delete sigma_r[i];
         sigma_r[i] = NULL;
-        sparse_product(*gamm_i, *green,      *g_ret);
+        sparse_product     (*gamm_i, *green, *g_ret);
         sparse_herm_product(*gamm_i, *green, *g_adv);
-//        cout << count_nonzero(*g_adv) << "\t";
-//        cout << g_adv->size1() * g_adv->size2() << endl;
-//        cout << count_nonzero(*gamm_i) << "\n";
         gamma_g_adv[i] = g_adv;
         gamma_g_ret[i] = g_ret;
     }
@@ -412,8 +408,9 @@ matrix<num>* greenji(sparse_cm* Hnn) {
         for (int j = 0; j < N_leads; j++){
             for (int n = 0; n < size; n++){
                 for (int m = 0; m < size; m++){
-                    (*tpq)(i, j) += real((*gamma_g_ret[i])(n, m)
-                                    * (*gamma_g_adv[j])(m, n));
+                    cnum x = (*(gamma_g_ret[i]))(n, m);
+                    cnum y = (*gamma_g_adv[j])(m, n);
+                    (*tpq)(i, j) += real(x * y);
                 }
             }
         }
@@ -422,8 +419,9 @@ matrix<num>* greenji(sparse_cm* Hnn) {
 
     for (int i = 0; i < N_leads; i++){
         for (int n = 0; n < size; n++){
-            (*tpq)(i, i) += real(cnum(0, 1) * (*(gamma_g_adv[i]))(n, n)
-                          - cnum(0, 1) * (*(gamma_g_ret[i]))(n, n));
+            cnum x = (*gamma_g_ret[i])(n, n);
+            cnum y = (*gamma_g_adv[i])(n, n);
+            (*tpq)(i, i) += real(cnum(0, 1) * y - cnum(0, 1) * x);
 
         }
         delete gamma_g_adv[i];
