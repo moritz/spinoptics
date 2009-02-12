@@ -14,18 +14,23 @@
 // for getpid();
 #include <sys/types.h>
 #include <unistd.h>
+// Eigen libs
+#include <Eigen/Core>
+#include <Eigen/Sparse>
 
 
 #define IDX(x, y) ((x) + Nx * (y))
 
 using namespace boost::numeric::ublas;
 using namespace std;
+USING_PART_OF_NAMESPACE_EIGEN
 
 typedef double num;
 typedef complex<num> cnum;
 typedef matrix<cnum> cmatrix;
 typedef compressed_matrix<cnum, row_major> sparse_cm;
 typedef unsigned int idx_t;
+//typedef DynamicSparseMatrix<cnum> cem;
 
 int Nx               = 10;
 int Ny               = Nx;
@@ -358,20 +363,39 @@ sparse_cm** self_energy(void) {
 matrix<num>* greenji(sparse_cm* Hnn) {
     sparse_cm **sigma_r   = self_energy();
 
-    cmatrix *green_inv  = new cmatrix(size, size);
-    (*green_inv) = *Hnn;
+//    cmatrix *green_inv  = new cmatrix(size, size);
     for (int k = 0; k < N_leads; k++){
-        noalias(*green_inv) -= *(sigma_r[k]);
+        noalias(*Hnn) -= *(sigma_r[k]);
     }
-    cmatrix *green = new cmatrix(size, size);
+    MatrixXcd I = MatrixXcd::Identity(size, size), e_green(size, size);
+    Eigen::SparseMatrix< cnum > e_green_inv(size, size);
+
+    {
+        Eigen::RandomSetter<Eigen::SparseMatrix< cnum > > setter(e_green_inv);
+        sparse_cm::const_iterator1 x = Hnn->begin1();
+        sparse_cm::const_iterator1 x_end = Hnn->end1();
+        for (; x != x_end; ++x) {
+            sparse_cm::const_iterator2 y = x.begin();
+            sparse_cm::const_iterator2 y_end = x.end();
+            for (; y != y_end; y++) {
+                setter(y.index1(), y.index2()) = *y;
+            }
+        }
+    }
+    Eigen::SparseLU<Eigen::SparseMatrix<cnum>,Eigen::SuperLU> slu(e_green_inv);
     log_tick("green_inv");
-    InvertMatrix(*green_inv, *green);
+    slu.solve(I, &e_green);
+
+    cmatrix *green = new cmatrix(size, size);
+    for (int x = 0; x < size; x++){
+        for (int y = 0; y < size; y++) {
+            (*green)(x, y) = e_green(x, y);
+        }
+    }
 //    cout << "Green: " << *green << endl;
 //    cout << green->size1() * green->size2() << "\t";
 //    cout << count_nonzero(*green) << endl;
     log_tick("matrix inversion");
-    delete green_inv;
-    green_inv = NULL;
 
 
     matrix<num> *tpq = new matrix<num>(N_leads, N_leads);
@@ -379,7 +403,7 @@ matrix<num>* greenji(sparse_cm* Hnn) {
     sparse_cm **gamma_g_adv = new sparse_cm*[N_leads];
     sparse_cm **gamma_g_ret = new sparse_cm*[N_leads];
 
-    // T_{p, q} = Trace( \Gamma_p G^R \Gamma_q G^A )
+    // T_{p, q} = Trace( \Gamma_p * G^R * \Gamma_q * G^A )
     // where G^A = (G^R)^\dagger
     //
     //
