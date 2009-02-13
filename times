@@ -21,7 +21,23 @@ size: 35x35, flags: -g -O3		47m52.492s
 size: 40x40, flags: -g -O3		156m18.156s
 size: 50x50, flags: -g -O3		706m7.276s
 
+# double, with sparse_product(), -O3
+10x10	0m0.220s
+15x15	0m2.923s
+20x20	0m18.281s
+25x25	1m7.723s
+30x30	3m45.815s
+40x40	39m9.469s
+60x60   684m15.563s for the matrix inversion, then 
+    terminate called after throwing an instance of 'std::bad_alloc'
+      what():  std::bad_alloc
+    Aborted
 
+# double, with eigen2 solvers
+30x30	0m33.801s
+40x40	2m50.600s
+50x50	10m23.373s
+60x60	30m35.666s
 
 nano execution times
 
