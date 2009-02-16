@@ -15,6 +15,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 // Eigen libs
+
 #include <Eigen/Core>
 #include <Eigen/Sparse>
 
@@ -30,7 +31,6 @@ typedef complex<num> cnum;
 typedef matrix<cnum> cmatrix;
 typedef compressed_matrix<cnum, row_major> sparse_cm;
 typedef unsigned int idx_t;
-//typedef DynamicSparseMatrix<cnum> cem;
 
 int Nx               = 10;
 int Ny               = Nx;
@@ -80,10 +80,10 @@ cnum b_factor(const num flux, const int n) {
 }
 
 template <class T>
-void set_zero(matrix<T>* m) {
-    for (unsigned int x = 0; x < m->size1(); x++){
-        for (unsigned int y = 0; y < m->size2(); y++){
-            (*m)(x, y) = 0.0;
+void set_zero(matrix<T> &m) {
+    for (unsigned int x = 0; x < m.size1(); x++){
+        for (unsigned int y = 0; y < m.size2(); y++){
+            m(x, y) = 0.0;
         }
     }
 }
@@ -114,6 +114,20 @@ idx_t count_nonzero(sparse_cm &m) {
     }
 
     return i;
+}
+
+void sparse_inverse(Eigen::SparseMatrix< cnum > &m, cmatrix &inv) {
+    Eigen::SparseLU<Eigen::SparseMatrix< cnum >,Eigen::SuperLU> slu(m);
+    Eigen::VectorXcd base(size), invCol(size);
+    for (int i=0; i<size; ++i) {
+        base = Eigen::VectorXcd::Unit(size, i);
+        slu.solve(base, &invCol);
+        for (int j=0; j<size; ++j) {
+            inv(j, i) = invCol[j];
+//            (*inv)(j,i) = invCol[j];
+        }
+    }
+//    return inv;
 }
 
 // sparse_product(a, b, c) computes the matrix product
@@ -275,7 +289,7 @@ sparse_cm* hamiltonian(const num rashb, const num B) {
 sparse_cm** self_energy(void) {
     // Glp1lp1n = G_{l+1, l+1}n
     cmatrix Glp1lp1n = cmatrix(Nx, Nx);
-    set_zero(&Glp1lp1n);
+    set_zero(Glp1lp1n);
     for (int r = 0; r < Nx; r++) {
         num x = (e_tot - mods(r, Nx))
             / (2.0 * V) + 1.0;
@@ -363,7 +377,6 @@ sparse_cm** self_energy(void) {
 matrix<num>* greenji(sparse_cm* Hnn) {
     sparse_cm **sigma_r   = self_energy();
 
-//    cmatrix *green_inv  = new cmatrix(size, size);
     for (int k = 0; k < N_leads; k++){
         noalias(*Hnn) -= *(sigma_r[k]);
     }
@@ -382,16 +395,18 @@ matrix<num>* greenji(sparse_cm* Hnn) {
             }
         }
     }
-    Eigen::SparseLU<Eigen::SparseMatrix<cnum>,Eigen::SuperLU> slu(e_green_inv);
+//    Eigen::SparseLU<Eigen::SparseMatrix<cnum>,Eigen::SuperLU> slu(e_green_inv);
     log_tick("green_inv");
-    slu.solve(I, &e_green);
-
     cmatrix *green = new cmatrix(size, size);
+    sparse_inverse(e_green_inv, *green);
+/*    slu.solve(I, &e_green);
+
     for (int x = 0; x < size; x++){
         for (int y = 0; y < size; y++) {
             (*green)(x, y) = e_green(x, y);
         }
     }
+    */
 //    cout << "Green: " << *green << endl;
 //    cout << green->size1() * green->size2() << "\t";
 //    cout << count_nonzero(*green) << endl;
@@ -399,7 +414,7 @@ matrix<num>* greenji(sparse_cm* Hnn) {
 
 
     matrix<num> *tpq = new matrix<num>(N_leads, N_leads);
-    set_zero(tpq);
+    set_zero(*tpq);
     sparse_cm **gamma_g_adv = new sparse_cm*[N_leads];
     sparse_cm **gamma_g_ret = new sparse_cm*[N_leads];
 
