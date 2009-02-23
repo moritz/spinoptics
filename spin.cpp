@@ -51,6 +51,8 @@ const num bohr_magneton
 const num width_lead = 30.0;             // [nm]
 const num g_factor   = 20.0;
 
+num global_gauge     = 1.0;
+
 // XXX is the +1 correct?
 const num a_lead     = width_lead / (num) (Nx + 1);
 const int size       = Nx * Ny * 2;      // `Nfin'
@@ -77,6 +79,26 @@ num flux_from_field(const num B) {
 
 cnum b_factor(const num flux, const int n) {
     return exp(cnum(0.0, -1) * flux * (num) n);
+}
+
+void correct_phase(sparse_cm &m, num flux) {
+    sparse_cm::iterator1 x = m.begin1();
+    sparse_cm::iterator1 x_end = m.end1();
+    for (; x != x_end; ++x) {
+        sparse_cm::iterator2 y = x.begin();
+        sparse_cm::iterator2 y_end = x.end();
+        for (; y != y_end; y++) {
+            int x1 = y.index1() % Nx;
+            int y1 = (y.index1()/Nx) % Ny;
+
+            int x2 = y.index2() % Nx;
+            int y2 = (y.index2()/Nx) % Ny;
+
+            cnum phi = b_factor(x2 * y2 - x1 * y1, flux);
+            (*y) *= phi;
+        }
+    }
+
 }
 
 template <class T>
@@ -174,7 +196,6 @@ void sparse_herm_product(const sparse_cm &m1, const cmatrix &m2, sparse_cm &r) {
             }
         }
     }
-
 }
 
 inline num rashba(const num alpha) {
@@ -286,10 +307,10 @@ sparse_cm* hamiltonian(const num rashb, const num B) {
     return Hnn;
 };
 
-sparse_cm** self_energy(void) {
+sparse_cm** self_energy(num flux, num gauge) {
     // Glp1lp1n = G_{l+1, l+1}n
     cmatrix Glp1lp1n = cmatrix(Nx, Nx);
-    set_zero(Glp1lp1n);
+    Glp1lp1n.clear();
     for (int r = 0; r < Nx; r++) {
         num x = (e_tot - mods(r, Nx))
             / (2.0 * V) + 1.0;
@@ -370,12 +391,31 @@ sparse_cm** self_energy(void) {
     // 6, not 5
     sr[6] = G_bottom_up;
     sr[7] = G_bottom_down;
+
+    for (int i = 0; i < N_leads; i++) {
+        switch(i) {
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+                correct_phase(*sr[i], -(1.0 - gauge) * flux);
+                break;
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+                cout << "gauge scaling factor: " << flux << endl;
+                correct_phase(*sr[i], gauge * flux);
+                break;
+        }
+    }
+
     log_tick("self-energy");
     return sr;
 }
 
-matrix<num>* greenji(sparse_cm* Hnn) {
-    sparse_cm **sigma_r   = self_energy();
+matrix<num>* greenji(sparse_cm* Hnn, num flux, num gauge) {
+    sparse_cm **sigma_r   = self_energy(flux, gauge);
 
     for (int k = 0; k < N_leads; k++){
         noalias(*Hnn) -= *(sigma_r[k]);
@@ -395,18 +435,9 @@ matrix<num>* greenji(sparse_cm* Hnn) {
             }
         }
     }
-//    Eigen::SparseLU<Eigen::SparseMatrix<cnum>,Eigen::SuperLU> slu(e_green_inv);
     log_tick("green_inv");
     cmatrix *green = new cmatrix(size, size);
     sparse_inverse(e_green_inv, *green);
-/*    slu.solve(I, &e_green);
-
-    for (int x = 0; x < size; x++){
-        for (int y = 0; y < size; y++) {
-            (*green)(x, y) = e_green(x, y);
-        }
-    }
-    */
 //    cout << "Green: " << *green << endl;
 //    cout << green->size1() * green->size2() << "\t";
 //    cout << count_nonzero(*green) << endl;
@@ -414,7 +445,7 @@ matrix<num>* greenji(sparse_cm* Hnn) {
 
 
     matrix<num> *tpq = new matrix<num>(N_leads, N_leads);
-    set_zero(*tpq);
+    tpq->clear();
     sparse_cm **gamma_g_adv = new sparse_cm*[N_leads];
     sparse_cm **gamma_g_ret = new sparse_cm*[N_leads];
 
@@ -540,7 +571,8 @@ int main (int argc, char** argv) {
 
 //    cout << "Hamiltonian: " << *Hnn << "\n";
 //    cout << io::sparse(*Hnn) << endl;
-    matrix<num> *tpq = greenji(Hnn);
+    num flux = flux_from_field(Bz);
+    matrix<num> *tpq = greenji(Hnn, flux, global_gauge);
     delete Hnn;
     cout << "final tpq" << *tpq << endl;
     boost::numeric::ublas::vector<num> r;
