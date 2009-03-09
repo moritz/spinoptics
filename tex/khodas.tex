@@ -1,0 +1,136 @@
+\NeedsTeXFormat{LaTeX2e}
+\documentclass[11pt]{article}
+%Absaetze nicht einruecken:
+\usepackage{parskip}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{ae}
+\usepackage[intlimits, sumlimits, namelimits]{amsmath}
+\usepackage{bbm}
+%Neue Macros fuer Mathe:
+%in parentheses - gleich mit richtiger Groesse
+\newcommand{\inp}[1]{\ensuremath{\left(#1\right)}}
+\newcommand{\sqr}{\ensuremath{^{2}}}
+\newcommand{\cube}{\ensuremath{^{3}}}
+%Mengensymbole mit doppelten senkrechten Strichen:
+\newcommand{\set}[1]{\ensuremath{\mathbbm{#1}}}
+%definiert eine Norm, also zwei senkrechte Striche auf jeder Seite:
+\newcommand{\norm}[1]{\ensuremath{\left|#1\right|}}
+\newcommand{\vect}[2]{\ensuremath{\inp{\hspace{-.8ex}\begin{array}{c}#1\\#2\end{array}\hspace{-.4ex}}}}
+%\newcommand{\vec3}[3]{\ensuremath{\inp{\hspace{-.8ex}\begin{array}{r}#1\\#2\\#3\end{array}\hspace{-.4ex}}}}
+\newcommand{\entspr}{\ensuremath{\,\,\hat{=}\,\,}}%
+\newcommand{\dx}[1][x]{\ensuremath{\textnormal d #1}}
+
+% For stupid thinkos:
+\newcommand{\cross}{\times}
+
+% Tabellen:
+\usepackage{array}
+\setlength{\extrarowheight}{.2mm}
+%Links im Text:
+\usepackage{hyperref}
+\usepackage{graphics,graphicx,fancyvrb}
+%Raender einstellen
+%\usepackage[a4paper, margin=15mm, top=30mm]{geometry}
+\usepackage[a4paper]{geometry}
+%Kopf - und Fusszeilen
+\usepackage{lastpage}
+\usepackage{fancyhdr}
+	\lhead{Moritz Lenz}
+	\chead{\bfseries{-- \thepage\ --}}
+	\rhead{\thetitle}
+	\lfoot{}
+	\rfoot{}
+	\cfoot{}
+	\pagestyle{fancy}
+\pagestyle{empty}
+
+\sffamily
+
+%Kopfzeile
+
+\author{Moritz Lenz}
+\title{Spintronics}
+\begin{document}
+\maketitle
+
+This is an attempt to reproduce what Khodas wrote in {\em Spin 
+Polarization of Nonmagnetic Heterostructures: The Basics of Spin
+Optics}, PRL 92.086602.
+
+The setup consists of a 2D electron gas in the $x-z$ plane, where the
+strength of the spin orbit interaction is a step function in $x$:
+$\alpha(x) = \alpha \Theta(x)$. The region $x < 0$ is called the
+"normal region", abbreviated with N, and the region with $x > 0$ is
+called the "spin orbit" region, abbreviated as SO.
+
+The Hamiltonian looks like this:
+
+\begin{align}
+    H_r &= \frac{p^2}{2m} + (-\vec y \times \vec \sigma) \cdot
+            \alpha(x) \vec p\\ 
+    p^2 &= p_x^2 + p_z^2
+\end{align}
+
+With the eigenvalues and the velocities
+
+\begin{align}
+    E_{\pm} &= \frac{p^2}{2m} \pm \alpha \\
+    v_{\pm} &= \frac{\partial E_{\pm}}{\partial p} = \frac{p}{m} \pm \alpha
+\end{align}
+
+When a wave travels from the N to the SO region it's energy doesn't
+change. Since its dispersion relation changes, the momentum must also
+change. From here on when we write $p$ we mean the momentum in the N
+region. The momentum in the SO region then follows as
+
+\begin{align*}
+    p_{SO}^{\pm} &= m v_F (\sqrt{1 + \tilde \alpha} \mp \tilde \alpha)\\
+    \tilde\alpha &= \frac{\alpha}{v_F}
+\end{align*}
+
+$p_z$ is conserved at the interface.
+
+Solving the eigenvalue equation leads us to the eigenvectors in the SO
+region:
+
+\begin{align*}
+   \chi_{SO}^{\pm} &= \frac{1}{n_{\pm}} 
+                      \vect{p_{x,SO}^{\pm} \pm p_{SO}^\pm}{p_z} \\
+    n_{\pm}^2      &= (p_{x,SO}^{\pm} \pm p_{SO}^\pm)^2 + p_z^2
+\end{align*}
+
+Note that in the N regime $H$ is a diagonal matrix, and the direction
+of the eigenvectors can be chosen with some freedom. We pick
+$\chi_N^{pm} = \lim_{\alpha \mapsto 0} \chi_{SO}^{\pm}$ to ensure that
+$<\chi_N^+|\chi_{SO}^+> = 1$ holds true.
+
+The overall wave function consists of an incident wave, and reflected
+and transmitted part:
+
+\begin{align}
+    \Psi^+ = e^{i p_z z} * \left\{
+        \begin{array}{ll}
+            e^{i p_x x} \chi_N^+ + e^{- i p_x x} (\chi_N^+ r_{++} +
+                    \chi_N^- r_{-})     & x < 0\\
+            e^{i p_x^+ x} \chi_{SO}^+ t_{++} + e^{-i p_x^- x}
+            \chi_{SO}^- t_{-+}          & x > 0
+        \end{array} \right.
+\end{align}
+
+The coefficient $r_{-+}$ is the amplitude with which the incident wave
+of $+$ chirality is reflected into $-$ chirality etc.
+
+To obtain the values for these coefficients one has to solve the
+boundary conditions at the interface
+
+\begin{align}
+    \Psi_N(x = -0)              &= \Psi_{SO}(x = +0)\\
+    \frac{p_x}{m} \Psi_N(x = -0)&= \left(\frac{p_x}{m} -\alpha \sigma_z\right)
+                                        \Psi_{SO}(x = +0)
+\end{align}
+
+
+\end{document}
+
+% vim: ts=4 sw=4 expandtab spell spelllang=en_us tw=70
