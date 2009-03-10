@@ -174,6 +174,14 @@ void ublas_to_eigen(const sparse_cm &m, esm &result) {
     return;
 }
 
+void eigen_to_ublas(const esm &m, sparse_cm &result) {
+    for (int k=0; k<m.outerSize(); ++k) {
+        for (esm::InnerIterator it(m,k); it; ++it) {
+            result(it.row(), it.col()) = it.value();
+        }
+    }
+}
+
 // sparse_product(a, b, c) computes the matrix product
 // a * b where a is a sparse matrix and b is a full one,
 // and assumes that c has a different storage location than
@@ -615,6 +623,7 @@ int main (int argc, char** argv) {
         }
     }
     delete tpq;
+    return 0;
 }
 
 // vim: ft=cpp sw=4 ts=4 expandtab
