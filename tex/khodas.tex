@@ -21,6 +21,8 @@
 \newcommand{\entspr}{\ensuremath{\,\,\hat{=}\,\,}}%
 \newcommand{\dx}[1][x]{\ensuremath{\textnormal d #1}}
 
+\newcommand{\ta}{\tilde \alpha}
+
 % For stupid thinkos:
 \newcommand{\cross}{\times}
 
@@ -84,10 +86,11 @@ change. Since its dispersion relation changes, the momentum must also
 change. From here on when we write $p$ we mean the momentum in the N
 region. The momentum in the SO region then follows as
 
-\begin{align*}
-    p_{SO}^{\pm} &= m v_F (\sqrt{1 + \tilde \alpha} \mp \tilde \alpha)\\
+\begin{align}
+    \label{eq:pso}
+    p_{SO}^{\pm} &= m v_F (\sqrt{1 + \tilde \alpha} \mp \tilde \alpha) \\
     \tilde\alpha &= \frac{\alpha}{v_F}
-\end{align*}
+\end{align}
 
 $p_z$ is conserved at the interface.
 
@@ -100,10 +103,15 @@ region:
     n_{\pm}^2      &= (p_{x,SO}^{\pm} \pm p_{SO}^\pm)^2 + p_z^2
 \end{align*}
 
+Where the lower index $x$ means that the value is projected onto the
+$x$ axis. The angle between the $x$ axis and the momentum of the
+incident wave is called $\phi$, so that $p_x = p \cos \phi$.
+
 Note that in the N regime $H$ is a diagonal matrix, and the direction
 of the eigenvectors can be chosen with some freedom. We pick
 $\chi_N^{pm} = \lim_{\alpha \mapsto 0} \chi_{SO}^{\pm}$ to ensure that
 $<\chi_N^+|\chi_{SO}^+> = 1$ holds true.
+
 
 The overall wave function consists of an incident wave, and reflected
 and transmitted part:
@@ -130,6 +138,58 @@ boundary conditions at the interface
                                         \Psi_{SO}(x = +0)
 \end{align}
 
+Multiplying both equations with $\chi_N^+$ and $\chi_N^-$ gives us
+four scalar equations:
+
+\begin{align}
+    1 + r_{++}  &= <\chi_{SO}^+|\chi_N^+> t_{++} + <\chi_{SO}^-|\chi_N^+> t_{-+}\\
+        r_{-+}  &= <\chi_{SO}^+|\chi_N^-> t_{++} + <\chi_{SO}^-|\chi_N^-> t_{-+}\\
+    \cos \phi \  (1 + r_{++})
+                &= \frac{p_{x,SO}}{p} \left(<\chi_{SO}^+|\chi_N^+> t_{++} 
+                        + <\chi_{SO}^-|\chi_N^+> t_{-+} \right) \nonumber \\
+                &  + \ta \left(<\chi_{SO}^+|\sigma_z|\chi_N^+> t_{++} 
+                        + <\chi_{SO}^-|\sigma_z|\chi_N^+> t_{-+} \right) \\
+    \cos \phi \  r_{-+}
+                &= \frac{p_{x,SO}}{p} \left(<\chi_{SO}^+|\chi_N^-> t_{++} 
+                        + <\chi_{SO}^-|\chi_N^-> t_{-+} \right) \nonumber \\
+                &  + \ta \left(<\chi_{SO}^+|\sigma_z|\chi_N^-> t_{++} 
+                        + <\chi_{SO}^-|\sigma_z|\chi_N^-> t_{-+} \right)
+\end{align}
+
+(The scalar products of the spinors are indicated in bracket notation
+for clarity, even though they don't imply in integration over any
+variable).
+
+Using the geometric relations
+
+\begin{align}
+    p^2         &= p_z^2 + p_x^2\\
+    p_{SO}^2    &= p_z^2 + p_{x,SO}^2
+\end{align}
+
+together with eqn. \ref{eq:pso} we have all quantities to calculate
+the scalar products (here expanded to the second order of $\ta$. 
+
+\begin{align}
+    <\chi_{SO}^+|\chi_N^+> &= 1 - \frac{\ta^2}{8} \tan^2 \phi \\
+    <\chi_{SO}^-|\chi_N^-> &= 1 - \frac{\ta^2}{8} \tan^2 \phi\\
+    <\chi_{SO}^+|\chi_N^-> &= \frac{\ta}{2} \tan \phi 
+            + \frac{\ta^2}{4} \frac{\tan \phi}{\cos^2\phi}\\
+    <\chi_{SO}^-|\chi_N^+> &= \frac{\ta}{2} \tan \phi 
+            - \frac{\ta^2}{4} \frac{\tan \phi}{\cos^2\phi}\\
+    <\chi_{SO}^+|\sigma_z|\chi_N^+> &= \cos \phi 
+            - \frac{\ta}{2} \sin \phi \tan \phi
+            - \frac{\ta^2}{16}\frac{(5 + \cos 2\phi)\tan^2 \phi}{\cos^2 \phi}\\
+    <\chi_{SO}^-|\sigma_z|\chi_N^-> &= -\cos \phi 
+            - \frac{\ta}{2} \sin \phi \tan \phi
+            + \frac{\ta^2}{16}\frac{(5 + \cos 2\phi)\tan^2 \phi}{\cos^2 \phi}\\
+    <\chi_{SO}^+|\sigma_z|\chi_N^-> &= - \sin \phi 
+            - \frac{\ta}{2} \sin \phi 
+            - \frac{\ta^2}{16} \frac{(3 + \cos 2\phi)\tan \phi}{\cos \phi}\\
+    <\chi_{SO}^-|\sigma_z|\chi_N^+> &= - \sin \phi 
+            + \frac{\ta}{2} \sin \phi 
+            - \frac{\ta^2}{16} \frac{(3 + \cos 2\phi)\tan \phi}{\cos \phi}
+\end{align}
 
 \end{document}
 
