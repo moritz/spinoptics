@@ -30,6 +30,7 @@ typedef double num;
 typedef complex<num> cnum;
 typedef matrix<cnum> cmatrix;
 typedef compressed_matrix<cnum, row_major> sparse_cm;
+typedef Eigen::SparseMatrix< cnum > esm;
 typedef unsigned int idx_t;
 
 int Nx               = 10;
@@ -82,6 +83,9 @@ cnum b_factor(const num flux, const int n) {
 }
 
 void correct_phase(sparse_cm &m, num flux) {
+    if (flux == num(0))
+        return;
+    cout << "correcting a phase...\n";
     sparse_cm::iterator1 x = m.begin1();
     sparse_cm::iterator1 x_end = m.end1();
     for (; x != x_end; ++x) {
@@ -94,8 +98,12 @@ void correct_phase(sparse_cm &m, num flux) {
             int x2 = y.index2() % Nx;
             int y2 = (y.index2()/Nx) % Ny;
 
-            cnum phi = b_factor(x2 * y2 - x1 * y1, flux);
+//            cout << "product: " << x2 * y2 - x1 * y1 << endl;
+            cnum phi = b_factor(flux, x2 * y2 - x1 * y1);
+//            cout << "phi: " << phi << endl;
+//            cout << "before: " << *y;
             (*y) *= phi;
+//            cout << " after: " << *y << endl;
         }
     }
 
@@ -150,6 +158,20 @@ void sparse_inverse(Eigen::SparseMatrix< cnum > &m, cmatrix &inv) {
         }
     }
 //    return inv;
+}
+
+void ublas_to_eigen(const sparse_cm &m, esm &result) {
+    Eigen::RandomSetter< esm > setter(result);
+    sparse_cm::const_iterator1 x = m.begin1();
+    sparse_cm::const_iterator1 x_end = m.end1();
+    for (; x != x_end; ++x) {
+        sparse_cm::const_iterator2 y = x.begin();
+        sparse_cm::const_iterator2 y_end = x.end();
+        for (; y != y_end; y++) {
+            setter(y.index1(), y.index2()) = *y;
+        }
+    }
+    return;
 }
 
 // sparse_product(a, b, c) computes the matrix product
@@ -221,7 +243,7 @@ sparse_cm* hamiltonian(const num rashb, const num B) {
     num zeeman = 0.5 * g_factor * bohr_magneton * B / e_charge;
 //    num zeeman = 0.0;
     num flux = flux_from_field(B);
-    num gauge = 1.0;
+    num gauge = global_gauge;
     num xflux = gauge * flux;
     num yflux = (1.0 - gauge) * flux;
     cout << "Zeeman term: " << zeeman << endl;
@@ -398,14 +420,14 @@ sparse_cm** self_energy(num flux, num gauge) {
             case 1:
             case 2:
             case 3:
-                correct_phase(*sr[i], -(1.0 - gauge) * flux);
+//                correct_phase(*sr[i], -(1.0 - gauge) * flux);
                 break;
             case 4:
             case 5:
             case 6:
             case 7:
                 cout << "gauge scaling factor: " << flux << endl;
-                correct_phase(*sr[i], gauge * flux);
+//                correct_phase(*sr[i], gauge * flux);
                 break;
         }
     }
@@ -421,20 +443,10 @@ matrix<num>* greenji(sparse_cm* Hnn, num flux, num gauge) {
         noalias(*Hnn) -= *(sigma_r[k]);
     }
     MatrixXcd I = MatrixXcd::Identity(size, size), e_green(size, size);
-    Eigen::SparseMatrix< cnum > e_green_inv(size, size);
+    esm e_green_inv(size, size);
 
-    {
-        Eigen::RandomSetter<Eigen::SparseMatrix< cnum > > setter(e_green_inv);
-        sparse_cm::const_iterator1 x = Hnn->begin1();
-        sparse_cm::const_iterator1 x_end = Hnn->end1();
-        for (; x != x_end; ++x) {
-            sparse_cm::const_iterator2 y = x.begin();
-            sparse_cm::const_iterator2 y_end = x.end();
-            for (; y != y_end; y++) {
-                setter(y.index1(), y.index2()) = *y;
-            }
-        }
-    }
+    ublas_to_eigen(*Hnn, e_green_inv);
+
     log_tick("green_inv");
     cmatrix *green = new cmatrix(size, size);
     sparse_inverse(e_green_inv, *green);
@@ -590,13 +602,16 @@ int main (int argc, char** argv) {
         }
         if (is_first) {
             ref = r_sum;
+            cout << "sume rule reference (row 0): " << ref << endl;
             is_first = false;
         }
         if (abs(r_sum - ref) > epsilon) {
-            cout << "ERROR: sum rule violated for row " << i << endl;
+            cout << "ERROR: sum rule violated for row " << i 
+                 << "  (" << r_sum << ")" << endl;
         }
         if (abs(c_sum - ref) > epsilon) {
-            cout << "ERROR: sum rule violated for column " << i << endl;
+            cout << "ERROR: sum rule violated for column " << i
+                 << "  (" << c_sum << ")" << endl;
         }
     }
     delete tpq;
