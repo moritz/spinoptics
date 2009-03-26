@@ -6,7 +6,6 @@
 #include <boost/numeric/ublas/io.hpp>
 #include <boost/numeric/ublas/operation_blocked.hpp>
 #include <stdlib.h>
-#include "invert-matrix.hpp"
 #include "sparse_io.hpp"
 #include <getopt.h>
 #include <assert.h>
@@ -88,21 +87,26 @@ void correct_phase(sparse_cm &m, num flux) {
     cout << "correcting a phase...\n";
     sparse_cm::iterator1 x = m.begin1();
     sparse_cm::iterator1 x_end = m.end1();
+    const int s = Nx * Ny;
     for (; x != x_end; ++x) {
         sparse_cm::iterator2 y = x.begin();
         sparse_cm::iterator2 y_end = x.end();
         for (; y != y_end; y++) {
             int x1 = y.index1() % Nx;
             int y1 = (y.index1()/Nx) % Ny;
+            assert(y.index1() % s == IDX(x1, y1));
 
             int x2 = y.index2() % Nx;
             int y2 = (y.index2()/Nx) % Ny;
+            assert(y.index2() % s == IDX(x2, y2));
 
 //            cout << "product: " << x2 * y2 - x1 * y1 << endl;
             cnum phi = b_factor(flux, x2 * y2 - x1 * y1);
 //            cout << "phi: " << phi << endl;
+//            cout << "phi: " << phi << endl;
 //            cout << "before: " << *y;
-            (*y) *= phi;
+//            (*y) *= phi;
+            (*y) *=cnum(1, 0);
 //            cout << " after: " << *y << endl;
         }
     }
@@ -154,10 +158,33 @@ void sparse_inverse(Eigen::SparseMatrix< cnum > &m, cmatrix &inv) {
         slu.solve(base, &invCol);
         for (int j=0; j<size; ++j) {
             inv(j, i) = invCol[j];
-//            (*inv)(j,i) = invCol[j];
         }
     }
-//    return inv;
+}
+
+void pseudo_sparse_solve(Eigen::SparseLU<esm,Eigen::SuperLU> &slu,
+                         const esm &rhs, esm &result) {
+    cout << "in pseudo_sparse_solve\n";
+    assert( rhs.cols() == rhs.rows() );
+    int n = rhs.cols();
+    MatrixXcd full_rhs(n, n);
+    MatrixXcd full_solution(n, n);
+    for (int k=0; k<rhs.outerSize(); ++k) {
+        for (esm::InnerIterator it(rhs,k); it; ++it) {
+            full_rhs(it.row(), it.col()) = it.value();
+        }
+    }
+    Eigen::VectorXcd base(size), *invCol = new VectorXcd (size);
+    Eigen::RandomSetter< esm > setter(result);
+    for (int k = 0; k < n; k++){
+        base = full_rhs.row(k);
+        slu.solve(base, invCol);
+        for (int j = 0; j < n; j++) {
+            if (abs((*invCol)[j]) > 1e-18) {
+                setter(j, k) = (*invCol)[j];
+            }
+        }
+    }
 }
 
 void ublas_to_eigen(const sparse_cm &m, esm &result) {
@@ -450,14 +477,15 @@ matrix<num>* greenji(sparse_cm* Hnn, num flux, num gauge) {
     for (int k = 0; k < N_leads; k++){
         noalias(*Hnn) -= *(sigma_r[k]);
     }
-    MatrixXcd I = MatrixXcd::Identity(size, size), e_green(size, size);
     esm e_green_inv(size, size);
 
     ublas_to_eigen(*Hnn, e_green_inv);
-
     log_tick("green_inv");
-    cmatrix *green = new cmatrix(size, size);
-    sparse_inverse(e_green_inv, *green);
+    Eigen::SparseLU<esm,Eigen::SuperLU> slu(e_green_inv);
+    log_tick("lu decomposition");
+
+//    cmatrix *green = new cmatrix(size, size);
+//    sparse_inverse(e_green_inv, *green);
 //    cout << "Green: " << *green << endl;
 //    cout << green->size1() * green->size2() << "\t";
 //    cout << count_nonzero(*green) << endl;
@@ -480,26 +508,56 @@ matrix<num>* greenji(sparse_cm* Hnn, num flux, num gauge) {
     // \Gamma_p * G^R and \Gamma_q * G^A
     sparse_cm * gamm_i = new sparse_cm(size, size);
     for (int i = 0; i < N_leads; i++) {
+        cout << "working on lead " << i << endl;
         sparse_cm *g_adv = new sparse_cm(size, size);
         sparse_cm *g_ret = new sparse_cm(size, size);
         assert(V * V == 1);
         noalias(*gamm_i) = -2 * imag(*sigma_r[i]);
         delete sigma_r[i];
         sigma_r[i] = NULL;
-        sparse_product     (*gamm_i, *green, *g_ret);
-        sparse_herm_product(*gamm_i, *green, *g_adv);
+
+        esm m1(size, size);
+        esm result1(size, size);
+
+        ublas_to_eigen(*gamm_i, m1);
+//        cout << m1 << endl;
+//        cout << "still alive\n";
+        pseudo_sparse_solve(slu, m1, result1);
+        esm r(size, size); 
+        sparse_cm t(size, size);
+        eigen_to_ublas(result1, t);
+        ublas_to_eigen(t, r);
+        r -= result1;
+//        r = e_green_inv * result1 - m1;
+//        cout << r << endl;
+
+//        result1 = result1.adjoint();
+        eigen_to_ublas(result1, *g_ret);
+
+        esm result2(size, size);
+
+        esm m2(size, size);
+        m2 = m1.adjoint();
+        pseudo_sparse_solve(slu, m2, result2);
+//        result2 = result2.adjoint();
+        eigen_to_ublas(result2, *g_adv);
+
         gamma_g_adv[i] = g_adv;
         gamma_g_ret[i] = g_ret;
     }
     log_tick("products");
     delete gamm_i;      gamm_i      = NULL;
-    delete green;       green       = NULL;
+
+    cout << "gamma_g_adv[0]: " << herm(*gamma_g_adv[0]) << endl;
+    cout << "gamma_g_ret[0]: " << herm(*gamma_g_ret[0]) << endl;
 
     delete[] sigma_r;
     sigma_r = NULL;
 
+    cout << "trace...\n";
     // Now calculate the trace
     for (int i = 0; i < N_leads; i++){
+//        cout << *gamma_g_adv[i] << "\n";
         for (int j = 0; j < N_leads; j++){
             for (int n = 0; n < size; n++){
                 for (int m = 0; m < size; m++){
@@ -511,6 +569,7 @@ matrix<num>* greenji(sparse_cm* Hnn, num flux, num gauge) {
         }
     }
     log_tick("trace");
+
 
     for (int i = 0; i < N_leads; i++){
         for (int n = 0; n < size; n++){
