@@ -392,26 +392,34 @@ sparse_cm** self_energy(num flux, num gauge) {
     for (int i = 0; i < N_leads; i++)
         sr[i] = new sparse_cm(size, size, lead_sites * lead_sites);
 
-    for (int i = 0; i < Nx; i++){
-        for (int j = 0; j < Ny; j++){
+    for (int i = 0; i < lead_sites; i++){
+        for (int j = 0; j < lead_sites; j++){
             cnum g = Glp1lp1n(i, j);
             /* left */
-            (*sr[0])(IDX(0, i)       , IDX(0, j)       ) = g;
-            (*sr[2])(IDX(0, i) + s   , IDX(0, j) + s   ) = g;
+            (*sr[0])(IDX(0, i+lead_offset[0]), 
+                     IDX(0, j+lead_offset[0]))          = g;
+            (*sr[2])(IDX(0, i+lead_offset[2]) + s, 
+                     IDX(0, j+lead_offset[2]) + s)      = g;
 
             /* right */
-            (*sr[1])(IDX(Nx-1, i)    , IDX(Nx-1, j)    ) = g;
-            (*sr[3])(IDX(Nx-1, i) + s, IDX(Nx-1, j) + s) = g;
+            (*sr[1])(IDX(Nx-1, i+lead_offset[1]),
+                     IDX(Nx-1, j+lead_offset[1]))       = g;
+            (*sr[3])(IDX(Nx-1, i+lead_offset[3]) + s, 
+                     IDX(Nx-1, j+lead_offset[3]) + s)   = g;
 
             /* top */
-            (*sr[4])(IDX(i, 0)       , IDX(j, 0)       ) = g;
-            /* 5 (sic) */
-            (*sr[5])(IDX(i, 0) + s   , IDX(j, 0) + s   ) = g;
+            (*sr[4])(IDX(i+lead_offset[4], 0), 
+                     IDX(j+lead_offset[4], 0))          = g;
+            /*   5 (sic) */
+            (*sr[5])(IDX(i+lead_offset[5], 0) + s,
+                     IDX(j+lead_offset[5], 0) + s)      = g;
 
             /* bottom */
-            /* 6 (sic) */
-            (*sr[6])(IDX(i, Ny-1)    , IDX(j, Ny-1)    ) = g;
-            (*sr[7])(IDX(i, Ny-1) + s, IDX(j, Ny-1) + s) = g;
+            /*   6 (sic) */
+            (*sr[6])(IDX(i+lead_offset[6], Ny-1), 
+                     IDX(j+lead_offset[6], Ny-1))       = g;
+            (*sr[7])(IDX(i+lead_offset[7], Ny-1) + s, 
+                     IDX(j+lead_offset[7], Ny-1) + s)   = g;
         }
     }
 
