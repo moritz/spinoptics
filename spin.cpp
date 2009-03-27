@@ -387,47 +387,33 @@ sparse_cm** self_energy(num flux, num gauge) {
 
     int s = size / 2;
 
-    sparse_cm *G_left_up     = new sparse_cm(size, size, s);
-    sparse_cm *G_left_down   = new sparse_cm(size, size, s);
-    sparse_cm *G_right_up    = new sparse_cm(size, size, s);
-    sparse_cm *G_right_down  = new sparse_cm(size, size, s);
+    sparse_cm** sr = new sparse_cm*[N_leads];
 
-    sparse_cm *G_top_up      = new sparse_cm(size, size, s);
-    sparse_cm *G_top_down    = new sparse_cm(size, size, s);
-    sparse_cm *G_bottom_up   = new sparse_cm(size, size, s);
-    sparse_cm *G_bottom_down = new sparse_cm(size, size, s);
-
+    for (int i = 0; i < N_leads; i++)
+        sr[i] = new sparse_cm(size, size, lead_sites * lead_sites);
 
     for (int i = 0; i < Nx; i++){
         for (int j = 0; j < Ny; j++){
             cnum g = Glp1lp1n(i, j);
-            (*G_left_up)    (IDX(0, i)       , IDX(0, j)       ) = g;
-            (*G_left_down)  (IDX(0, i) + s   , IDX(0, j) + s   ) = g;
+            /* left */
+            (*sr[0])(IDX(0, i)       , IDX(0, j)       ) = g;
+            (*sr[2])(IDX(0, i) + s   , IDX(0, j) + s   ) = g;
 
-            (*G_right_up)   (IDX(Nx-1, i)    , IDX(Nx-1, j)    ) = g;
-            (*G_right_down) (IDX(Nx-1, i) + s, IDX(Nx-1, j) + s) = g;
+            /* right */
+            (*sr[1])(IDX(Nx-1, i)    , IDX(Nx-1, j)    ) = g;
+            (*sr[3])(IDX(Nx-1, i) + s, IDX(Nx-1, j) + s) = g;
 
-            (*G_top_up)     (IDX(i, 0)       , IDX(j, 0)       ) = g;
-            (*G_top_down)   (IDX(i, 0) + s   , IDX(j, 0) + s   ) = g;
+            /* top */
+            (*sr[4])(IDX(i, 0)       , IDX(j, 0)       ) = g;
+            /* 5 (sic) */
+            (*sr[5])(IDX(i, 0) + s   , IDX(j, 0) + s   ) = g;
 
-            (*G_bottom_up)  (IDX(i, Ny-1)    , IDX(j, Ny-1)    ) = g;
-            (*G_bottom_down)(IDX(i, Ny-1) + s, IDX(j, Ny-1) + s) = g;
+            /* bottom */
+            /* 6 (sic) */
+            (*sr[6])(IDX(i, Ny-1)    , IDX(j, Ny-1)    ) = g;
+            (*sr[7])(IDX(i, Ny-1) + s, IDX(j, Ny-1) + s) = g;
         }
     }
-
-    sparse_cm** sr = new sparse_cm*[N_leads];
-    sr[0] = G_left_up;
-    sr[2] = G_left_down;
-
-    sr[4] = G_top_up;
-    // 5, not 6
-    sr[5] = G_top_down;
-
-    sr[1] = G_right_up;
-    sr[3] = G_right_down;
-    // 6, not 5
-    sr[6] = G_bottom_up;
-    sr[7] = G_bottom_down;
 
     for (int i = 0; i < N_leads; i++) {
         switch(i) {
