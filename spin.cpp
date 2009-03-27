@@ -35,8 +35,13 @@ typedef unsigned int idx_t;
 
 int Nx               = 10;
 int Ny               = Nx;
+
 const int N_leads    = 8;
-int lead_offsets[N_leads];
+
+// width of leads in units of lattice sites
+int lead_sites       = Nx; 
+
+int lead_offset[N_leads];
 
 const num epsilon    = 1e-5;
 
@@ -344,7 +349,7 @@ sparse_cm** self_energy(num flux, num gauge) {
     cmatrix Glp1lp1n = cmatrix(Nx, Nx);
     Glp1lp1n.clear();
     for (int r = 0; r < Nx; r++) {
-        num x = (e_tot - mods(r, Nx))
+        num x = (e_tot - mods(r, lead_sites))
             / (2.0 * V) + 1.0;
         cnum theta;
         if (x > 1.0) {
@@ -524,8 +529,8 @@ matrix<num>* greenji(sparse_cm* Hnn, num flux, num gauge) {
         delete gamma_g_adv[i];
         delete gamma_g_ret[i];
     }
-    for (int i = 0; i < Nx; i++){
-        cnum k = findk(mods(i, Nx));
+    for (int i = 0; i < lead_sites; i++){
+        cnum k = findk(mods(i, lead_sites));
         if (imag(k) == 0.0) {
             for (int j = 0; j < N_leads; j++){
                 (*tpq)(j, j) += 1.0;
@@ -564,6 +569,10 @@ int main (int argc, char** argv) {
                 exit(1);
 
         }
+    }
+
+    for (int i = 0; i < N_leads; i++) {
+        lead_offset[i] = 0;
     }
 
     cout << "PID:     " << getpid() << endl;
