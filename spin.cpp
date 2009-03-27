@@ -36,6 +36,7 @@ typedef unsigned int idx_t;
 int Nx               = 10;
 int Ny               = Nx;
 const int N_leads    = 8;
+int lead_offsets[N_leads];
 
 const num epsilon    = 1e-5;
 
@@ -49,13 +50,14 @@ const num e_charge   = 1.60217653E-19;   // [C = A*s]
 const num bohr_magneton
                      = 9.27400915E-24;   // [A * m^2]
 
-const num width_lead = 30.0;             // [nm]
+const num width_sample 
+                     = 30.0;             // [nm]
 const num g_factor   = 20.0;
 
 num global_gauge     = 1.0;
 
 // XXX is the +1 correct?
-const num a_lead     = width_lead / (num) (Nx + 1);
+const num a_sample   = width_sample / (num) (Nx + 1);
 const int size       = Nx * Ny * 2;      // `Nfin'
 const num V          = 1.0;              // hopping term
 
@@ -63,7 +65,7 @@ const num V          = 1.0;              // hopping term
 const num e_tot      = -2.0 * V;
 const num width_disorder  = 0.0;
 
-num alpha = -0.02 / a_lead / 2.0;
+num alpha = -0.02 / a_sample / 2.0;
 
 void log_tick(const char* desc, bool end = false) {
     static time_t prev = time(NULL);
@@ -74,7 +76,7 @@ void log_tick(const char* desc, bool end = false) {
 
 num flux_from_field(const num B) {
     return 2.0 * pi * B 
-        * (a_lead * a_lead) * 1e-18 // a_lead is in nm
+        * (a_sample * a_sample) * 1e-18 // a_sample is in nm
         / h_planck; 
 }
 
@@ -229,7 +231,7 @@ void sparse_herm_product(const sparse_cm &m1, const cmatrix &m2, sparse_cm &r) {
 }
 
 inline num rashba(const num alpha) {
-    return 2.0 * alpha * a_lead;
+    return 2.0 * alpha * a_sample;
 }
 
 inline num mods(const int n, const int nle) {
