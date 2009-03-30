@@ -39,7 +39,7 @@ int Spin_idx         = Nx * Ny;
 const int N_leads    = 8;
 
 // width of leads in units of lattice sites
-int lead_sites       = Nx / 2; 
+int lead_sites       = Nx;
 
 int lead_offset[N_leads];
 
@@ -101,11 +101,11 @@ void correct_phase(sparse_cm &m, num flux) {
         for (; y != y_end; y++) {
             int x1 = y.index1() % Nx;
             int y1 = (y.index1()/Nx) % Ny;
-//            assert(y.index1() % (Nx * Ny) == IDX(x1, y1));
+            assert(y.index1() == IDX(x1, y1, (int) y.index1() / Spin_idx));
 
             int x2 = y.index2() % Nx;
             int y2 = (y.index2()/Nx) % Ny;
-//            assert(y.index2() % (Nx * Ny) == IDX(x2, y2));
+            assert(y.index2() == IDX(x2, y2, (int) y.index2() / Spin_idx));
 
 //            cout << "product: " << x2 * y2 - x1 * y1 << endl;
             cnum phi = b_factor(flux, x2 * y2 - x1 * y1);
@@ -345,12 +345,12 @@ sparse_cm* hamiltonian(const num rashb, const num B) {
 };
 
 sparse_cm** self_energy(num flux, num gauge) {
-    // Glp1lp1n = G_{l+1, l+1}n
-    cmatrix Glp1lp1n = cmatrix(Nx, Nx);
-    Glp1lp1n.clear();
+    // analytical green's function in the leads
+    // gl = G_{l+1, l+1}n
+    cmatrix gl = cmatrix(Nx, Nx);
+    gl.clear();
     for (int r = 0; r < Nx; r++) {
-        num x = (e_tot - mods(r, lead_sites))
-            / (2.0 * V) + 1.0;
+        num x = (e_tot - mods(r, lead_sites)) / (2.0 * V) + 1.0;
         cnum theta;
         if (x > 1.0) {
             // evanescent mode, calculate cosh^-1
@@ -380,7 +380,7 @@ sparse_cm** self_energy(num flux, num gauge) {
             for (int q = 0; q < Nx; q++) {
                 // "psiN1(jj)" in nano0903c.f
                 cnum y2 = y * sin(pi * (num) ((q+1) * (r+1))/(1.0 + Nx));
-                Glp1lp1n(p, q) += exp(cnum(0.0,1.0) * theta)/V * y1 * y2;
+                gl(p, q) += exp(cnum(0.0,1.0) * theta)/V * y1 * y2;
             }
         }
     }
@@ -392,7 +392,7 @@ sparse_cm** self_energy(num flux, num gauge) {
 
     for (int i = 0; i < lead_sites; i++){
         for (int j = 0; j < lead_sites; j++){
-            cnum g = Glp1lp1n(i, j);
+            cnum g = gl(i, j);
             /* left */
             (*sr[0])(IDX(0, i+lead_offset[0], 0), 
                      IDX(0, j+lead_offset[0], 0))      = g;
