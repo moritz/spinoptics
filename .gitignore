@@ -1,0 +1,7 @@
+data/
+*.swp
+*~
+*.out
+cppspin
+a.out
+spin

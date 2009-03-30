@@ -18,9 +18,6 @@
 #include <Eigen/Core>
 #include <Eigen/Sparse>
 
-
-#define IDX(x, y) ((x) + Nx * (y))
-
 using namespace boost::numeric::ublas;
 using namespace std;
 USING_PART_OF_NAMESPACE_EIGEN
@@ -34,7 +31,16 @@ typedef unsigned int idx_t;
 
 int Nx               = 10;
 int Ny               = Nx;
+int Spin_idx         = Nx * Ny;
+
+#define IDX(x, y, s) ((x) + Nx * (y) + (s) * Spin_idx)
+
 const int N_leads    = 8;
+
+// width of leads in units of lattice sites
+int lead_sites       = Nx;
+
+int lead_offset[N_leads];
 
 const num epsilon    = 1e-5;
 
@@ -48,13 +54,14 @@ const num e_charge   = 1.60217653E-19;   // [C = A*s]
 const num bohr_magneton
                      = 9.27400915E-24;   // [A * m^2]
 
-const num width_lead = 30.0;             // [nm]
+const num width_sample 
+                     = 30.0;             // [nm]
 const num g_factor   = 20.0;
 
 num global_gauge     = 1.0;
 
 // XXX is the +1 correct?
-const num a_lead     = width_lead / (num) (Nx + 1);
+const num a_sample   = width_sample / (num) (Nx + 1);
 const int size       = Nx * Ny * 2;      // `Nfin'
 const num V          = 1.0;              // hopping term
 
@@ -62,7 +69,7 @@ const num V          = 1.0;              // hopping term
 const num e_tot      = -2.0 * V;
 const num width_disorder  = 0.0;
 
-num alpha = -0.02 / a_lead / 2.0;
+num alpha = -0.02 / a_sample / 2.0;
 
 void log_tick(const char* desc, bool end = false) {
     static time_t prev = time(NULL);
@@ -73,7 +80,7 @@ void log_tick(const char* desc, bool end = false) {
 
 num flux_from_field(const num B) {
     return 2.0 * pi * B 
-        * (a_lead * a_lead) * 1e-18 // a_lead is in nm
+        * (a_sample * a_sample) * 1e-18 // a_sample is in nm
         / h_planck; 
 }
 
@@ -87,18 +94,17 @@ void correct_phase(sparse_cm &m, num flux) {
     cout << "correcting a phase...\n";
     sparse_cm::iterator1 x = m.begin1();
     sparse_cm::iterator1 x_end = m.end1();
-    const int s = Nx * Ny;
     for (; x != x_end; ++x) {
         sparse_cm::iterator2 y = x.begin();
         sparse_cm::iterator2 y_end = x.end();
         for (; y != y_end; y++) {
             int x1 = y.index1() % Nx;
             int y1 = (y.index1()/Nx) % Ny;
-            assert(y.index1() % s == IDX(x1, y1));
+            assert(y.index1() == IDX(x1, y1, (int) y.index1() / Spin_idx));
 
             int x2 = y.index2() % Nx;
             int y2 = (y.index2()/Nx) % Ny;
-            assert(y.index2() % s == IDX(x2, y2));
+            assert(y.index2() == IDX(x2, y2, (int) y.index2() / Spin_idx));
 
 //            cout << "product: " << x2 * y2 - x1 * y1 << endl;
             cnum phi = b_factor(flux, x2 * y2 - x1 * y1);
@@ -256,7 +262,7 @@ void sparse_herm_product(const sparse_cm &m1, const cmatrix &m2, sparse_cm &r) {
 }
 
 inline num rashba(const num alpha) {
-    return 2.0 * alpha * a_lead;
+    return 2.0 * alpha * a_sample;
 }
 
 inline num mods(const int n, const int nle) {
@@ -315,26 +321,24 @@ sparse_cm* hamiltonian(const num rashb, const num B) {
      */
 
     // interaction in x direction
-    int s = size / 2;
-
     cnum r = rashba(rashb);
     for (int x = 0; x < Nx - 1; x++) {
         for (int y = 0; y < Ny; y++) {
             cnum h = -V * conj(b_factor(xflux, y));
             // kinetic energy
-            (*Hnn)(    IDX(x,   y),     IDX(x+1, y)) = h;
-            (*Hnn)(    IDX(x+1, y),     IDX(x,   y)) = conj(h);
-            (*Hnn)(s + IDX(x,   y), s + IDX(x+1, y)) = h;
-            (*Hnn)(s + IDX(x+1, y), s + IDX(x,   y)) = conj(h);
+            (*Hnn)(IDX(x,   y, 0), IDX(x+1, y, 0)) = h;
+            (*Hnn)(IDX(x+1, y, 0), IDX(x,   y, 0)) = conj(h);
+            (*Hnn)(IDX(x,   y, 1), IDX(x+1, y, 1)) = h;
+            (*Hnn)(IDX(x+1, y, 1), IDX(x,   y, 1)) = conj(h);
             // Rashba terms
             // "1 and 102"
             // with spin flip
             cnum b = b_factor(xflux, y);
-            (*Hnn)(IDX(x, y)      , IDX(x+1, y) + s) = -r * conj(b);
-            (*Hnn)(IDX(x+1, y) + s, IDX(x,  y)     ) = -r * b;
+            (*Hnn)(IDX(x,   y, 0), IDX(x+1, y, 1)) = -r * conj(b);
+            (*Hnn)(IDX(x+1, y, 1), IDX(x,   y, 0)) = -r * b;
             // "101 and 2"
-            (*Hnn)(IDX(x+1, y)    , IDX(x, y) + s  ) = r * b;
-            (*Hnn)(IDX(x, y) + s  , IDX(x+1, y)    ) = r * conj(b);
+            (*Hnn)(IDX(x+1, y, 0), IDX(x,   y, 1)) = r * b;
+            (*Hnn)(IDX(x,   y, 1), IDX(x+1, y, 0)) = r * conj(b);
         }
     }
 
@@ -345,18 +349,18 @@ sparse_cm* hamiltonian(const num rashb, const num B) {
         for (int y = 0; y < Ny - 1; y++) {
             cnum b = b_factor(yflux, x);
             cnum h = -V * b;
-            (*Hnn)(IDX(x, y)      , IDX(x, y+1)    ) = h;
-            (*Hnn)(IDX(x, y+1)    , IDX(x, y  )    ) = conj(h);
-            (*Hnn)(IDX(x, y)   + s, IDX(x, y+1) + s) = h;
-            (*Hnn)(IDX(x, y+1) + s, IDX(x, y  ) + s) = conj(h);
+            (*Hnn)(IDX(x, y, 0)  , IDX(x, y+1, 0)) = h;
+            (*Hnn)(IDX(x, y+1, 0), IDX(x, y  , 0)) = conj(h);
+            (*Hnn)(IDX(x, y, 1)  , IDX(x, y+1, 1)) = h;
+            (*Hnn)(IDX(x, y+1, 1), IDX(x, y  , 1)) = conj(h);
             // Rashba terms
             // "11 and 101"
             h = cnum(0, 1) * b * r;
-            (*Hnn)(IDX(x, y+1)    , IDX(x, y  ) + s) = conj(h);
-            (*Hnn)(IDX(x, y  ) + s, IDX(x, y+1)    ) = h;
+            (*Hnn)(IDX(x, y+1, 0), IDX(x, y  , 1)) = conj(h);
+            (*Hnn)(IDX(x, y  , 1), IDX(x, y+1, 0)) = h;
             // "1 and 111"
-            (*Hnn)(IDX(x, y  )    , IDX(x, y+1) + s) = h;
-            (*Hnn)(IDX(x, y+1) + s, IDX(x, y  )    ) = conj(h);
+            (*Hnn)(IDX(x, y  , 0), IDX(x, y+1, 1)) = h;
+            (*Hnn)(IDX(x, y+1, 1), IDX(x, y  , 0)) = conj(h);
         }
     }
 
@@ -365,12 +369,12 @@ sparse_cm* hamiltonian(const num rashb, const num B) {
 };
 
 sparse_cm** self_energy(num flux, num gauge) {
-    // Glp1lp1n = G_{l+1, l+1}n
-    cmatrix Glp1lp1n = cmatrix(Nx, Nx);
-    Glp1lp1n.clear();
+    // analytical green's function in the leads
+    // gl = G_{l+1, l+1}n
+    cmatrix gl = cmatrix(Nx, Nx);
+    gl.clear();
     for (int r = 0; r < Nx; r++) {
-        num x = (e_tot - mods(r, Nx))
-            / (2.0 * V) + 1.0;
+        num x = (e_tot - mods(r, lead_sites)) / (2.0 * V) + 1.0;
         cnum theta;
         if (x > 1.0) {
             // evanescent mode, calculate cosh^-1
@@ -392,7 +396,7 @@ sparse_cm** self_energy(num flux, num gauge) {
 
         // "AnorN1(mm)" in nano0903c.f
         num y = 1.0 / sqrt(0.5 * Nx +
-            real((unit - tmpp) / (unit-tmpp) * cnum(0.5, 0.0)));
+            real((unit - tmpp) / (unit-tmpm) * cnum(0.5, 0.0)));
 
         for (int p = 0; p < Nx; p++) {
             // "psiN1(ii)" in nano0903c.f
@@ -400,54 +404,46 @@ sparse_cm** self_energy(num flux, num gauge) {
             for (int q = 0; q < Nx; q++) {
                 // "psiN1(jj)" in nano0903c.f
                 cnum y2 = y * sin(pi * (num) ((q+1) * (r+1))/(1.0 + Nx));
-                Glp1lp1n(p, q) += exp(cnum(0.0,1.0) * theta)/V * y1 * y2;
+                gl(p, q) += exp(cnum(0.0,1.0) * theta)/V * y1 * y2;
             }
         }
     }
 
-    int s = size / 2;
+    sparse_cm** sr = new sparse_cm*[N_leads];
 
-    sparse_cm *G_left_up     = new sparse_cm(size, size, s);
-    sparse_cm *G_left_down   = new sparse_cm(size, size, s);
-    sparse_cm *G_right_up    = new sparse_cm(size, size, s);
-    sparse_cm *G_right_down  = new sparse_cm(size, size, s);
+    for (int i = 0; i < N_leads; i++)
+        sr[i] = new sparse_cm(size, size, lead_sites * lead_sites);
 
-    sparse_cm *G_top_up      = new sparse_cm(size, size, s);
-    sparse_cm *G_top_down    = new sparse_cm(size, size, s);
-    sparse_cm *G_bottom_up   = new sparse_cm(size, size, s);
-    sparse_cm *G_bottom_down = new sparse_cm(size, size, s);
+    for (int i = 0; i < lead_sites; i++){
+        for (int j = 0; j < lead_sites; j++){
+            cnum g = gl(i, j);
+            /* left */
+            (*sr[0])(IDX(0, i+lead_offset[0], 0), 
+                     IDX(0, j+lead_offset[0], 0))      = g;
+            (*sr[2])(IDX(0, i+lead_offset[2], 1), 
+                     IDX(0, j+lead_offset[2], 1))      = g;
 
+            /* right */
+            (*sr[1])(IDX(Nx-1, i+lead_offset[1], 0),
+                     IDX(Nx-1, j+lead_offset[1], 0))   = g;
+            (*sr[3])(IDX(Nx-1, i+lead_offset[3], 1), 
+                     IDX(Nx-1, j+lead_offset[3], 1))   = g;
 
-    for (int i = 0; i < Nx; i++){
-        for (int j = 0; j < Ny; j++){
-            cnum g = Glp1lp1n(i, j);
-            (*G_left_up)    (IDX(0, i)       , IDX(0, j)       ) = g;
-            (*G_left_down)  (IDX(0, i) + s   , IDX(0, j) + s   ) = g;
+            /* top */
+            (*sr[4])(IDX(i+lead_offset[4], 0, 0), 
+                     IDX(j+lead_offset[4], 0, 0))      = g;
+            /*   5 (sic) */
+            (*sr[5])(IDX(i+lead_offset[5], 0, 1),
+                     IDX(j+lead_offset[5], 0, 1))      = g;
 
-            (*G_right_up)   (IDX(Nx-1, i)    , IDX(Nx-1, j)    ) = g;
-            (*G_right_down) (IDX(Nx-1, i) + s, IDX(Nx-1, j) + s) = g;
-
-            (*G_top_up)     (IDX(i, 0)       , IDX(j, 0)       ) = g;
-            (*G_top_down)   (IDX(i, 0) + s   , IDX(j, 0) + s   ) = g;
-
-            (*G_bottom_up)  (IDX(i, Ny-1)    , IDX(j, Ny-1)    ) = g;
-            (*G_bottom_down)(IDX(i, Ny-1) + s, IDX(j, Ny-1) + s) = g;
+            /* bottom */
+            /*   6 (sic) */
+            (*sr[6])(IDX(i+lead_offset[6], Ny-1, 0), 
+                     IDX(j+lead_offset[6], Ny-1, 0))   = g;
+            (*sr[7])(IDX(i+lead_offset[7], Ny-1, 1), 
+                     IDX(j+lead_offset[7], Ny-1, 1))   = g;
         }
     }
-
-    sparse_cm** sr = new sparse_cm*[N_leads];
-    sr[0] = G_left_up;
-    sr[2] = G_left_down;
-
-    sr[4] = G_top_up;
-    // 5, not 6
-    sr[5] = G_top_down;
-
-    sr[1] = G_right_up;
-    sr[3] = G_right_down;
-    // 6, not 5
-    sr[6] = G_bottom_up;
-    sr[7] = G_bottom_down;
 
     for (int i = 0; i < N_leads; i++) {
         switch(i) {
@@ -581,8 +577,8 @@ matrix<num>* greenji(sparse_cm* Hnn, num flux, num gauge) {
         delete gamma_g_adv[i];
         delete gamma_g_ret[i];
     }
-    for (int i = 0; i < Nx; i++){
-        cnum k = findk(mods(i, Nx));
+    for (int i = 0; i < lead_sites; i++){
+        cnum k = findk(mods(i, lead_sites));
         if (imag(k) == 0.0) {
             for (int j = 0; j < N_leads; j++){
                 (*tpq)(j, j) += 1.0;
@@ -601,7 +597,7 @@ matrix<num>* greenji(sparse_cm* Hnn, num flux, num gauge) {
 
 int main (int argc, char** argv) {
     log_tick("start");
-    num Bz = 6;
+    num Bz = +6;
 
     int opt;
     while ((opt = getopt(argc, argv, "r:b:s:")) != -1) {
@@ -621,6 +617,10 @@ int main (int argc, char** argv) {
                 exit(1);
 
         }
+    }
+
+    for (int i = 0; i < N_leads; i++) {
+        lead_offset[i] = 0;
     }
 
     cout << "PID:     " << getpid() << endl;
