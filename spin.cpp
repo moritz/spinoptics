@@ -120,15 +120,6 @@ void correct_phase(sparse_cm &m, num flux) {
 }
 
 template <class T>
-void set_zero(matrix<T> &m) {
-    for (unsigned int x = 0; x < m.size1(); x++){
-        for (unsigned int y = 0; y < m.size2(); y++){
-            m(x, y) = 0.0;
-        }
-    }
-}
-
-template <class T>
 idx_t count_nonzero(matrix<T> &m) {
     idx_t i = 0;
     for (idx_t x = 0; x < m.size1(); x++){
