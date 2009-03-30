@@ -372,7 +372,7 @@ sparse_cm** self_energy(num flux, num gauge) {
 
         // "AnorN1(mm)" in nano0903c.f
         num y = 1.0 / sqrt(0.5 * Nx +
-            real((unit - tmpp) / (unit-tmpp) * cnum(0.5, 0.0)));
+            real((unit - tmpp) / (unit-tmpm) * cnum(0.5, 0.0)));
 
         for (int p = 0; p < Nx; p++) {
             // "psiN1(ii)" in nano0903c.f
