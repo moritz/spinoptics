@@ -174,7 +174,6 @@ void pseudo_sparse_solve(Eigen::SparseLU<esm,Eigen::SuperLU> &slu,
         Eigen::VectorXcd base(n);
         int i = 0;
         for (esm::InnerIterator it(rhs,k); it; ++it) {
-//            full_rhs(it.row(), it.col()) = it.value();
             base(it.col()) = it.value();
             i++;
         }
@@ -209,52 +208,6 @@ void eigen_to_ublas(const esm &m, sparse_cm &result) {
     for (int k=0; k<m.outerSize(); ++k) {
         for (esm::InnerIterator it(m,k); it; ++it) {
             result(it.row(), it.col()) = it.value();
-        }
-    }
-}
-
-// sparse_product(a, b, c) computes the matrix product
-// a * b where a is a sparse matrix and b is a full one,
-// and assumes that c has a different storage location than
-// a and b
-void sparse_product(const sparse_cm &m1, const cmatrix &m2, sparse_cm &r) {
-    sparse_cm::const_iterator1 x = m1.begin1();
-    sparse_cm::const_iterator1 x_end = m1.end1();
-    r.clear();
-    idx_t s = m2.size1();
-    for (; x != x_end; ++x) {
-        sparse_cm::const_iterator2 y = x.begin();
-        sparse_cm::const_iterator2 y_end = x.end();
-        for (; y != y_end; y++) {
-            for (idx_t j = 0; j < s; j++){
-                idx_t xi = y.index1();
-                idx_t yi = y.index2();
-                r(xi, j) += (*y) * m2(yi, j);
-            }
-        }
-    }
-}
-
-// sparse_herm_product(a, b, c) computes the matrix product
-// a * herm(b) where a is a sparse matrix and b is a full one,
-// (herm(b) is the hermitian conjugate, ie complex conjugation
-// and transposition).
-// It assumes that c has a different storage location than
-// a and b
-void sparse_herm_product(const sparse_cm &m1, const cmatrix &m2, sparse_cm &r) {
-    sparse_cm::const_iterator1 x = m1.begin1();
-    sparse_cm::const_iterator1 x_end = m1.end1();
-    r.clear();
-    idx_t s = m2.size1();
-    for (; x != x_end; ++x) {
-        sparse_cm::const_iterator2 y = x.begin();
-        sparse_cm::const_iterator2 y_end = x.end();
-        for (; y != y_end; y++) {
-            for (idx_t j = 0; j < s; j++){
-                idx_t xi = y.index1();
-                idx_t yi = y.index2();
-                r(xi, j) += (*y) * conj(m2(j, yi));
-            }
         }
     }
 }
