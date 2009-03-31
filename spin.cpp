@@ -184,15 +184,13 @@ void pseudo_sparse_solve(Eigen::SparseLU<esm,Eigen::SuperLU> &slu,
     cout << full_rhs << endl;
 
     Eigen::VectorXcd base(size), *invCol = new VectorXcd (size);
-    {
-        Eigen::RandomSetter< esm > setter(result);
-        for (int k = 0; k < n; k++){
-            base = full_rhs.row(k);
-            slu.solve(base, invCol);
-            for (int j = 0; j < n; j++) {
-                if (abs((*invCol)[j]) > 1e-18) {
-                    setter(j, k) = (*invCol)[j];
-                }
+    Eigen::RandomSetter< esm > setter(result);
+    for (int k = 0; k < n; k++){
+        base = full_rhs.row(k);
+        slu.solve(base, invCol);
+        for (int j = 0; j < n; j++) {
+            if (abs((*invCol)[j]) > 1e-18) {
+                setter(j, k) = (*invCol)[j];
             }
         }
     }
@@ -484,7 +482,7 @@ matrix<num>* greenji(sparse_cm* Hnn, num flux, num gauge) {
 
     ublas_to_eigen(*Hnn, e_green_inv);
     log_tick("green_inv");
-    Eigen::SparseLU<esm,Eigen::SuperLU> slu(e_green_inv);
+    Eigen::SparseLU<esm,Eigen::SuperLU> slu(e_green_inv.transpose());
     log_tick("lu decomposition");
 
     cmatrix *green = new cmatrix(size, size);
@@ -521,10 +519,10 @@ matrix<num>* greenji(sparse_cm* Hnn, num flux, num gauge) {
         delete sigma_r[i];
         sigma_r[i] = NULL;
 
-        sparse_cm *ublas_g_ret = new sparse_cm(size, size);
+//      sparse_cm *ublas_g_ret = new sparse_cm(size, size);
         sparse_cm *ublas_g_adv = new sparse_cm(size, size);
-        sparse_product(*green, *gamm_i, *ublas_g_ret);
-        sparse_herm_product(*green, *gamm_i, *ublas_g_adv);
+//      sparse_product     (*gamm_i, *green, *ublas_g_ret);
+        sparse_herm_product(*gamm_i, *green, *ublas_g_adv);
 
 
         esm m1(size, size);
@@ -534,10 +532,10 @@ matrix<num>* greenji(sparse_cm* Hnn, num flux, num gauge) {
 //        cout << m1 << endl;
 //        cout << "still alive\n";
 
-        pseudo_sparse_solve(slu, m1, result1);
+        pseudo_sparse_solve(slu, m1.transpose().eval(), result1);
         esm r(size, size); 
         sparse_cm t(size, size);
-        eigen_to_ublas(result1, t);
+        eigen_to_ublas(result1.transpose().eval(), t);
 
 
         ublas_to_eigen(t, r);
@@ -546,22 +544,22 @@ matrix<num>* greenji(sparse_cm* Hnn, num flux, num gauge) {
 //        cout << r << endl;
 
 //        result1 = result1.adjoint();
-        eigen_to_ublas(result1, *g_ret);
+        eigen_to_ublas(result1.transpose().eval(), *g_ret);
 
         esm result2(size, size);
 //        esm m2 = esm(m1.adjoint());
 
 //        cout << m2 - m1 << endl;
 
-        pseudo_sparse_solve(slu, m1, result2, true);
-        eigen_to_ublas(result2, *g_adv);
+        pseudo_sparse_solve(slu, m1.transpose().eval(), result2, true);
+        eigen_to_ublas(result2.transpose().eval(), *g_adv);
 
 //        gamma_g_adv[i] = g_adv;
 //        gamma_g_ret[i] = g_ret;
         gamma_g_adv[i] = ublas_g_adv;
-        gamma_g_ret[i] = ublas_g_ret;
+        gamma_g_ret[i] = g_ret;
 
-        cout << "with inverse (ret)" << *ublas_g_ret << "\n";
+//        cout << "with inverse (ret)" << *ublas_g_ret << "\n";
         cout << "direct       (ret)" << *g_ret       << "\n";
         cout << "with inverse (adv)" << *ublas_g_adv << "\n";
         cout << "direct       (adv)" << *g_adv       << "\n";
