@@ -1,0 +1,4 @@
+#!/bin/sh
+make cppspin  && time ./cppspin | tee cout
+grep "^final tpq" cout > cbtpq
+./real-compare cbtpq ref/btpq-narrow
