@@ -4,7 +4,7 @@ LDFLAGS=
 INCLUDEPATH=-I/home/mlenz/tmp/eigen2/
 GPPFLAGS=$(INCLUDEPATH) -lsuperlu -DEIGEN_SUPERLU_SUPPORT
 
-all: spin cppspin
+all: cppspin
 
 inv_general_complex_mat.o: Makefile inv_general_complex_mat.f
 	$(CC) -c $(CFLAGS) inv_general_complex_mat.f
@@ -17,9 +17,11 @@ spin: nano0903c.f inv_general_complex_mat.o Makefile
 #	$(CC) $(CFLAGS) $(LDFLAGS) -o spin  inv_general_complex_mat.o nano0903c.f
 
 cppspin: spin.cpp Makefile
-	g++ $(GPPFLAGS) -Wall -DNDEBUG -msse2 -O3 -o cppspin spin.cpp
-#	g++ $(GPPFLAGS) -Wall -g -O -fbounds-check -o cppspin spin.cpp
+	g++ $(GPPFLAGS) -Wall -g -O -fbounds-check -o cppspin spin.cpp
+#	g++ $(GPPFLAGS) -Wall -DNDEBUG -msse2 -O3 -o cppspin spin.cpp
 
+t: test.cpp Makefile
+	g++ $(GPPFLAGS) -Wall -g -O -fbounds-check -o t test.cpp
 clean:
 	rm -f *.o *~ spin cppspin
 
