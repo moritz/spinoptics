@@ -5,3 +5,5 @@ data/
 cppspin
 a.out
 spin
+t
+inv_general_complex_mat.o
