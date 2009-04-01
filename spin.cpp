@@ -304,18 +304,18 @@ esm* hamiltonian(const num rashb, const num B) {
         for (int y = 0; y < Ny - 1; y++) {
             cnum b = b_factor(yflux, x);
             cnum h = -V * b;
-            (Hnn)(IDX(x, y, 0)  , IDX(x, y+1, 0)) = h;
-            (Hnn)(IDX(x, y+1, 0), IDX(x, y  , 0)) = conj(h);
-            (Hnn)(IDX(x, y, 1)  , IDX(x, y+1, 1)) = h;
-            (Hnn)(IDX(x, y+1, 1), IDX(x, y  , 1)) = conj(h);
+            Hnn(IDX(x, y, 0)  , IDX(x, y+1, 0)) = h;
+            Hnn(IDX(x, y+1, 0), IDX(x, y  , 0)) = conj(h);
+            Hnn(IDX(x, y, 1)  , IDX(x, y+1, 1)) = h;
+            Hnn(IDX(x, y+1, 1), IDX(x, y  , 1)) = conj(h);
             // Rashba terms
             // "11 and 101"
             h = cnum(0, 1) * b * r;
-            (Hnn)(IDX(x, y+1, 0), IDX(x, y  , 1)) = conj(h);
-            (Hnn)(IDX(x, y  , 1), IDX(x, y+1, 0)) = h;
+            Hnn(IDX(x, y+1, 0), IDX(x, y  , 1)) = conj(h);
+            Hnn(IDX(x, y  , 1), IDX(x, y+1, 0)) = h;
             // "1 and 111"
-            (Hnn)(IDX(x, y  , 0), IDX(x, y+1, 1)) = h;
-            (Hnn)(IDX(x, y+1, 1), IDX(x, y  , 0)) = conj(h);
+            Hnn(IDX(x, y  , 0), IDX(x, y+1, 1)) = h;
+            Hnn(IDX(x, y+1, 1), IDX(x, y  , 0)) = conj(h);
         }
     }
 
