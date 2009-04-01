@@ -29,16 +29,16 @@ typedef compressed_matrix<cnum, row_major> sparse_cm;
 typedef Eigen::SparseMatrix< cnum , Eigen::RowMajor> esm;
 typedef unsigned int idx_t;
 
-int Nx               = 10;
-int Ny               = Nx;
-int Spin_idx         = Nx * Ny;
+const int Nx               = 10;
+const int Ny               = Nx;
+const int Spin_idx         = Nx * Ny;
 
 #define IDX(x, y, s) ((x) + Nx * (y) + (s) * Spin_idx)
 
 const int N_leads    = 8;
 
 // width of leads in units of lattice sites
-int lead_sites       = Nx;
+const int lead_sites       = Nx;
 
 int lead_offset[N_leads];
 
@@ -429,8 +429,9 @@ matrix<num>* greenji(sparse_cm* Hnn, num flux, num gauge) {
     ublas_to_eigen(*Hnn, e_green_inv);
     log_tick("green_inv");
     Eigen::SparseLU<esm,Eigen::SuperLU> slu(e_green_inv.transpose());
+    log_tick("first decomposition");
     Eigen::SparseLU<esm,Eigen::SuperLU> slu_herm(e_green_inv.conjugate());
-    log_tick("lu decomposition");
+    log_tick("second decomposition");
 
 
     matrix<num> *tpq = new matrix<num>(N_leads, N_leads);
@@ -475,7 +476,7 @@ matrix<num>* greenji(sparse_cm* Hnn, num flux, num gauge) {
         gamma_g_ret[i] = g_ret;
     }
 
-    log_tick("products");
+    log_tick("solving");
     delete gamm_i;      gamm_i      = NULL;
 
 //    cout << "gamma_g_adv[0]: " << herm(*gamma_g_adv[0]) << endl;
@@ -538,10 +539,6 @@ int main (int argc, char** argv) {
        switch (opt) {
             case 'r':
                 alpha = atof(optarg);
-                break;
-            case 's':
-                Nx = atoi(optarg);
-                Ny = Nx;
                 break;
             case 'b':
                 Bz = atof(optarg);
