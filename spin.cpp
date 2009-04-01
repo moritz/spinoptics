@@ -325,7 +325,7 @@ esm* hamiltonian(const num rashb, const num B) {
 };
 
 
-sparse_cm** self_energy(const num flux, const num gauge) {
+esm** self_energy(const num flux, const num gauge) {
     // analytical green's function in the leads
     // gl = G_{l+1, l+1}n
     MatrixXcd gl(Nx, Nx);
@@ -368,12 +368,10 @@ sparse_cm** self_energy(const num flux, const num gauge) {
         }
     }
 
-    sparse_cm** sr = new sparse_cm*[N_leads];
     esm** e = new esm*[N_leads];
     ers** s = new ers*[N_leads];
 
     for (int i = 0; i < N_leads; i++) {
-        sr[i] = new sparse_cm(size, size, lead_sites * lead_sites);
         e[i]  = new esm(size, size);
         s[i]  = new ers( *e[i] );
     }
@@ -412,7 +410,6 @@ sparse_cm** self_energy(const num flux, const num gauge) {
 
     for (int i = 0; i < N_leads; i++) {
         delete s[i];
-        eigen_to_ublas(*e[i], *sr[i]);
 
         switch(i) {
             case 0:
@@ -433,16 +430,14 @@ sparse_cm** self_energy(const num flux, const num gauge) {
     delete[] s;
 
     log_tick("self-energy");
-    return sr;
+    return e;
 }
 
 matrix<num>* greenji(esm &H, const num flux, const num gauge) {
-    sparse_cm **sigma_r   = self_energy(flux, gauge);
+    esm **sigma_r   = self_energy(flux, gauge);
 
     for (int k = 0; k < N_leads; k++){
-        esm tmp(size, size);
-        ublas_to_eigen(*sigma_r[k], tmp);
-        H -= tmp; 
+        H -= *sigma_r[k]; 
     }
     esm e_green_inv(size, size);
 
@@ -467,7 +462,7 @@ matrix<num>* greenji(esm &H, const num flux, const num gauge) {
     // to save memory
     // first carry out the two products 
     // \Gamma_p * G^R and \Gamma_q * G^A
-    sparse_cm * gamm_i = new sparse_cm(size, size);
+    esm gamm_i(size, size);
     for (int i = 0; i < N_leads; i++) {
         cout << "working on lead " << i << endl;
         esm *g_adv = new esm(size, size);
@@ -475,20 +470,18 @@ matrix<num>* greenji(esm &H, const num flux, const num gauge) {
 
 
         assert(V * V == 1);
-        noalias(*gamm_i) = -2 * imag(*sigma_r[i]);
+        gamm_i = (-2) * sigma_r[i]->imag();
         delete sigma_r[i];
         sigma_r[i] = NULL;
 
         esm m1(size, size);
         esm result1(size, size);
 
-        ublas_to_eigen(*gamm_i, m1);
-
-        pseudo_sparse_solve(slu, m1.transpose(), result1);
+        pseudo_sparse_solve(slu, gamm_i.transpose(), result1);
         *g_ret = result1.transpose();
 
         esm result2(size, size);
-        pseudo_sparse_solve(slu_herm, m1, result2);
+        pseudo_sparse_solve(slu_herm, gamm_i, result2);
 
         *g_adv = result2.transpose();
 
@@ -497,7 +490,6 @@ matrix<num>* greenji(esm &H, const num flux, const num gauge) {
     }
 
     log_tick("solving");
-    delete gamm_i;      gamm_i      = NULL;
 
     delete[] sigma_r;
     sigma_r = NULL;
