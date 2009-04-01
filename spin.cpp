@@ -330,8 +330,10 @@ esm* hamiltonian(const num rashb, const num B) {
 sparse_cm** self_energy(const num flux, const num gauge) {
     // analytical green's function in the leads
     // gl = G_{l+1, l+1}n
-    cmatrix gl = cmatrix(Nx, Nx);
-    gl.clear();
+    MatrixXcd gl(Nx, Nx);
+    gl.setZero();
+
+
     for (int r = 0; r < Nx; r++) {
         num x = (e_tot - mods(r, lead_sites)) / (2.0 * V) + 1.0;
         cnum theta;
