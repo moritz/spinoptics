@@ -89,31 +89,26 @@ cnum b_factor(const num flux, const int n) {
     return exp(cnum(0.0, -1) * flux * (num) n);
 }
 
-void correct_phase(sparse_cm &m, const num flux) {
+void correct_phase(esm &m, const num flux) {
     if (flux == num(0))
         return;
     cout << "correcting a phase...\n";
-    sparse_cm::iterator1 x = m.begin1();
-    sparse_cm::iterator1 x_end = m.end1();
-    for (; x != x_end; ++x) {
-        sparse_cm::iterator2 y = x.begin();
-        sparse_cm::iterator2 y_end = x.end();
-        for (; y != y_end; y++) {
-            int x1 = y.index1() % Nx;
-            int y1 = (y.index1()/Nx) % Ny;
-            assert(y.index1() == IDX(x1, y1, (int) y.index1() / Spin_idx));
+    for (int k = 0; k < m.outerSize(); ++k) {
+        for (esm::InnerIterator it(m,k); it; ++it) {
+            int x1 = it.row() % Nx;
+            int y1 = (it.row()/Nx) % Ny;
+            assert(it.row() == IDX(x1, y1, (int) it.row() / Spin_idx));
 
-            int x2 = y.index2() % Nx;
-            int y2 = (y.index2()/Nx) % Ny;
-            assert(y.index2() == IDX(x2, y2, (int) y.index2() / Spin_idx));
+            int x2 = it.col() % Nx;
+            int y2 = (it.col()/Nx) % Ny;
+            assert(it.col() == IDX(x2, y2, (int) it.col() / Spin_idx));
 
 //            cout << "product: " << x2 * y2 - x1 * y1 << endl;
             cnum phi = b_factor(flux, x2 * y2 - x1 * y1);
 //            cout << "phi: " << phi << endl;
-//            cout << "phi: " << phi << endl;
 //            cout << "before: " << *y;
 //            (*y) *= phi;
-            (*y) *=cnum(1, 0);
+            it.value() *= phi;
 //            cout << " after: " << *y << endl;
         }
     }
@@ -400,14 +395,14 @@ esm** self_energy(const num flux, const num gauge) {
             case 1:
             case 2:
             case 3:
-//                correct_phase(*sr[i], -(1.0 - gauge) * flux);
+                correct_phase(*e[i], -(1.0 - gauge) * flux);
                 break;
             case 4:
             case 5:
             case 6:
             case 7:
                 cout << "gauge scaling factor: " << flux << endl;
-//                correct_phase(*sr[i], gauge * flux);
+                correct_phase(*e[i], gauge * flux);
                 break;
         }
     }
