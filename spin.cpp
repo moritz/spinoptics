@@ -474,13 +474,13 @@ matrix<num>* greenji(esm &H, const num flux, const num gauge) {
 
         ublas_to_eigen(*gamm_i, m1);
 
-        pseudo_sparse_solve(slu, m1.transpose().eval(), result1);
-        *g_ret = result1.transpose().eval();
+        pseudo_sparse_solve(slu, m1.transpose(), result1);
+        *g_ret = result1.transpose();
 
         esm result2(size, size);
         pseudo_sparse_solve(slu_herm, m1, result2);
 
-        *g_adv = result2.transpose().eval();
+        *g_adv = result2.transpose();
 
         gamma_g_adv[i] = g_adv;
         gamma_g_ret[i] = g_ret;
@@ -489,16 +489,12 @@ matrix<num>* greenji(esm &H, const num flux, const num gauge) {
     log_tick("solving");
     delete gamm_i;      gamm_i      = NULL;
 
-//    cout << "gamma_g_adv[0]: " << herm(*gamma_g_adv[0]) << endl;
-//    cout << "gamma_g_ret[0]: " << herm(*gamma_g_ret[0]) << endl;
-
     delete[] sigma_r;
     sigma_r = NULL;
 
     cout << "trace...\n";
     // Now calculate the trace
     for (int i = 0; i < N_leads; i++){
-//        cout << *gamma_g_adv[i] << "\n";
         for (int j = 0; j < N_leads; j++){
             for (int n = 0; n < size; n++){
                 for (int m = 0; m < size; m++){
