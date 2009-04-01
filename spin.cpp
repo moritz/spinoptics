@@ -27,6 +27,7 @@ typedef complex<num> cnum;
 typedef matrix<cnum> cmatrix;
 typedef compressed_matrix<cnum, row_major> sparse_cm;
 typedef Eigen::SparseMatrix< cnum , Eigen::RowMajor> esm;
+typedef Eigen::RandomSetter< esm > ers;
 typedef unsigned int idx_t;
 
 const int Nx               = 10;
@@ -228,8 +229,11 @@ cnum findk(const num Emod) {
         );
 }
 
-sparse_cm* hamiltonian(const num rashb, const num B) {
-    sparse_cm* Hnn = new sparse_cm(size, size, 4 * size);
+esm* hamiltonian(const num rashb, const num B) {
+    esm *H = new esm(size, size);
+    {
+    ers Hnn( *H );
+
 
     // division by e_charge to convert from electron volt to Joule
     num zeeman = 0.5 * g_factor * bohr_magneton * B / e_charge;
@@ -247,8 +251,8 @@ sparse_cm* hamiltonian(const num rashb, const num B) {
         // iteration, but every two diagonal items with distance
         // (size/2) must still have the same value
         cnum energy = 4.0 * V + e_tot;
-        (*Hnn)(i, i)                     = energy - zeeman;
-        (*Hnn)(i + size/2, i + size/2)   = energy + zeeman;
+        (Hnn)(i, i)                     = energy - zeeman;
+        (Hnn)(i + size/2, i + size/2)   = energy + zeeman;
     }
 
     /*                Nx
@@ -277,19 +281,19 @@ sparse_cm* hamiltonian(const num rashb, const num B) {
         for (int y = 0; y < Ny; y++) {
             cnum h = -V * conj(b_factor(xflux, y));
             // kinetic energy
-            (*Hnn)(IDX(x,   y, 0), IDX(x+1, y, 0)) = h;
-            (*Hnn)(IDX(x+1, y, 0), IDX(x,   y, 0)) = conj(h);
-            (*Hnn)(IDX(x,   y, 1), IDX(x+1, y, 1)) = h;
-            (*Hnn)(IDX(x+1, y, 1), IDX(x,   y, 1)) = conj(h);
+            (Hnn)(IDX(x,   y, 0), IDX(x+1, y, 0)) = h;
+            (Hnn)(IDX(x+1, y, 0), IDX(x,   y, 0)) = conj(h);
+            (Hnn)(IDX(x,   y, 1), IDX(x+1, y, 1)) = h;
+            (Hnn)(IDX(x+1, y, 1), IDX(x,   y, 1)) = conj(h);
             // Rashba terms
             // "1 and 102"
             // with spin flip
             cnum b = b_factor(xflux, y);
-            (*Hnn)(IDX(x,   y, 0), IDX(x+1, y, 1)) = -r * conj(b);
-            (*Hnn)(IDX(x+1, y, 1), IDX(x,   y, 0)) = -r * b;
+            (Hnn)(IDX(x,   y, 0), IDX(x+1, y, 1)) = -r * conj(b);
+            (Hnn)(IDX(x+1, y, 1), IDX(x,   y, 0)) = -r * b;
             // "101 and 2"
-            (*Hnn)(IDX(x+1, y, 0), IDX(x,   y, 1)) = r * b;
-            (*Hnn)(IDX(x,   y, 1), IDX(x+1, y, 0)) = r * conj(b);
+            (Hnn)(IDX(x+1, y, 0), IDX(x,   y, 1)) = r * b;
+            (Hnn)(IDX(x,   y, 1), IDX(x+1, y, 0)) = r * conj(b);
         }
     }
 
@@ -300,24 +304,28 @@ sparse_cm* hamiltonian(const num rashb, const num B) {
         for (int y = 0; y < Ny - 1; y++) {
             cnum b = b_factor(yflux, x);
             cnum h = -V * b;
-            (*Hnn)(IDX(x, y, 0)  , IDX(x, y+1, 0)) = h;
-            (*Hnn)(IDX(x, y+1, 0), IDX(x, y  , 0)) = conj(h);
-            (*Hnn)(IDX(x, y, 1)  , IDX(x, y+1, 1)) = h;
-            (*Hnn)(IDX(x, y+1, 1), IDX(x, y  , 1)) = conj(h);
+            (Hnn)(IDX(x, y, 0)  , IDX(x, y+1, 0)) = h;
+            (Hnn)(IDX(x, y+1, 0), IDX(x, y  , 0)) = conj(h);
+            (Hnn)(IDX(x, y, 1)  , IDX(x, y+1, 1)) = h;
+            (Hnn)(IDX(x, y+1, 1), IDX(x, y  , 1)) = conj(h);
             // Rashba terms
             // "11 and 101"
             h = cnum(0, 1) * b * r;
-            (*Hnn)(IDX(x, y+1, 0), IDX(x, y  , 1)) = conj(h);
-            (*Hnn)(IDX(x, y  , 1), IDX(x, y+1, 0)) = h;
+            (Hnn)(IDX(x, y+1, 0), IDX(x, y  , 1)) = conj(h);
+            (Hnn)(IDX(x, y  , 1), IDX(x, y+1, 0)) = h;
             // "1 and 111"
-            (*Hnn)(IDX(x, y  , 0), IDX(x, y+1, 1)) = h;
-            (*Hnn)(IDX(x, y+1, 1), IDX(x, y  , 0)) = conj(h);
+            (Hnn)(IDX(x, y  , 0), IDX(x, y+1, 1)) = h;
+            (Hnn)(IDX(x, y+1, 1), IDX(x, y  , 0)) = conj(h);
         }
     }
 
     log_tick("hamiltonian");
-    return Hnn;
+    }
+
+    return H;
+
 };
+
 
 sparse_cm** self_energy(const num flux, const num gauge) {
     // analytical green's function in the leads
@@ -557,7 +565,9 @@ int main (int argc, char** argv) {
     cout << "PID:     " << getpid() << endl;
     cout << "Size:    " << Nx << "x" << Ny << endl;
     cout << "Bz:      " << Bz << endl;
-    sparse_cm *Hnn = hamiltonian(alpha, Bz);
+    esm *H = hamiltonian(alpha, Bz);
+    sparse_cm *Hnn = new sparse_cm(size, size);
+    eigen_to_ublas(*H, *Hnn);
 #ifndef NDEBUG
     {
         sparse_cm HH = herm(*Hnn);
