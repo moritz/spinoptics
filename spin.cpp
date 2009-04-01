@@ -231,7 +231,6 @@ cnum findk(const num Emod) {
 
 esm* hamiltonian(const num rashb, const num B) {
     esm *H = new esm(size, size);
-    {
     ers Hnn( *H );
 
 
@@ -320,7 +319,6 @@ esm* hamiltonian(const num rashb, const num B) {
     }
 
     log_tick("hamiltonian");
-    }
 
     return H;
 
