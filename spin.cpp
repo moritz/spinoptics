@@ -426,19 +426,20 @@ sparse_cm** self_energy(const num flux, const num gauge) {
     return sr;
 }
 
-matrix<num>* greenji(sparse_cm &Hnn, const num flux, const num gauge) {
+matrix<num>* greenji(esm &H, const num flux, const num gauge) {
     sparse_cm **sigma_r   = self_energy(flux, gauge);
 
     for (int k = 0; k < N_leads; k++){
-        noalias(Hnn) -= *(sigma_r[k]);
+        esm tmp(size, size);
+        ublas_to_eigen(*sigma_r[k], tmp);
+        H -= tmp; 
     }
     esm e_green_inv(size, size);
 
-    ublas_to_eigen(Hnn, e_green_inv);
-    log_tick("green_inv");
-    Eigen::SparseLU<esm,Eigen::SuperLU> slu(e_green_inv.transpose());
+    log_tick("hamiltonian + self-energy");
+    Eigen::SparseLU<esm,Eigen::SuperLU> slu(H.transpose());
     log_tick("first decomposition");
-    Eigen::SparseLU<esm,Eigen::SuperLU> slu_herm(e_green_inv.conjugate());
+    Eigen::SparseLU<esm,Eigen::SuperLU> slu_herm(H.conjugate());
     log_tick("second decomposition");
 
 
@@ -584,7 +585,7 @@ int main (int argc, char** argv) {
 //    cout << "Hamiltonian: " << *Hnn << "\n";
 //    cout << io::sparse(*Hnn) << endl;
     num flux = flux_from_field(Bz);
-    matrix<num> *tpq = greenji(*Hnn, flux, global_gauge);
+    matrix<num> *tpq = greenji(*H, flux, global_gauge);
     delete Hnn;
     cout << "final tpq" << *tpq << endl;
     boost::numeric::ublas::vector<num> r;
