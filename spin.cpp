@@ -132,22 +132,6 @@ idx_t count_nonzero(const matrix<T> &m) {
     return i;
 }
 
-idx_t count_nonzero(const sparse_cm &m) {
-    idx_t i = 0;
-    sparse_cm::const_iterator1 x = m.begin1();
-    sparse_cm::const_iterator1 x_end = m.end1();
-    for (; x != x_end; ++x) {
-        sparse_cm::const_iterator2 y = x.begin();
-        sparse_cm::const_iterator2 y_end = x.end();
-        for (; y != y_end; y++) {
-            if ( (*y) != (num) 0.0) 
-                i++;
-        }
-    }
-
-    return i;
-}
-
 void sparse_inverse(const esm &m, cmatrix &inv) {
     Eigen::SparseLU<Eigen::SparseMatrix< cnum >,Eigen::SuperLU> slu(m);
     Eigen::VectorXcd base(size), invCol(size);
