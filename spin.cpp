@@ -445,8 +445,8 @@ matrix<num>* greenji(esm &H, const num flux, const num gauge) {
 
     matrix<num> *tpq = new matrix<num>(N_leads, N_leads);
     tpq->clear();
-    sparse_cm **gamma_g_adv = new sparse_cm*[N_leads];
-    sparse_cm **gamma_g_ret = new sparse_cm*[N_leads];
+    esm **gamma_g_adv = new esm*[N_leads];
+    esm **gamma_g_ret = new esm*[N_leads];
 
     // T_{p, q} = Trace( \Gamma_p * G^R * \Gamma_q * G^A )
     // where G^A = (G^R)^\dagger
@@ -460,8 +460,8 @@ matrix<num>* greenji(esm &H, const num flux, const num gauge) {
     sparse_cm * gamm_i = new sparse_cm(size, size);
     for (int i = 0; i < N_leads; i++) {
         cout << "working on lead " << i << endl;
-        sparse_cm *g_adv = new sparse_cm(size, size);
-        sparse_cm *g_ret = new sparse_cm(size, size);
+        esm *g_adv = new esm(size, size);
+        esm *g_ret = new esm(size, size);
 
 
         assert(V * V == 1);
@@ -475,11 +475,12 @@ matrix<num>* greenji(esm &H, const num flux, const num gauge) {
         ublas_to_eigen(*gamm_i, m1);
 
         pseudo_sparse_solve(slu, m1.transpose().eval(), result1);
+        *g_ret = result1.transpose().eval();
 
-        eigen_to_ublas(result1.transpose().eval(), *g_ret);
         esm result2(size, size);
         pseudo_sparse_solve(slu_herm, m1, result2);
-        eigen_to_ublas(result2.transpose().eval(), *g_adv);
+
+        *g_adv = result2.transpose().eval();
 
         gamma_g_adv[i] = g_adv;
         gamma_g_ret[i] = g_ret;
@@ -501,8 +502,8 @@ matrix<num>* greenji(esm &H, const num flux, const num gauge) {
         for (int j = 0; j < N_leads; j++){
             for (int n = 0; n < size; n++){
                 for (int m = 0; m < size; m++){
-                    cnum x = (*(gamma_g_ret[i]))(n, m);
-                    cnum y = (*gamma_g_adv[j])(m, n);
+                    cnum x = gamma_g_ret[i]->coeff(n, m);
+                    cnum y = gamma_g_adv[j]->coeff(m, n);
                     (*tpq)(i, j) += real(x * y);
                 }
             }
@@ -513,8 +514,8 @@ matrix<num>* greenji(esm &H, const num flux, const num gauge) {
 
     for (int i = 0; i < N_leads; i++){
         for (int n = 0; n < size; n++){
-            cnum x = (*gamma_g_ret[i])(n, n);
-            cnum y = (*gamma_g_adv[i])(n, n);
+            cnum x = gamma_g_ret[i]->coeff(n, n);
+            cnum y = gamma_g_adv[i]->coeff(n, n);
             (*tpq)(i, i) += real(cnum(0, 1) * y - cnum(0, 1) * x);
 
         }
