@@ -88,7 +88,7 @@ cnum b_factor(const num flux, const int n) {
     return exp(cnum(0.0, -1) * flux * (num) n);
 }
 
-void correct_phase(sparse_cm &m, num flux) {
+void correct_phase(sparse_cm &m, const num flux) {
     if (flux == num(0))
         return;
     cout << "correcting a phase...\n";
@@ -120,7 +120,7 @@ void correct_phase(sparse_cm &m, num flux) {
 }
 
 template <class T>
-idx_t count_nonzero(matrix<T> &m) {
+idx_t count_nonzero(const matrix<T> &m) {
     idx_t i = 0;
     for (idx_t x = 0; x < m.size1(); x++){
         for (idx_t y = 0; y < m.size2(); y++){
@@ -131,7 +131,7 @@ idx_t count_nonzero(matrix<T> &m) {
     return i;
 }
 
-idx_t count_nonzero(sparse_cm &m) {
+idx_t count_nonzero(const sparse_cm &m) {
     idx_t i = 0;
     sparse_cm::const_iterator1 x = m.begin1();
     sparse_cm::const_iterator1 x_end = m.end1();
@@ -147,7 +147,7 @@ idx_t count_nonzero(sparse_cm &m) {
     return i;
 }
 
-void sparse_inverse(esm &m, cmatrix &inv) {
+void sparse_inverse(const esm &m, cmatrix &inv) {
     Eigen::SparseLU<Eigen::SparseMatrix< cnum >,Eigen::SuperLU> slu(m);
     Eigen::VectorXcd base(size), invCol(size);
     for (int i=0; i<size; ++i) {
@@ -159,7 +159,7 @@ void sparse_inverse(esm &m, cmatrix &inv) {
     }
 }
 
-void pseudo_sparse_solve(Eigen::SparseLU<esm,Eigen::SuperLU> &slu,
+void pseudo_sparse_solve(const Eigen::SparseLU<esm,Eigen::SuperLU> &slu,
                          const esm &rhs, esm &result) {
     assert( rhs.cols() == rhs.rows() );
     int n = rhs.cols();
@@ -319,7 +319,7 @@ sparse_cm* hamiltonian(const num rashb, const num B) {
     return Hnn;
 };
 
-sparse_cm** self_energy(num flux, num gauge) {
+sparse_cm** self_energy(const num flux, const num gauge) {
     // analytical green's function in the leads
     // gl = G_{l+1, l+1}n
     cmatrix gl = cmatrix(Nx, Nx);
@@ -418,15 +418,15 @@ sparse_cm** self_energy(num flux, num gauge) {
     return sr;
 }
 
-matrix<num>* greenji(sparse_cm* Hnn, num flux, num gauge) {
+matrix<num>* greenji(sparse_cm &Hnn, const num flux, const num gauge) {
     sparse_cm **sigma_r   = self_energy(flux, gauge);
 
     for (int k = 0; k < N_leads; k++){
-        noalias(*Hnn) -= *(sigma_r[k]);
+        noalias(Hnn) -= *(sigma_r[k]);
     }
     esm e_green_inv(size, size);
 
-    ublas_to_eigen(*Hnn, e_green_inv);
+    ublas_to_eigen(Hnn, e_green_inv);
     log_tick("green_inv");
     Eigen::SparseLU<esm,Eigen::SuperLU> slu(e_green_inv.transpose());
     log_tick("first decomposition");
@@ -582,7 +582,7 @@ int main (int argc, char** argv) {
 //    cout << "Hamiltonian: " << *Hnn << "\n";
 //    cout << io::sparse(*Hnn) << endl;
     num flux = flux_from_field(Bz);
-    matrix<num> *tpq = greenji(Hnn, flux, global_gauge);
+    matrix<num> *tpq = greenji(*Hnn, flux, global_gauge);
     delete Hnn;
     cout << "final tpq" << *tpq << endl;
     boost::numeric::ublas::vector<num> r;
