@@ -18,14 +18,14 @@
 #include <Eigen/Core>
 #include <Eigen/Sparse>
 
-using namespace boost::numeric::ublas;
+namespace ub = boost::numeric::ublas;
 using namespace std;
 USING_PART_OF_NAMESPACE_EIGEN
 
 typedef double num;
 typedef complex<num> cnum;
-typedef matrix<cnum> cmatrix;
-typedef compressed_matrix<cnum, row_major> sparse_cm;
+typedef ub::matrix<cnum> cmatrix;
+typedef ub::compressed_matrix<cnum, ub::row_major> sparse_cm;
 typedef Eigen::SparseMatrix< cnum , Eigen::RowMajor> esm;
 typedef Eigen::RandomSetter< esm > ers;
 typedef unsigned int idx_t;
@@ -116,7 +116,7 @@ void correct_phase(esm &m, const num flux) {
 }
 
 template <class T>
-idx_t count_nonzero(const matrix<T> &m) {
+idx_t count_nonzero(const ub::matrix<T> &m) {
     idx_t i = 0;
     for (idx_t x = 0; x < m.size1(); x++){
         for (idx_t y = 0; y < m.size2(); y++){
@@ -412,7 +412,7 @@ esm** self_energy(const num flux, const num gauge) {
     return e;
 }
 
-matrix<num>* greenji(esm &H, const num flux, const num gauge) {
+ub::matrix<num>* greenji(esm &H, const num flux, const num gauge) {
     esm **sigma_r   = self_energy(flux, gauge);
 
     for (int k = 0; k < N_leads; k++){
@@ -427,7 +427,7 @@ matrix<num>* greenji(esm &H, const num flux, const num gauge) {
     log_tick("second decomposition");
 
 
-    matrix<num> *tpq = new matrix<num>(N_leads, N_leads);
+    ub::matrix<num> *tpq = new ub::matrix<num>(N_leads, N_leads);
     tpq->clear();
     esm **gamma_g_adv = new esm*[N_leads];
     esm **gamma_g_ret = new esm*[N_leads];
@@ -559,7 +559,7 @@ int main (int argc, char** argv) {
 #endif
 
     num flux = flux_from_field(Bz);
-    matrix<num> *tpq = greenji(*H, flux, global_gauge);
+    ub::matrix<num> *tpq = greenji(*H, flux, global_gauge);
     cout << "final tpq" << *tpq << endl;
     delete H;
     boost::numeric::ublas::vector<num> r;
