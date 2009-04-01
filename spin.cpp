@@ -369,42 +369,51 @@ sparse_cm** self_energy(const num flux, const num gauge) {
     }
 
     sparse_cm** sr = new sparse_cm*[N_leads];
+    esm** e = new esm*[N_leads];
+    ers** s = new ers*[N_leads];
 
-    for (int i = 0; i < N_leads; i++)
+    for (int i = 0; i < N_leads; i++) {
         sr[i] = new sparse_cm(size, size, lead_sites * lead_sites);
+        e[i]  = new esm(size, size);
+        s[i]  = new ers( *e[i] );
+    }
 
     for (int i = 0; i < lead_sites; i++){
         for (int j = 0; j < lead_sites; j++){
             cnum g = gl(i, j);
+
             /* left */
-            (*sr[0])(IDX(0, i+lead_offset[0], 0), 
-                     IDX(0, j+lead_offset[0], 0))      = g;
-            (*sr[2])(IDX(0, i+lead_offset[2], 1), 
-                     IDX(0, j+lead_offset[2], 1))      = g;
+            (*s[0])(IDX(0, i+lead_offset[0], 0), 
+                    IDX(0, j+lead_offset[0], 0))      = g;
+            (*s[2])(IDX(0, i+lead_offset[2], 1), 
+                    IDX(0, j+lead_offset[2], 1))      = g;
 
             /* right */
-            (*sr[1])(IDX(Nx-1, i+lead_offset[1], 0),
-                     IDX(Nx-1, j+lead_offset[1], 0))   = g;
-            (*sr[3])(IDX(Nx-1, i+lead_offset[3], 1), 
-                     IDX(Nx-1, j+lead_offset[3], 1))   = g;
+            (*s[1])(IDX(Nx-1, i+lead_offset[1], 0),
+                    IDX(Nx-1, j+lead_offset[1], 0))   = g;
+            (*s[3])(IDX(Nx-1, i+lead_offset[3], 1), 
+                    IDX(Nx-1, j+lead_offset[3], 1))   = g;
 
             /* top */
-            (*sr[4])(IDX(i+lead_offset[4], 0, 0), 
-                     IDX(j+lead_offset[4], 0, 0))      = g;
-            /*   5 (sic) */
-            (*sr[5])(IDX(i+lead_offset[5], 0, 1),
+            (*s[4])(IDX(i+lead_offset[4], 0, 0), 
+                    IDX(j+lead_offset[4], 0, 0))      = g;
+            /*  5 (sic) */
+            (*s[5])(IDX(i+lead_offset[5], 0, 1),
                      IDX(j+lead_offset[5], 0, 1))      = g;
 
             /* bottom */
             /*   6 (sic) */
-            (*sr[6])(IDX(i+lead_offset[6], Ny-1, 0), 
-                     IDX(j+lead_offset[6], Ny-1, 0))   = g;
-            (*sr[7])(IDX(i+lead_offset[7], Ny-1, 1), 
-                     IDX(j+lead_offset[7], Ny-1, 1))   = g;
+            (*s[6])(IDX(i+lead_offset[6], Ny-1, 0), 
+                    IDX(j+lead_offset[6], Ny-1, 0))   = g;
+            (*s[7])(IDX(i+lead_offset[7], Ny-1, 1), 
+                    IDX(j+lead_offset[7], Ny-1, 1))   = g;
         }
     }
 
     for (int i = 0; i < N_leads; i++) {
+        delete s[i];
+        eigen_to_ublas(*e[i], *sr[i]);
+
         switch(i) {
             case 0:
             case 1:
@@ -421,6 +430,7 @@ sparse_cm** self_energy(const num flux, const num gauge) {
                 break;
         }
     }
+    delete[] s;
 
     log_tick("self-energy");
     return sr;
@@ -577,8 +587,6 @@ int main (int argc, char** argv) {
     }
 #endif
 
-//    cout << "Hamiltonian: " << *Hnn << "\n";
-//    cout << io::sparse(*Hnn) << endl;
     num flux = flux_from_field(Bz);
     matrix<num> *tpq = greenji(*H, flux, global_gauge);
     cout << "final tpq" << *tpq << endl;
