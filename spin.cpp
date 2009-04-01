@@ -250,8 +250,8 @@ esm* hamiltonian(const num rashb, const num B) {
         // iteration, but every two diagonal items with distance
         // (size/2) must still have the same value
         cnum energy = 4.0 * V + e_tot;
-        (Hnn)(i, i)                     = energy - zeeman;
-        (Hnn)(i + size/2, i + size/2)   = energy + zeeman;
+        Hnn(i, i)                     = energy - zeeman;
+        Hnn(i + size/2, i + size/2)   = energy + zeeman;
     }
 
     /*                Nx
