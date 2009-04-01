@@ -572,20 +572,12 @@ int main (int argc, char** argv) {
     eigen_to_ublas(*H, *Hnn);
 #ifndef NDEBUG
     {
-        sparse_cm HH = herm(*Hnn);
-        int errors = 0;
-        for (int x = 0; x < size; x++) {
-            for (int y = 0; y < size; y++){
-                cnum c1 = (*Hnn)(x, y);
-                cnum c2 = HH(x, y);
-                if (abs(c1 - c2 ) > 1e-5) {
-                    errors++;
-                }
-            }
-        }
-        if (errors > 0) {
+        esm Hcheck(size, size);
+        Hcheck = *H - esm(H->adjoint()).eval();
+        num x = Hcheck.cwise().abs().sum();
+        if (x > 0.01) {
             cerr << "ERROR: Hamiltonian is not hermitian ("
-                << errors << " differences)\n";
+                 << x << ")\n";
             exit(1);
         }
     }
