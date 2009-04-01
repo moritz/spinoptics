@@ -564,8 +564,6 @@ int main (int argc, char** argv) {
     cout << "Size:    " << Nx << "x" << Ny << endl;
     cout << "Bz:      " << Bz << endl;
     esm *H = hamiltonian(alpha, Bz);
-    sparse_cm *Hnn = new sparse_cm(size, size);
-    eigen_to_ublas(*H, *Hnn);
 #ifndef NDEBUG
     {
         esm Hcheck(size, size);
@@ -583,8 +581,8 @@ int main (int argc, char** argv) {
 //    cout << io::sparse(*Hnn) << endl;
     num flux = flux_from_field(Bz);
     matrix<num> *tpq = greenji(*H, flux, global_gauge);
-    delete Hnn;
     cout << "final tpq" << *tpq << endl;
+    delete H;
     boost::numeric::ublas::vector<num> r;
     boost::numeric::ublas::vector<num> c;
     bool is_first = true;
