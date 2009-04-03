@@ -28,6 +28,7 @@ typedef ub::matrix<cnum> cmatrix;
 typedef ub::compressed_matrix<cnum, ub::row_major> sparse_cm;
 typedef Eigen::SparseMatrix< cnum , Eigen::RowMajor> esm;
 typedef Eigen::RandomSetter< esm > ers;
+typedef Eigen::SparseLU<esm, Eigen::SuperLU> eslu;
 typedef unsigned int idx_t;
 
 const int Nx               = 10;
@@ -92,7 +93,7 @@ cnum b_factor(const num flux, const int n) {
 void correct_phase(esm &m, const num flux) {
     if (flux == num(0))
         return;
-    cout << "correcting a phase...\n";
+//    cout << "correcting a phase...\n";
     for (int k = 0; k < m.outerSize(); ++k) {
         for (esm::InnerIterator it(m,k); it; ++it) {
             int x1 = it.row() % Nx;
@@ -128,7 +129,7 @@ idx_t count_nonzero(const ub::matrix<T> &m) {
 }
 
 void sparse_inverse(const esm &m, cmatrix &inv) {
-    Eigen::SparseLU<Eigen::SparseMatrix< cnum >,Eigen::SuperLU> slu(m);
+    eslu slu(m);
     Eigen::VectorXcd base(size), invCol(size);
     for (int i=0; i<size; ++i) {
         base = Eigen::VectorXcd::Unit(size, i);
@@ -139,7 +140,7 @@ void sparse_inverse(const esm &m, cmatrix &inv) {
     }
 }
 
-void pseudo_sparse_solve(const Eigen::SparseLU<esm,Eigen::SuperLU> &slu,
+void pseudo_sparse_solve(const eslu &slu,
                          const esm &rhs, esm &result) {
     assert( rhs.cols() == rhs.rows() );
     int n = rhs.cols();
@@ -401,7 +402,7 @@ esm** self_energy(const num flux, const num gauge) {
             case 5:
             case 6:
             case 7:
-                cout << "gauge scaling factor: " << flux << endl;
+//                cout << "gauge scaling factor: " << flux << endl;
                 correct_phase(*e[i], gauge * flux);
                 break;
         }
@@ -421,9 +422,9 @@ ub::matrix<num>* greenji(esm &H, const num flux, const num gauge) {
     esm e_green_inv(size, size);
 
     log_tick("hamiltonian + self-energy");
-    Eigen::SparseLU<esm,Eigen::SuperLU> slu(H.transpose());
+    eslu slu(H.transpose());
     log_tick("first decomposition");
-    Eigen::SparseLU<esm,Eigen::SuperLU> slu_herm(H.conjugate());
+    eslu slu_herm(H.conjugate());
     log_tick("second decomposition");
 
 
@@ -475,11 +476,14 @@ ub::matrix<num>* greenji(esm &H, const num flux, const num gauge) {
 
     cout << "trace...\n";
     // Now calculate the trace
+    cnum null = cnum(0, 0);
     for (int i = 0; i < N_leads; i++){
         for (int j = 0; j < N_leads; j++){
             for (int n = 0; n < size; n++){
                 for (int m = 0; m < size; m++){
                     cnum x = gamma_g_ret[i]->coeff(n, m);
+                    if (x == null)
+                        break;
                     cnum y = gamma_g_adv[j]->coeff(m, n);
                     (*tpq)(i, j) += real(x * y);
                 }
@@ -541,9 +545,10 @@ int main (int argc, char** argv) {
         lead_offset[i] = 0;
     }
 
-    cout << "PID:     " << getpid() << endl;
-    cout << "Size:    " << Nx << "x" << Ny << endl;
-    cout << "Bz:      " << Bz << endl;
+    cout << "PID:        " << getpid() << endl;
+    cout << "Size:       " << Nx << "x" << Ny << endl;
+    cout << "lead width: " << lead_sites << endl;
+    cout << "Bz:         " << Bz << endl;
     esm *H = hamiltonian(alpha, Bz);
 #ifndef NDEBUG
     {
