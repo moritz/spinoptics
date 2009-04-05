@@ -1,8 +1,9 @@
 CC=gfortran
 CFLAGS=-g -I/usr/include/ -O2 -Wuninitialized
 LDFLAGS= -L$(HOME)/local/lib
-INCLUDEPATH=-I/home/mlenz/tmp/eigen2/ -I/usr/include/superlu -I$(HOME)/local/include
-GPPFLAGS=$(INCLUDEPATH) $(LDFLAGS) -ltaucs -lsuperlu -DEIGEN_SUPERLU_SUPPORT -DEIGEN_TAUCS_SUPPORT
+INCLUDEPATH=-I$(HOME)/tmp/eigen2/ -I/usr/include/superlu -I$(HOME)/local/include
+# GPPFLAGS=$(INCLUDEPATH) $(LDFLAGS) -ltaucs -lsuperlu -DEIGEN_SUPERLU_SUPPORT -DEIGEN_TAUCS_SUPPORT
+GPPFLAGS=$(INCLUDEPATH) $(LDFLAGS) -lsuperlu -DEIGEN_SUPERLU_SUPPORT
 
 all: cppspin
 
