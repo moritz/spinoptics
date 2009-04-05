@@ -167,6 +167,7 @@ void pseudo_sparse_solve(const eslu &slu,
             }
         }
     }
+    delete invCol;
 }
 
 void ublas_to_eigen(const sparse_cm &m, esm &result) {
