@@ -422,9 +422,11 @@ ub::matrix<num>* greenji(esm &H, const num flux, const num gauge) {
     esm e_green_inv(size, size);
 
     log_tick("hamiltonian + self-energy");
-    eslu slu(H.transpose());
+    // the magic number is the ordering method that the solver uses
+    // internally. Doesn't change results, only execution time
+    eslu slu(H.transpose(), 0x0300);
     log_tick("first decomposition");
-    eslu slu_herm(H.conjugate());
+    eslu slu_herm(H.conjugate(), 0x0300);
     log_tick("second decomposition");
 
 
