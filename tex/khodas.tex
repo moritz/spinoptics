@@ -141,17 +141,22 @@ boundary conditions at the interface
 Multiplying both equations with $\chi_N^+$ and $\chi_N^-$ gives us
 four scalar equations:
 
-\begin{align}
-    1 + r_{++}  &= <\chi_{SO}^+|\chi_N^+> t_{++} + <\chi_{SO}^-|\chi_N^+> t_{-+}\\
+\begin{align} 
+    \label{eq:a1}
+    1 + r_{++}  &= <\chi_{SO}^+|\chi_N^+> t_{++} +
+                    <\chi_{SO}^-|\chi_N^+> t_{-+}\\
+    \label{eq:a2}
         r_{-+}  &= <\chi_{SO}^+|\chi_N^-> t_{++} + <\chi_{SO}^-|\chi_N^-> t_{-+}\\
-    \cos \phi \  (1 + r_{++})
+    \label{eq:b1}
+    \cos \phi  (1 + r_{++})
                 &= \frac{p_{x,SO}}{p} \left(<\chi_{SO}^+|\chi_N^+> t_{++} 
                         + <\chi_{SO}^-|\chi_N^+> t_{-+} \right) \nonumber \\
                 &  + \ta \left(<\chi_{SO}^+|\sigma_z|\chi_N^+> t_{++} 
-                        + <\chi_{SO}^-|\sigma_z|\chi_N^+> t_{-+} \right) \\
+                        + <\chi_{SO}^-|\sigma_z|\chi_N^+> t_{-+} \right)\\
+ \label{eq:b2}
     \cos \phi \  r_{-+}
                 &= \frac{p_{x,SO}}{p} \left(<\chi_{SO}^+|\chi_N^-> t_{++} 
-                        + <\chi_{SO}^-|\chi_N^-> t_{-+} \right) \nonumber \\
+                        + <\chi_{SO}^-|\chi_N^-> t_{-+} \right) \nonumber\\
                 &  + \ta \left(<\chi_{SO}^+|\sigma_z|\chi_N^-> t_{++} 
                         + <\chi_{SO}^-|\sigma_z|\chi_N^-> t_{-+} \right)
 \end{align}
@@ -159,6 +164,32 @@ four scalar equations:
 (The scalar products of the spinors are indicated in bracket notation
 for clarity, even though they don't imply in integration over any
 variable).
+
+$(\ref{eq:a1}) - \frac{1}{\cos \phi} (\ref{eq:b1})$
+and
+$(\ref{eq:a2}) - \frac{1}{\cos \phi} (\ref{eq:b2})$ form a linear,
+homogeneous system of equations, which obviously has the trivial
+solution $t_{++}, t_{-+} = 0$, which isn't a very physical solution.
+
+Introducing
+
+\begin{align}
+    \beta = \frac{p_{x,SO}}{p \cos \phi}
+\end{align}
+
+we obtain for the determinant of that equation system
+
+\begin{align}
+    d = \left(<\chi_{N}^+|\chi_{SO}^+>( \beta - 1) +  
+            \frac{\ta}{\cos \phi} <\chi_{N}^+|\sigma_z|\chi_{SO}^+>\right) \nonumber \\
+        \cdot \left(<\chi_{N}^-|\chi_{SO}^->( \beta - 1) +  
+            \frac{\ta}{\cos \phi} <\chi_{N}^-|\sigma_z|\chi_{SO}^->\right) \nonumber \\
+     - \left(<\chi_{N}^-|\chi_{SO}^+>( \beta - 1) +  
+            \frac{\ta}{\cos \phi} <\chi_{N}^+|\sigma_z|\chi_{SO}^->\right) \nonumber \\
+        \cdot \left(<\chi_{N}^+|\chi_{SO}^->( \beta - 1) +  
+            \frac{\ta}{\cos \phi} <\chi_{N}^+|\sigma_z|\chi_{SO}^->\right) \nonumber \\
+\end{align}
+
 
 Using the geometric relations
 
@@ -168,28 +199,17 @@ Using the geometric relations
 \end{align}
 
 together with eqn. \ref{eq:pso} we have all quantities to calculate
-the scalar products (here expanded to the second order of $\ta$. 
+the scalar products.
+
+As the Mathematica notebook \texttt{spinoptics-scratch.nb} shows,
+a calculation up to the second order of $\ta$ gives us
 
 \begin{align}
-    <\chi_{SO}^+|\chi_N^+> &= 1 - \frac{\ta^2}{8} \tan^2 \phi \\
-    <\chi_{SO}^-|\chi_N^-> &= 1 - \frac{\ta^2}{8} \tan^2 \phi\\
-    <\chi_{SO}^+|\chi_N^-> &= \frac{\ta}{2} \tan \phi 
-            + \frac{\ta^2}{4} \frac{\tan \phi}{\cos^2\phi}\\
-    <\chi_{SO}^-|\chi_N^+> &= \frac{\ta}{2} \tan \phi 
-            - \frac{\ta^2}{4} \frac{\tan \phi}{\cos^2\phi}\\
-    <\chi_{SO}^+|\sigma_z|\chi_N^+> &= \cos \phi 
-            - \frac{\ta}{2} \sin \phi \tan \phi
-            - \frac{\ta^2}{16}\frac{(5 + \cos 2\phi)\tan^2 \phi}{\cos^2 \phi}\\
-    <\chi_{SO}^-|\sigma_z|\chi_N^-> &= -\cos \phi 
-            - \frac{\ta}{2} \sin \phi \tan \phi
-            + \frac{\ta^2}{16}\frac{(5 + \cos 2\phi)\tan^2 \phi}{\cos^2 \phi}\\
-    <\chi_{SO}^+|\sigma_z|\chi_N^-> &= - \sin \phi 
-            - \frac{\ta}{2} \sin \phi 
-            - \frac{\ta^2}{16} \frac{(3 + \cos 2\phi)\tan \phi}{\cos \phi}\\
-    <\chi_{SO}^-|\sigma_z|\chi_N^+> &= - \sin \phi 
-            + \frac{\ta}{2} \sin \phi 
-            - \frac{\ta^2}{16} \frac{(3 + \cos 2\phi)\tan \phi}{\cos \phi}
+    d &= \ta^2 \sec^2 \phi \tan^2 \phi \nonumber\\
+      &= \frac{\ta^2}{\cos^2 \phi}
 \end{align}
+
+So a not too approximative calculation gives no physical solutions to our boundary conditions.
 
 \end{document}
 
