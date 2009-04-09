@@ -205,7 +205,6 @@ esm* hamiltonian(const num rashb, const num B) {
     esm *H = new esm(size, size);
     ers Hnn( *H );
 
-
     // division by e_charge to convert from electron volt to Joule
     num zeeman = 0.5 * g_factor * bohr_magneton * B / e_charge;
 //    num zeeman = 0.0;
@@ -296,6 +295,21 @@ esm* hamiltonian(const num rashb, const num B) {
 
 };
 
+num r_prod_trace(const esm &a, const esm &b) {
+    num sum = 0.0;
+    cnum null = cnum(0, 0);
+    for (int n = 0; n < size; n++){
+        for (int m = 0; m < size; m++){
+            cnum x = a.coeff(n, m);
+            if (x == null)
+                break;
+            cnum y = b.coeff(m, n);
+            sum += real(x * y);
+        }
+    }
+
+    return sum;
+}
 
 esm** self_energy(const num flux, const num gauge) {
     // analytical green's function in the leads
@@ -472,15 +486,7 @@ ub::matrix<num>* greenji(esm &H, const num flux, const num gauge) {
     cnum null = cnum(0, 0);
     for (int i = 0; i < N_leads; i++){
         for (int j = 0; j < N_leads; j++){
-            for (int n = 0; n < size; n++){
-                for (int m = 0; m < size; m++){
-                    cnum x = gamma_g_ret[i]->coeff(n, m);
-                    if (x == null)
-                        break;
-                    cnum y = gamma_g_adv[j]->coeff(m, n);
-                    (*tpq)(i, j) += real(x * y);
-                }
-            }
+            (*tpq)(i, j) = r_prod_trace(*gamma_g_ret[i], *gamma_g_adv[j]);
         }
     }
     log_tick("trace");
