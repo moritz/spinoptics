@@ -298,18 +298,16 @@ esm* hamiltonian(const num rashb, const num B) {
 num r_prod_trace(const esm &a, const esm &b) {
     num sum = 0.0;
     cnum null = cnum(0, 0);
-    for (int n = 0; n < size; n++){
-        for (int m = 0; m < size; m++){
-            cnum x = a.coeff(n, m);
-            if (x == null)
-                break;
-            cnum y = b.coeff(m, n);
-            sum += real(x * y);
+    for (int k = 0; k < a.outerSize(); ++k) {
+        for (esm::InnerIterator it(a,k); it; ++it) {
+            cnum y = b.coeff(it.col(), it.row());
+            sum += real(it.value() * y);
         }
     }
 
     return sum;
 }
+
 
 esm** self_energy(const num flux, const num gauge) {
     // analytical green's function in the leads
