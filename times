@@ -44,3 +44,15 @@ nano execution times
 size: 12x12, flags: -g -O2		0m15.596s
 size: 20x20, flags: -g -O2		7m50.786s
 
+
+# With SuperLU backend to eigen2
+# OrderingMethod flags:
+40x40:
+default:    0m53.482s
+0x0200:     0m18.442s
+0x0300:     0m12.897s
+0x0400:     0m12.525s
+
+60x60:
+0x0300:     1m1.354s
+0x0400:     0m59.187s
