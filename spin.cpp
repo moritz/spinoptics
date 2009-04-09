@@ -459,16 +459,15 @@ ub::matrix<num>* greenji(esm &H, const num flux, const num gauge) {
         sigma_r[i] = NULL;
 
         esm m1(size, size);
-        esm result1(size, size);
+        esm result(size, size);
 
-        pseudo_sparse_solve(slu, gamm_i.adjoint(), result1);
-        *g_ret = result1.adjoint();
+        pseudo_sparse_solve(slu, gamm_i.adjoint(), result);
+        *g_ret = result.adjoint();
 
-        esm result2(size, size);
-        pseudo_sparse_solve(slu, gamm_i.conjugate(), result2, true);
+        pseudo_sparse_solve(slu, gamm_i.conjugate(), result, true);
 
 
-        *g_adv = result2.adjoint();
+        *g_adv = result.adjoint();
 
         gamma_g_adv[i] = g_adv;
         gamma_g_ret[i] = g_ret;
