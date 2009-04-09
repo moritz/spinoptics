@@ -141,16 +141,19 @@ void sparse_inverse(const esm &m, cmatrix &inv) {
 }
 
 void pseudo_sparse_solve(const eslu &slu,
-                         const esm &rhs, esm &result) {
+                         const esm &rhs, esm &result,
+                         const bool adjoint = false) {
     assert( rhs.cols() == rhs.rows() );
     int n = rhs.cols();
-    MatrixXcd full_rhs(n, n);
-    full_rhs.setZero();
-    MatrixXcd full_solution(n, n);
-    full_solution.setZero();
 
     Eigen::RandomSetter< esm > setter(result);
     Eigen::VectorXcd *invCol = new Eigen::VectorXcd(n);
+    int transpose_flag;
+    if (adjoint) {
+        transpose_flag = Eigen::SvAdjoint;
+    } else {
+        transpose_flag = Eigen::SvNoTrans;
+    }
     for (int k=0; k<rhs.outerSize(); ++k) {
         Eigen::VectorXcd base(n);
         int i = 0;
@@ -159,7 +162,7 @@ void pseudo_sparse_solve(const eslu &slu,
             i++;
         }
         if (i != 0) {
-            slu.solve(base, invCol);
+            slu.solve(base, invCol, transpose_flag);
             for (int j = 0; j < n; j++) {
                 if (abs((*invCol)[j]) > 1e-18) {
                     setter(j, k) = (*invCol)[j];
@@ -425,7 +428,7 @@ ub::matrix<num>* greenji(esm &H, const num flux, const num gauge) {
     log_tick("hamiltonian + self-energy");
     // the magic number is the ordering method that the solver uses
     // internally. Doesn't change results, only execution time
-    eslu slu(H.transpose(), 0x0300);
+    eslu slu(H.adjoint(), 0x0300);
     log_tick("first decomposition");
     eslu slu_herm(H.conjugate(), 0x0300);
     log_tick("second decomposition");
@@ -460,10 +463,11 @@ ub::matrix<num>* greenji(esm &H, const num flux, const num gauge) {
         esm m1(size, size);
         esm result1(size, size);
 
-        pseudo_sparse_solve(slu, gamm_i.transpose(), result1);
-        *g_ret = result1.transpose();
+        pseudo_sparse_solve(slu, gamm_i.adjoint(), result1);
+        *g_ret = result1.adjoint();
 
         esm result2(size, size);
+//        pseudo_sparse_solve(slu, gamm_i.adjoint(), result1, true);
         pseudo_sparse_solve(slu_herm, gamm_i, result2);
 
         *g_adv = result2.transpose();
