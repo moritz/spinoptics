@@ -430,7 +430,7 @@ ub::matrix<num>* greenji(esm &H, const num flux, const num gauge) {
     // internally. Doesn't change results, only execution time
     eslu slu(H.adjoint(), 0x0300);
     log_tick("first decomposition");
-    eslu slu_herm(H.conjugate(), 0x0300);
+    eslu slu_herm(H, 0x0300);
     log_tick("second decomposition");
 
 
@@ -468,9 +468,9 @@ ub::matrix<num>* greenji(esm &H, const num flux, const num gauge) {
 
         esm result2(size, size);
 //        pseudo_sparse_solve(slu, gamm_i.adjoint(), result1, true);
-        pseudo_sparse_solve(slu_herm, gamm_i, result2);
+        pseudo_sparse_solve(slu_herm, gamm_i.conjugate(), result2);
 
-        *g_adv = result2.transpose();
+        *g_adv = result2.adjoint();
 
         gamma_g_adv[i] = g_adv;
         gamma_g_ret[i] = g_ret;
