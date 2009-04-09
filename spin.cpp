@@ -116,18 +116,6 @@ void correct_phase(esm &m, const num flux) {
 
 }
 
-template <class T>
-idx_t count_nonzero(const ub::matrix<T> &m) {
-    idx_t i = 0;
-    for (idx_t x = 0; x < m.size1(); x++){
-        for (idx_t y = 0; y < m.size2(); y++){
-            if (m(x, y) != 0.0) 
-                i++;
-        }
-    }
-    return i;
-}
-
 void sparse_inverse(const esm &m, cmatrix &inv) {
     eslu slu(m);
     Eigen::VectorXcd base(size), invCol(size);
