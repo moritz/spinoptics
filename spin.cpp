@@ -446,7 +446,6 @@ ub::matrix<num>* greenji(esm &H, const num flux, const num gauge) {
     // to save memory
     // first carry out the two products 
     // \Gamma_p * G^R and \Gamma_q * G^A
-    esm gamm_i(size, size);
     for (int i = 0; i < N_leads; i++) {
         cout << "working on lead " << i << endl;
         esm *g_adv = new esm(size, size);
@@ -454,17 +453,19 @@ ub::matrix<num>* greenji(esm &H, const num flux, const num gauge) {
 
 
         assert(V * V == 1);
-        gamm_i = (-2) * sigma_r[i]->imag();
-        delete sigma_r[i];
-        sigma_r[i] = NULL;
+        *sigma_r[i] = (-2) * sigma_r[i]->imag();
 
         esm m1(size, size);
         esm result(size, size);
 
-        pseudo_sparse_solve(slu, gamm_i.adjoint(), result);
+        // since *sigma_r[i] is a real matrix by now (although declared
+        // complex) we can use transpose() instead of adjoint();
+        pseudo_sparse_solve(slu, sigma_r[i]->transpose(), result);
         *g_ret = result.adjoint();
 
-        pseudo_sparse_solve(slu, gamm_i.conjugate(), result, true);
+        pseudo_sparse_solve(slu, *sigma_r[i], result, true);
+        delete sigma_r[i];
+        sigma_r[i] = NULL;
 
 
         *g_adv = result.adjoint();
