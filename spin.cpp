@@ -429,9 +429,7 @@ ub::matrix<num>* greenji(esm &H, const num flux, const num gauge) {
     // the magic number is the ordering method that the solver uses
     // internally. Doesn't change results, only execution time
     eslu slu(H.adjoint(), 0x0300);
-    log_tick("first decomposition");
-    eslu slu_herm(H, 0x0300);
-    log_tick("second decomposition");
+    log_tick("LU decomposition");
 
 
     ub::matrix<num> *tpq = new ub::matrix<num>(N_leads, N_leads);
@@ -467,8 +465,8 @@ ub::matrix<num>* greenji(esm &H, const num flux, const num gauge) {
         *g_ret = result1.adjoint();
 
         esm result2(size, size);
-//        pseudo_sparse_solve(slu, gamm_i.adjoint(), result1, true);
-        pseudo_sparse_solve(slu_herm, gamm_i.conjugate(), result2);
+        pseudo_sparse_solve(slu, gamm_i.conjugate(), result2, true);
+
 
         *g_adv = result2.adjoint();
 
