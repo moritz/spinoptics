@@ -7,4 +7,6 @@ a.out
 spin
 cout
 t
-inv_general_complex_mat.o
+*.[ao]
+cachegrind.out.*
+callgrind.out.*
