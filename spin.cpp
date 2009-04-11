@@ -356,6 +356,7 @@ esm** self_energy(const num flux, const num gauge) {
     ers** s = new ers*[N_leads];
 
     for (int i = 0; i < N_leads; i++) {
+        assert(lead_sites + lead_offset[i] <= Nx);
         e[i]  = new esm(size, size);
         s[i]  = new ers( *e[i] );
     }
@@ -579,7 +580,7 @@ int main (int argc, char** argv) {
         }
         if (is_first) {
             ref = r_sum;
-            cout << "sume rule reference (row 0): " << ref << endl;
+            cout << "Number of modes: " << ref << endl;
             is_first = false;
         }
         if (abs(r_sum - ref) > epsilon) {
