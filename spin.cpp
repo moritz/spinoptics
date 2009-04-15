@@ -56,7 +56,7 @@ const num e_charge   = 1.60217653E-19;   // [C = A*s]
 const num bohr_magneton
                      = 9.27400915E-24;   // [A * m^2]
 
-const num width_sample 
+const num width_sample
                      = 30.0;             // [nm]
 const num g_factor   = 20.0;
 
@@ -81,9 +81,9 @@ void log_tick(const char* desc, bool end = false) {
 }
 
 num flux_from_field(const num B) {
-    return 2.0 * pi * B 
+    return 2.0 * pi * B
         * (a_sample * a_sample) * 1e-18 // a_sample is in nm
-        / h_planck; 
+        / h_planck;
 }
 
 cnum b_factor(const num flux, const int n) {
@@ -128,8 +128,9 @@ void sparse_inverse(const esm &m, cmatrix &inv) {
     }
 }
 
-void pseudo_sparse_solve(const eslu &slu,
-                         const esm &rhs, esm &result,
+void pseudo_sparse_solve(const eslu * const slu,
+                         const esm &rhs,
+                         esm &result,
                          const bool adjoint = false) {
     assert( rhs.cols() == rhs.rows() );
     int n = rhs.cols();
@@ -150,7 +151,7 @@ void pseudo_sparse_solve(const eslu &slu,
             i++;
         }
         if (i != 0) {
-            slu.solve(base, invCol, transpose_flag);
+            slu->solve(base, invCol, transpose_flag);
             for (int j = 0; j < n; j++) {
                 if (abs((*invCol)[j]) > 1e-18) {
                     setter(j, k) = (*invCol)[j];
@@ -190,7 +191,7 @@ inline num rashba(const num alpha) {
 }
 
 inline num mods(const int n, const int nle) {
-    return 2.0 * V * (cos(pi * (num) (n+1) / ((num) nle + 1.0)) 
+    return 2.0 * V * (cos(pi * (num) (n+1) / ((num) nle + 1.0))
             - 1.0);
 }
 
@@ -240,7 +241,7 @@ esm* hamiltonian(const num rashb, const num B) {
      *      0   1     ...       (Nx-1)
      *      Nx  Nx+1  ...       (2*Nx -1)
      *
-     *      if the index i is given, 
+     *      if the index i is given,
      *      y = i / Nx
      *      x = i % Nx
      */
@@ -332,9 +333,9 @@ esm** self_energy(const num flux, const num gauge) {
 
         cnum unit = cnum(1.0, 0.0);
         num  f    = (num) (Nx + 1);
-        cnum tmpp = exp(cnum(0, 1) * (num) (2.0 * pi 
+        cnum tmpp = exp(cnum(0, 1) * (num) (2.0 * pi
                     * (((num) ((r+1) * Nx )) / f)));
-        cnum tmpm = exp(cnum(0, -1) *(num)  (2.0 * pi 
+        cnum tmpm = exp(cnum(0, -1) *(num)  (2.0 * pi
                     * ((num) (r+1) / f)));
 
         // "AnorN1(mm)" in nano0903c.f
@@ -366,19 +367,19 @@ esm** self_energy(const num flux, const num gauge) {
             cnum g = gl(i, j);
 
             /* left */
-            (*s[0])(IDX(0, i+lead_offset[0], 0), 
+            (*s[0])(IDX(0, i+lead_offset[0], 0),
                     IDX(0, j+lead_offset[0], 0))      = g;
-            (*s[2])(IDX(0, i+lead_offset[2], 1), 
+            (*s[2])(IDX(0, i+lead_offset[2], 1),
                     IDX(0, j+lead_offset[2], 1))      = g;
 
             /* right */
             (*s[1])(IDX(Nx-1, i+lead_offset[1], 0),
                     IDX(Nx-1, j+lead_offset[1], 0))   = g;
-            (*s[3])(IDX(Nx-1, i+lead_offset[3], 1), 
+            (*s[3])(IDX(Nx-1, i+lead_offset[3], 1),
                     IDX(Nx-1, j+lead_offset[3], 1))   = g;
 
             /* top */
-            (*s[4])(IDX(i+lead_offset[4], 0, 0), 
+            (*s[4])(IDX(i+lead_offset[4], 0, 0),
                     IDX(j+lead_offset[4], 0, 0))      = g;
             /*  5 (sic) */
             (*s[5])(IDX(i+lead_offset[5], 0, 1),
@@ -386,9 +387,9 @@ esm** self_energy(const num flux, const num gauge) {
 
             /* bottom */
             /*   6 (sic) */
-            (*s[6])(IDX(i+lead_offset[6], Ny-1, 0), 
+            (*s[6])(IDX(i+lead_offset[6], Ny-1, 0),
                     IDX(j+lead_offset[6], Ny-1, 0))   = g;
-            (*s[7])(IDX(i+lead_offset[7], Ny-1, 1), 
+            (*s[7])(IDX(i+lead_offset[7], Ny-1, 1),
                     IDX(j+lead_offset[7], Ny-1, 1))   = g;
         }
     }
@@ -422,14 +423,14 @@ ub::matrix<num>* greenji(esm &H, const num flux, const num gauge) {
     esm **sigma_r   = self_energy(flux, gauge);
 
     for (int k = 0; k < N_leads; k++){
-        H -= *sigma_r[k]; 
+        H -= *sigma_r[k];
     }
     esm e_green_inv(size, size);
 
     log_tick("hamiltonian + self-energy");
     // the magic number is the ordering method that the solver uses
     // internally. Doesn't change results, only execution time
-    eslu slu(H.adjoint(), 0x0300);
+    eslu *slu = new eslu(H.adjoint(), 0x0300);
     log_tick("LU decomposition");
 
 
@@ -442,10 +443,10 @@ ub::matrix<num>* greenji(esm &H, const num flux, const num gauge) {
     // where G^A = (G^R)^\dagger
     //
     //
-    // \Gamma = -2 * Im(\Sigma_r)   
+    // \Gamma = -2 * Im(\Sigma_r)
     // (calculate slices of \Gamma (aka gamm_i) on the fly
     // to save memory
-    // first carry out the two products 
+    // first carry out the two products
     // \Gamma_p * G^R and \Gamma_q * G^A
     for (int i = 0; i < N_leads; i++) {
         cout << "working on lead " << i << endl;
@@ -477,6 +478,8 @@ ub::matrix<num>* greenji(esm &H, const num flux, const num gauge) {
 
     log_tick("solving");
 
+    delete slu;
+    slu = NULL;
     delete[] sigma_r;
     sigma_r = NULL;
 
@@ -584,7 +587,7 @@ int main (int argc, char** argv) {
             is_first = false;
         }
         if (abs(r_sum - ref) > epsilon) {
-            cout << "ERROR: sum rule violated for row " << i 
+            cout << "ERROR: sum rule violated for row " << i
                  << "  (" << r_sum << ")" << endl;
         }
         if (abs(c_sum - ref) > epsilon) {
