@@ -73,7 +73,7 @@ const num width_disorder  = 0.0;
 
 num alpha = -0.02 / a_sample / 2.0;
 
-void log_tick(const char* desc, bool end = false) {
+void log_tick(const char* desc) {
     static time_t prev = time(NULL);
     time_t t = time(NULL);
     printf("[Tick] %06ld %s\n", t-prev, desc);
@@ -135,7 +135,7 @@ void pseudo_sparse_solve(const eslu * const slu,
     assert( rhs.cols() == rhs.rows() );
     int n = rhs.cols();
 
-    Eigen::RandomSetter< esm > setter(result);
+    ers setter(result);
     Eigen::VectorXcd *invCol = new Eigen::VectorXcd(n);
     int transpose_flag;
     if (adjoint) {
@@ -164,7 +164,7 @@ void pseudo_sparse_solve(const eslu * const slu,
 
 void ublas_to_eigen(const sparse_cm &m, esm &result) {
     result.setZero();
-    Eigen::RandomSetter< esm > setter(result);
+    ers setter(result);
     sparse_cm::const_iterator1 x = m.begin1();
     sparse_cm::const_iterator1 x_end = m.end1();
     for (; x != x_end; ++x) {
@@ -595,6 +595,7 @@ int main (int argc, char** argv) {
                  << "  (" << c_sum << ")" << endl;
         }
     }
+    log_tick("Done");
     delete tpq;
     return 0;
 }
