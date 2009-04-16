@@ -342,18 +342,20 @@ esm** self_energy(const num flux, const num gauge) {
     return e;
 }
 
-ub::matrix<num>* greenji(esm &H, const num flux, const num gauge) {
+ub::matrix<num>* transmission(esm *H, const num flux, const num gauge) {
     esm **sigma_r   = self_energy(flux, gauge);
 
     for (int k = 0; k < N_leads; k++){
-        H -= *sigma_r[k];
+        *H -= *sigma_r[k];
     }
     esm e_green_inv(size, size);
 
     log_tick("hamiltonian + self-energy");
     // the magic number is the ordering method that the solver uses
     // internally. Doesn't change results, only execution time
-    eslu *slu = new eslu(H.adjoint(), 0x0300);
+    eslu *slu = new eslu(H->adjoint(), 0x0300);
+    delete H;
+    H = NULL;
     log_tick("LU decomposition");
 
 
@@ -488,9 +490,8 @@ int main (int argc, char** argv) {
 #endif
 
     num flux = flux_from_field(Bz);
-    ub::matrix<num> *tpq = greenji(*H, flux, global_gauge);
+    ub::matrix<num> *tpq = transmission(H, flux, global_gauge);
     cout << "final tpq" << *tpq << endl;
-    delete H;
     boost::numeric::ublas::vector<num> r;
     boost::numeric::ublas::vector<num> c;
     bool is_first = true;
