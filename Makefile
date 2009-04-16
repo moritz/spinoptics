@@ -19,11 +19,11 @@ spin: nano0903c.f inv_general_complex_mat.o Makefile
 	$(CC) $(CFLAGS) $(LDFLAGS) -fbounds-check -o spin  inv_general_complex_mat.o nano0903c.f DBL_COMBO_generatorjs1.f
 #	$(CC) $(CFLAGS) $(LDFLAGS) -o spin  inv_general_complex_mat.o nano0903c.f
 
-cppspin: spin.cpp Makefile
+cppspin: spin.cpp Makefile math-utils.h
 	g++ $(GPPFLAGS) -Wall $(DEBUGFLAGS) -o cppspin spin.cpp
 #	g++ $(GPPFLAGS) -Wall $(OPTFLAGS) -o cppspin spin.cpp
 
-t: test.cpp Makefile
+t: test.cpp Makefile math-utils.h
 	g++ $(GPPFLAGS) -Wall $(DEBUGFLAGS) -o t test.cpp
 clean:
 	rm -f *.o *~ spin cppspin
