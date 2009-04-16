@@ -28,7 +28,37 @@ const int Nx               = 10;
 const int Ny               = Nx;
 const int Spin_idx         = Nx * Ny;
 
+/*   Numbering  scheme for the sites
+ *
+ *                Nx
+ *       +----------------+
+ *      /                  \
+ *      X   X   X ...   X   X  -
+ *      X   X   X ...   X   X    \
+ *      .   .   .       .   .    |
+ *      .   .   .       .   .    |  Ny
+ *      .   .   .       .   .    |
+ *      X   X   X ...   X   X    /
+ *      X   X   X ...   X   X  -
+ *
+ *      Numbering scheme:
+ *      0   1     ...       (Nx-1)
+ *      Nx  Nx+1  ...       (2*Nx -1)
+ *
+ *      The same is repeated once more for spin down electrons
+ *
+ *      IDX(x, y, spin) returns an index into the site matrices
+ *      (where `x' and `y' are zero based, and `spin' is either 0 or 1
+ *
+ *      X_IDX(i) returns the x index for site index i
+ *      Y_IDX(i) returns the y index for site index i
+ *      S_IDX(i) returns the spin index for site index i
+ */
+
 #define IDX(x, y, s) ((x) + Nx * (y) + (s) * Spin_idx)
+#define X_IDX(i) (((i) % Spin_idx) % Nx)
+#define Y_IDX(i) (((i) % Spin_idx) / Nx)
+#define S_IDX(i) ((int) (i) / Spin_idx)
 
 const int N_leads    = 8;
 
@@ -89,13 +119,13 @@ void correct_phase(esm &m, const num flux) {
 //    cout << "correcting a phase...\n";
     for (int k = 0; k < m.outerSize(); ++k) {
         for (esm::InnerIterator it(m,k); it; ++it) {
-            int x1 = it.row() % Nx;
-            int y1 = (it.row()/Nx) % Ny;
-            assert(it.row() == IDX(x1, y1, (int) it.row() / Spin_idx));
+            int x1 = X_IDX(it.row());
+            int y1 = Y_IDX(it.row());
+            assert(it.row() == IDX(x1, y1, S_IDX(it.row())));
 
-            int x2 = it.col() % Nx;
-            int y2 = (it.col()/Nx) % Ny;
-            assert(it.col() == IDX(x2, y2, (int) it.col() / Spin_idx));
+            int x2 = X_IDX(it.col());
+            int y2 = Y_IDX(it.col());
+            assert(it.col() == IDX(x2, y2, S_IDX(it.col())));
 
 //            cout << "product: " << x2 * y2 - x1 * y1 << endl;
             cnum phi = b_factor(flux, x2 * y2 - x1 * y1);
@@ -148,25 +178,6 @@ esm* hamiltonian(const num rashb, const num B) {
         Hnn(i + size/2, i + size/2)   = energy + zeeman;
     }
 
-    /*                Nx
-     *       +----------------+
-     *      /                  \
-     *      X   X   X ...   X   X  -
-     *      X   X   X ...   X   X    \
-     *      .   .   .       .   .    |
-     *      .   .   .       .   .    |  Ny
-     *      .   .   .       .   .    |
-     *      X   X   X ...   X   X    /
-     *      X   X   X ...   X   X  -
-     *
-     *      Numbering scheme:
-     *      0   1     ...       (Nx-1)
-     *      Nx  Nx+1  ...       (2*Nx -1)
-     *
-     *      if the index i is given,
-     *      y = i / Nx
-     *      x = i % Nx
-     */
 
     // interaction in x direction
     cnum r = rashba(rashb);
