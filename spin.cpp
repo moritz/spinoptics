@@ -351,9 +351,9 @@ ub::matrix<num>* transmission(esm *H, const num flux, const num gauge) {
     esm e_green_inv(size, size);
 
     log_tick("hamiltonian + self-energy");
-    // the magic number is the ordering method that the solver uses
+    // the second parameter is the ordering method that the solver uses
     // internally. Doesn't change results, only execution time
-    eslu *slu = new eslu(H->adjoint(), 0x0300);
+    eslu *slu = new eslu(H->adjoint(), Eigen::MinimumDegree_ATA);
     delete H;
     H = NULL;
     log_tick("LU decomposition");
