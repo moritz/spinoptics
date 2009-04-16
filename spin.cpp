@@ -20,7 +20,6 @@
 
 namespace ub = boost::numeric::ublas;
 using namespace std;
-USING_PART_OF_NAMESPACE_EIGEN
 
 #include "math-utils.h"
 typedef unsigned int idx_t;
@@ -236,7 +235,7 @@ num r_prod_trace(const esm &a, const esm &b) {
 esm** self_energy(const num flux, const num gauge) {
     // analytical green's function in the leads
     // gl = G_{l+1, l+1}n
-    MatrixXcd gl(Nx, Nx);
+    Eigen::MatrixXcd gl(Nx, Nx);
     gl.setZero();
 
 
