@@ -28,6 +28,11 @@ const int Nx               = 10;
 const int Ny               = Nx;
 const int Spin_idx         = Nx * Ny;
 
+const int N_leads    = 8;
+
+// width of leads in units of lattice sites
+const int lead_sites       = Nx;
+
 /*   Numbering  scheme for the sites
  *
  *                Nx
@@ -59,11 +64,6 @@ const int Spin_idx         = Nx * Ny;
 #define X_IDX(i) (((i) % Spin_idx) % Nx)
 #define Y_IDX(i) (((i) % Spin_idx) / Nx)
 #define S_IDX(i) ((int) (i) / Spin_idx)
-
-const int N_leads    = 8;
-
-// width of leads in units of lattice sites
-const int lead_sites       = Nx;
 
 int lead_offset[N_leads];
 
@@ -363,7 +363,7 @@ ub::matrix<num>* transmission(esm *H, const num flux, const num gauge) {
     log_tick("hamiltonian + self-energy");
     // the second parameter is the ordering method that the solver uses
     // internally. Doesn't change results, only execution time
-    eslu *slu = new eslu(H->adjoint(), Eigen::MinimumDegree_ATA);
+    eslu *slu = new eslu(*H, Eigen::MinimumDegree_ATA);
     delete H;
     H = NULL;
     log_tick("LU decomposition");
@@ -397,10 +397,10 @@ ub::matrix<num>* transmission(esm *H, const num flux, const num gauge) {
 
         // since *sigma_r[i] is a real matrix by now (although declared
         // complex) we can use transpose() instead of adjoint();
-        pseudo_sparse_solve(slu, sigma_r[i]->transpose(), result);
+        pseudo_sparse_solve(slu, sigma_r[i]->transpose(), result, true);
         *g_ret = result.adjoint();
 
-        pseudo_sparse_solve(slu, *sigma_r[i], result, true);
+        pseudo_sparse_solve(slu, *sigma_r[i], result, false);
         delete sigma_r[i];
         sigma_r[i] = NULL;
 
