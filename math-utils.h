@@ -21,6 +21,7 @@ typedef Eigen::SparseMatrix< cnum , Eigen::RowMajor> esm;
 typedef Eigen::RandomSetter< esm > ers;
 typedef Eigen::SparseLU<esm, Eigen::SuperLU> eslu;
 
+// calculate the (dense) inverse of a sparse, complex matrix
 void sparse_inverse(const esm &m, cmatrix &inv) {
     assert(m.rows() == m.cols());
     int size = m.rows();
@@ -35,6 +36,7 @@ void sparse_inverse(const esm &m, cmatrix &inv) {
     }
 }
 
+// convert a sparse boost::numeric::ublas to an Eigen::SparseMatrix
 void ublas_to_eigen(const sparse_cm &m, esm &result) {
     result.setZero();
     ers setter(result);
@@ -50,6 +52,7 @@ void ublas_to_eigen(const sparse_cm &m, esm &result) {
     return;
 }
 
+// convert an Eigen::SparseMatrix to a boost::numeric::ublas matrix
 void eigen_to_ublas(const esm &m, sparse_cm &result) {
     result.clear();
     for (int k=0; k<m.outerSize(); ++k) {
@@ -59,6 +62,9 @@ void eigen_to_ublas(const esm &m, sparse_cm &result) {
     }
 }
 
+// given a sparse LU decompostion slu of a matrix A and a right-hand side
+// rhs, solve the equation A * x = rhs or A^\dagger * x = rhs (if the 
+// `adjoint' flag is true
 void pseudo_sparse_solve(const eslu * const slu,
                          const esm &rhs,
                          esm &result,
