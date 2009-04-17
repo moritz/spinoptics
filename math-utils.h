@@ -93,5 +93,18 @@ void pseudo_sparse_solve(const eslu * const slu,
     delete invCol;
 }
 
+// real(trace(a * b))
+num r_prod_trace(const esm &a, const esm &b) {
+    num sum = 0.0;
+    cnum null = cnum(0, 0);
+    for (int k = 0; k < a.outerSize(); ++k) {
+        for (esm::InnerIterator it(a,k); it; ++it) {
+            cnum y = b.coeff(it.col(), it.row());
+            sum += real(it.value() * y);
+        }
+    }
+
+    return sum;
+}
 
 #endif /* __MATH_UTILS_H */
