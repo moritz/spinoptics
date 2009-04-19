@@ -13,10 +13,13 @@
 // for getpid();
 #include <sys/types.h>
 #include <unistd.h>
-// Eigen libs
 
+// Eigen libs
 #include <Eigen/Core>
 #include <Eigen/Sparse>
+
+#include "visualize.h"
+
 
 namespace ub = boost::numeric::ublas;
 using namespace std;
@@ -24,7 +27,7 @@ using namespace std;
 #include "math-utils.h"
 typedef unsigned int idx_t;
 
-const int Nx               = 10;
+const int Nx               = 12;
 const int Ny               = Nx;
 const int Spin_idx         = Nx * Ny;
 
@@ -340,10 +343,20 @@ esm** self_energy(const num flux, const num gauge) {
 
 ub::matrix<num>* transmission(esm *H, const num flux, const num gauge) {
     esm **sigma_r   = self_energy(flux, gauge);
+    
+    visualize(*sigma_r[0], "lead_0.png");
+    visualize(*sigma_r[1], "lead_1.png");
+    visualize(*sigma_r[2], "lead_2.png");
+    visualize(*sigma_r[3], "lead_3.png");
+    visualize(*sigma_r[4], "lead_4.png");
+    visualize(*sigma_r[5], "lead_5.png");
+    visualize(*sigma_r[6], "lead_6.png");
+    visualize(*sigma_r[7], "lead_7.png");
 
     for (int k = 0; k < N_leads; k++){
         *H -= *sigma_r[k];
     }
+    visualize(*H, "self_energy.png");
     esm e_green_inv(size, size);
 
     log_tick("hamiltonian + self-energy");
@@ -472,6 +485,7 @@ int main (int argc, char** argv) {
     cout << "lead width: " << lead_sites << endl;
     cout << "Bz:         " << Bz << endl;
     esm *H = hamiltonian(alpha, Bz);
+    visualize(*H, "hamiltonian.png");
 #ifndef NDEBUG
     {
         esm Hcheck(size, size);

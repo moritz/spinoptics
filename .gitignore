@@ -10,3 +10,4 @@ t
 *.[ao]
 cachegrind.out.*
 callgrind.out.*
+*.png
