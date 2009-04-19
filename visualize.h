@@ -8,7 +8,7 @@
 
 #include <Imlib2.h>
 
-void visualize(esm &matrix, char* filename) {
+void visualize(esm &matrix, const char* filename) {
     int my = matrix.rows();
     int mx = matrix.cols();
     unsigned char *pixmap = (unsigned char*)malloc(4 * mx * my);

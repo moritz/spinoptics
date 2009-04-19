@@ -3,6 +3,7 @@ data/
 *~
 *.out
 cppspin
+vspin
 a.out
 spin
 cout
