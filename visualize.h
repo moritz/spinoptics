@@ -1,14 +1,12 @@
 #ifndef __VISUALIZE_H
 #define __VISUALIZE_H
 
-#include <X11/Xutil.h>
-#include <strings.h>
-#include <stdlib.h>
-#include "math-utils.h"
-
+#include <Eigen/Core>
+#include <Eigen/Sparse>
 #include <Imlib2.h>
 
-void visualize(esm &matrix, const char* filename) {
+template <typename T, int _Flags>
+void visualize(Eigen::SparseMatrix<T, _Flags> &matrix, const char* filename) {
     int my = matrix.rows();
     int mx = matrix.cols();
     if (mx * my > 1000000) {
@@ -20,7 +18,7 @@ void visualize(esm &matrix, const char* filename) {
     unsigned char *pixmap = (unsigned char*)malloc(4 * mx * my);
     memset(pixmap, 255,  4 * mx * my);
     for (int k = 0; k < matrix.outerSize(); ++k) {
-        for (esm::InnerIterator it(matrix,k); it; ++it) {
+        for (typename Eigen::SparseMatrix<T>::InnerIterator it(matrix,k); it; ++it) {
             int i = it.col() * mx + it.row();
             pixmap[4 * i    ] = 0;
             pixmap[4 * i + 1] = 0;
