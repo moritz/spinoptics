@@ -30,13 +30,13 @@ namespace ub = boost::numeric::ublas;
 using namespace std;
 
 #include "math-utils.h"
-typedef unsigned int idx_t;
+typedef int idx_t;
 
 const int Nx               = 10;
 const int Ny               = Nx;
 const int Spin_idx         = Nx * Ny;
 
-const int N_leads    = 8;
+const int N_leads          = 8;
 
 // width of leads in units of lattice sites
 const int lead_sites       = Nx;
@@ -109,6 +109,10 @@ void log_tick(const char* desc) {
     time_t t = time(NULL);
     printf("[Tick] %06ld %s\n", t-prev, desc);
     prev = t;
+}
+
+num rashba_for_site(idx_t x, idx_t y) {
+    return alpha;
 }
 
 num flux_from_field(const num B) {
@@ -188,24 +192,24 @@ esm* hamiltonian(const num rashb, const num B) {
 
 
     // interaction in x direction
-    cnum r = rashba(rashb);
     for (int x = 0; x < Nx - 1; x++) {
         for (int y = 0; y < Ny; y++) {
+            cnum r = rashba(rashba_for_site(x, y));
             cnum h = -V * conj(b_factor(xflux, y));
             // kinetic energy
-            (Hnn)(IDX(x,   y, 0), IDX(x+1, y, 0)) = h;
-            (Hnn)(IDX(x+1, y, 0), IDX(x,   y, 0)) = conj(h);
-            (Hnn)(IDX(x,   y, 1), IDX(x+1, y, 1)) = h;
-            (Hnn)(IDX(x+1, y, 1), IDX(x,   y, 1)) = conj(h);
+            Hnn(IDX(x,   y, 0), IDX(x+1, y, 0)) = h;
+            Hnn(IDX(x+1, y, 0), IDX(x,   y, 0)) = conj(h);
+            Hnn(IDX(x,   y, 1), IDX(x+1, y, 1)) = h;
+            Hnn(IDX(x+1, y, 1), IDX(x,   y, 1)) = conj(h);
             // Rashba terms
             // "1 and 102"
             // with spin flip
             cnum b = b_factor(xflux, y);
-            (Hnn)(IDX(x,   y, 0), IDX(x+1, y, 1)) = -r * conj(b);
-            (Hnn)(IDX(x+1, y, 1), IDX(x,   y, 0)) = -r * b;
+            Hnn(IDX(x,   y, 0), IDX(x+1, y, 1)) = -r * conj(b);
+            Hnn(IDX(x+1, y, 1), IDX(x,   y, 0)) = -r * b;
             // "101 and 2"
-            (Hnn)(IDX(x+1, y, 0), IDX(x,   y, 1)) = r * b;
-            (Hnn)(IDX(x,   y, 1), IDX(x+1, y, 0)) = r * conj(b);
+            Hnn(IDX(x+1, y, 0), IDX(x,   y, 1)) = r * b;
+            Hnn(IDX(x,   y, 1), IDX(x+1, y, 0)) = r * conj(b);
         }
     }
 
@@ -214,6 +218,7 @@ esm* hamiltonian(const num rashb, const num B) {
 
     for (int x = 0; x < Nx; x++){
         for (int y = 0; y < Ny - 1; y++) {
+            cnum r = rashba(rashba_for_site(x, y));
             cnum b = b_factor(yflux, x);
             cnum h = -V * b;
             Hnn(IDX(x, y, 0)  , IDX(x, y+1, 0)) = h;
@@ -296,11 +301,11 @@ esm** self_energy(const num flux, const num gauge) {
             /* left */
             (*s[0])(IDX(0, i+lead_offset[0], 0),
                     IDX(0, j+lead_offset[0], 0))      = g;
-            (*s[2])(IDX(0, i+lead_offset[2], 1),
+            (*s[1])(IDX(0, i+lead_offset[2], 1),
                     IDX(0, j+lead_offset[2], 1))      = g;
 
             /* right */
-            (*s[1])(IDX(Nx-1, i+lead_offset[1], 0),
+            (*s[2])(IDX(Nx-1, i+lead_offset[1], 0),
                     IDX(Nx-1, j+lead_offset[1], 0))   = g;
             (*s[3])(IDX(Nx-1, i+lead_offset[3], 1),
                     IDX(Nx-1, j+lead_offset[3], 1))   = g;
