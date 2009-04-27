@@ -113,8 +113,8 @@ $\chi_N^{pm} = \lim_{\alpha \mapsto 0} \chi_{SO}^{\pm}$ to ensure that
 $<\chi_N^+|\chi_{SO}^+> = 1$ holds true.
 
 
-The overall wave function consists of an incident wave, and reflected
-and transmitted part:
+The overall wave function consists of an incident wave, 
+and reflected and transmitted part:
 
 \begin{align}
     \Psi^+ = e^{i p_z z} * \left\{
@@ -130,12 +130,35 @@ The coefficient $r_{-+}$ is the amplitude with which the incident wave
 of $+$ chirality is reflected into $-$ chirality etc.
 
 To obtain the values for these coefficients one has to solve the
-boundary conditions at the interface
+boundary conditions at the interface. The wave function is continuous
+and the current is conserved, so $\frac{\partial H}{p_x} \Psi$ is also
+continuous.
 
 \begin{align}
-    \Psi_N(x = -0)              &= \Psi_{SO}(x = +0)\\
-    \frac{p_x}{m} \Psi_N(x = -0)&= \left(\frac{p_x}{m} -\alpha \sigma_z\right)
-                                        \Psi_{SO}(x = +0)
+    \Psi_N|_{x = -0}    &= \Psi_{SO}|_{x = +0}\\
+    \left.\frac{\hat p_x}{m} \Psi_N\right|_{x = -0}
+                        &= \left. \left(\frac{\hat p_x}{m} -\alpha \sigma_z\right)
+                                    \Psi_{SO}\right|_{x = +0}
+\end{align}
+
+The second equation can be evaluated with $\hat p_x = -i \partial_x$
+(assuming $\hbar = 1$, as done in the rest of the calculation) and
+carrying out the derivation (and multiplied by $m$), yielding
+
+\begin{align}
+    p_x \chi_N^+ (1 - r_{++}) - p_x \chi_N^- r_{-+}
+        =& p_x^+ \chi_{SO}^+ t_{++} + p_x^- \chi_{SO}^- t_{-+} \nonumber\\
+         &   - m \alpha \left( p_x^+ \sigma_z \chi_{SO}^+ t_{++} + p_x^-
+                     \sigma_z \chi_{SO}^- t_{-+} \right)
+\end{align}
+
+Dividing it by  $p_x = p \cos \phi$: 
+
+\begin{align}
+    \chi_N^+ (1 - r_{++}) - \chi_N^- r_{-+}
+        =& \frac{p_x^+}{p_x} \chi_{SO}^+ t_{++} + \frac{p_x^-}{p_x} \chi_{SO}^- t_{-+} \nonumber\\
+         &   - \frac{\ta}{\cos \phi} \left( \frac{p_x^+}{p_x} \sigma_z \chi_{SO}^+
+                 t_{++} + \frac{p_x^-}{p_x} \sigma_z \chi_{SO}^- t_{-+} \right)
 \end{align}
 
 Multiplying both equations with $\chi_N^+$ and $\chi_N^-$ gives us
