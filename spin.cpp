@@ -13,6 +13,7 @@
 // for getpid();
 #include <sys/types.h>
 #include <unistd.h>
+#include <math.h>
 
 // Eigen libs
 #include <Eigen/Core>
@@ -112,7 +113,19 @@ void log_tick(const char* desc) {
 }
 
 num rashba_for_site(idx_t x, idx_t y) {
-    return alpha;
+    // stripe with angle phi and height h. Inside the strip
+    // the spin-orbit coupling is `alpha', outside it's
+    // `alpha * scale'.
+    num phi = pi / 4.0;
+    int h = 4;
+    num scale = 1.0;
+
+    num y1 = tanl(phi) * (num) x;
+    if (abs(y1 - y) <= h) {
+        return alpha;
+    } else {
+        return scale * alpha;
+    }
 }
 
 num flux_from_field(const num B) {

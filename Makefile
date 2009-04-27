@@ -1,6 +1,6 @@
 CC=gfortran
 CFLAGS=-g -I/usr/include/ -O2 -Wuninitialized
-LDFLAGS= -L$(HOME)/local/lib
+LDFLAGS= -L$(HOME)/local/lib -lm
 INCLUDEPATH=-I$(HOME)/tmp/eigen2-git/ -I/usr/include/superlu -I$(HOME)/local/include
 OPTFLAGS=-DNDEBUG -msse2 -O3 -fweb -fwhole-program -ffast-math -fassociative-math -freciprocal-math  -ffinite-math-only
 DEBUGFLAGS=-Wextra -g -O -fbounds-check -fstack-protector-all
