@@ -194,7 +194,6 @@ esm* hamiltonian(const num rashb, const num B) {
     // interaction in x direction
     for (int x = 0; x < Nx - 1; x++) {
         for (int y = 0; y < Ny; y++) {
-            cnum r = rashba(rashba_for_site(x, y));
             cnum h = -V * conj(b_factor(xflux, y));
             // kinetic energy
             Hnn(IDX(x,   y, 0), IDX(x+1, y, 0)) = h;
@@ -204,6 +203,9 @@ esm* hamiltonian(const num rashb, const num B) {
             // Rashba terms
             // "1 and 102"
             // with spin flip
+            cnum r = rashba(rashba_for_site(x, y));
+            if (r == (num) 0)
+                break;
             cnum b = b_factor(xflux, y);
             Hnn(IDX(x,   y, 0), IDX(x+1, y, 1)) = -r * conj(b);
             Hnn(IDX(x+1, y, 1), IDX(x,   y, 0)) = -r * b;
@@ -218,13 +220,17 @@ esm* hamiltonian(const num rashb, const num B) {
 
     for (int x = 0; x < Nx; x++){
         for (int y = 0; y < Ny - 1; y++) {
-            cnum r = rashba(rashba_for_site(x, y));
             cnum b = b_factor(yflux, x);
             cnum h = -V * b;
             Hnn(IDX(x, y, 0)  , IDX(x, y+1, 0)) = h;
             Hnn(IDX(x, y+1, 0), IDX(x, y  , 0)) = conj(h);
             Hnn(IDX(x, y, 1)  , IDX(x, y+1, 1)) = h;
             Hnn(IDX(x, y+1, 1), IDX(x, y  , 1)) = conj(h);
+
+            cnum r = rashba(rashba_for_site(x, y));
+            if (r == (num) 0)
+                break;
+
             // Rashba terms
             // "11 and 101"
             h = cnum(0, 1) * b * r;
