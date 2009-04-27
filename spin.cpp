@@ -33,7 +33,7 @@ using namespace std;
 #include "math-utils.h"
 typedef int idx_t;
 
-const int Nx               = 10;
+const int Nx               = 20;
 const int Ny               = Nx;
 const int Spin_idx         = Nx * Ny;
 
@@ -117,11 +117,11 @@ num rashba_for_site(idx_t x, idx_t y) {
     // the spin-orbit coupling is `alpha', outside it's
     // `alpha * scale'.
     num phi = pi / 4.0;
-    int h = 4;
-    num scale = 1.0;
+    int h = Nx/5;
+    num scale = 0.0;
 
     num y1 = tanl(phi) * (num) x;
-    if (abs(y1 - y) <= h) {
+    if (abs(y1 - y) <= h/2) {
         return alpha;
     } else {
         return scale * alpha;
@@ -526,6 +526,22 @@ int main (int argc, char** argv) {
             exit(1);
         }
     }
+#endif
+
+#ifdef VISUALIZE
+    esm ra(Nx, Ny);
+    {
+        ers s(ra);
+        for (int x = 0; x < Nx ;x++){
+            for (int y = 0; y < Ny; y++) {
+                num r = rashba_for_site(x, y);
+                if (r != 0.0)
+                    s(x, y) = cnum(r, 0.0);
+            }
+        }
+    }
+    viz(ra, "rashba.png");
+
 #endif
 
     num flux = flux_from_field(Bz);
