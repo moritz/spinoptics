@@ -11,6 +11,12 @@
 void visualize(esm &matrix, const char* filename) {
     int my = matrix.rows();
     int mx = matrix.cols();
+    if (mx * my > 1000000) {
+        std::cerr <<
+            "visualize(): warning: matrix too large, not writing "
+            "image `" << filename << "'\n";
+        return;
+    }
     unsigned char *pixmap = (unsigned char*)malloc(4 * mx * my);
     memset(pixmap, 255,  4 * mx * my);
     for (int k = 0; k < matrix.outerSize(); ++k) {
@@ -27,4 +33,5 @@ void visualize(esm &matrix, const char* filename) {
 }
 
 
+// vim: ts=4 sw=4 expandtab
 #endif /* __VISUALIZE_H */
