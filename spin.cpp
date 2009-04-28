@@ -33,14 +33,14 @@ using namespace std;
 #include "math-utils.h"
 typedef int idx_t;
 
-const int Nx               = 20;
+const int Nx               = 60;
 const int Ny               = Nx;
 const int Spin_idx         = Nx * Ny;
 
 const int N_leads          = 8;
 
 // width of leads in units of lattice sites
-const int lead_sites       = Nx;
+const int lead_sites       = Nx / 2;
 
 /*   Numbering  scheme for the sites
  *
@@ -94,6 +94,8 @@ const num g_factor   = 20.0;
 
 num global_gauge     = 1.0;
 
+num stripe_angle     = pi / 4;
+
 // XXX is the +1 correct?
 const num a_sample   = width_sample / (num) (Nx + 1);
 const int size       = Nx * Ny * 2;      // `Nfin'
@@ -113,14 +115,14 @@ void log_tick(const char* desc) {
 }
 
 num rashba_for_site(idx_t x, idx_t y) {
-    // stripe with angle phi and height h. Inside the strip
+    // stripe with angle `stripe_angle' against the x axis and height h.
+    // Inside the strip
     // the spin-orbit coupling is `alpha', outside it's
     // `alpha * scale'.
-    num phi = pi / 4.0;
-    int h = Nx/5;
+    num h = ((num) Nx) / 5.0 / cos(stripe_angle);
     num scale = 0.0;
 
-    num y1 = tanl(phi) * (num) x;
+    num y1 = tanl(stripe_angle) * (num) x;
     if (abs(y1 - y) <= h/2) {
         return alpha;
     } else {
@@ -332,12 +334,10 @@ esm** self_energy(const num flux, const num gauge) {
             /* top */
             (*s[4])(IDX(i+lead_offset[4], 0, 0),
                     IDX(j+lead_offset[4], 0, 0))      = g;
-            /*  5 (sic) */
             (*s[5])(IDX(i+lead_offset[5], 0, 1),
                     IDX(j+lead_offset[5], 0, 1))      = g;
 
             /* bottom */
-            /*   6 (sic) */
             (*s[6])(IDX(i+lead_offset[6], Ny-1, 0),
                     IDX(j+lead_offset[6], Ny-1, 0))   = g;
             (*s[7])(IDX(i+lead_offset[7], Ny-1, 1),
@@ -490,13 +490,16 @@ int main (int argc, char** argv) {
     num Bz = +6;
 
     int opt;
-    while ((opt = getopt(argc, argv, "r:b:s:")) != -1) {
+    while ((opt = getopt(argc, argv, "r:b:p:")) != -1) {
        switch (opt) {
             case 'r':
                 alpha = atof(optarg);
                 break;
             case 'b':
                 Bz = atof(optarg);
+                break;
+            case 'p':
+                stripe_angle = atof(optarg);
                 break;
             default:
                 cerr << "Error while processing command line args\n";
@@ -513,20 +516,6 @@ int main (int argc, char** argv) {
     cout << "Size:       " << Nx << "x" << Ny << endl;
     cout << "lead width: " << lead_sites << endl;
     cout << "Bz:         " << Bz << endl;
-    esm *H = hamiltonian(alpha, Bz);
-    viz(*H, "hamiltonian.png");
-#ifndef NDEBUG
-    {
-        esm Hcheck(size, size);
-        Hcheck = *H - esm(H->adjoint()).eval();
-        num x = Hcheck.cwise().abs().sum();
-        if (x > 0.01) {
-            cerr << "ERROR: Hamiltonian is not hermitian ("
-                 << x << ")\n";
-            exit(1);
-        }
-    }
-#endif
 
 #ifdef VISUALIZE
     esm ra(Nx, Ny);
@@ -541,7 +530,21 @@ int main (int argc, char** argv) {
         }
     }
     viz(ra, "rashba.png");
+#endif
 
+    esm *H = hamiltonian(alpha, Bz);
+    viz(*H, "hamiltonian.png");
+#ifndef NDEBUG
+    {
+        esm Hcheck(size, size);
+        Hcheck = *H - esm(H->adjoint()).eval();
+        num x = Hcheck.cwise().abs().sum();
+        if (x > 0.01) {
+            cerr << "ERROR: Hamiltonian is not hermitian ("
+                 << x << ")\n";
+            exit(1);
+        }
+    }
 #endif
 
     num flux = flux_from_field(Bz);
