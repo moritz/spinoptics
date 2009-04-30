@@ -33,7 +33,7 @@
 \usepackage{hyperref}
 \usepackage{graphics,graphicx,fancyvrb}
 %Raender einstellen
-%\usepackage[a4paper, margin=15mm, top=30mm]{geometry}
+%\usepackage[a4paper, left=25mm, right=5mm, top=30mm]{geometry}
 \usepackage[a4paper]{geometry}
 %Kopf - und Fusszeilen
 \usepackage{lastpage}
@@ -166,53 +166,31 @@ four scalar equations:
 
 \begin{align} 
     \label{eq:a1}
-    1 + r_{++}  &= <\chi_{SO}^+|\chi_N^+> t_{++} +
+    1 + r_{++}  =& <\chi_{SO}^+|\chi_N^+> t_{++} +
                     <\chi_{SO}^-|\chi_N^+> t_{-+}\\
     \label{eq:a2}
-        r_{-+}  &= <\chi_{SO}^+|\chi_N^-> t_{++} + <\chi_{SO}^-|\chi_N^-> t_{-+}\\
+        r_{-+}  =& <\chi_{SO}^+|\chi_N^-> t_{++} + <\chi_{SO}^-|\chi_N^-> t_{-+}\\
     \label{eq:b1}
-    \cos \phi  (1 + r_{++})
-                &= \frac{p_{x,SO}}{p} \left(<\chi_{SO}^+|\chi_N^+> t_{++} 
-                        + <\chi_{SO}^-|\chi_N^+> t_{-+} \right) \nonumber \\
-                &  + \ta \left(<\chi_{SO}^+|\sigma_z|\chi_N^+> t_{++} 
-                        + <\chi_{SO}^-|\sigma_z|\chi_N^+> t_{-+} \right)\\
- \label{eq:b2}
-    \cos \phi \  r_{-+}
-                &= \frac{p_{x,SO}}{p} \left(<\chi_{SO}^+|\chi_N^-> t_{++} 
-                        + <\chi_{SO}^-|\chi_N^-> t_{-+} \right) \nonumber\\
-                &  + \ta \left(<\chi_{SO}^+|\sigma_z|\chi_N^-> t_{++} 
-                        + <\chi_{SO}^-|\sigma_z|\chi_N^-> t_{-+} \right)
+    1 - r_{++}
+        =& \frac{p_x^+}{p_x} <\chi_N^+|\chi_{SO}^+> t_{++}
+           + \frac{p_x^-}{p_x} <\chi_N^+|\chi_{SO}^-> t_{-+} \nonumber\\
+         &   - \frac{\ta}{\cos \phi} \left( \frac{p_x^+}{p_x} 
+                 <\chi_N^+|\sigma_z|\chi_{SO}^+>
+                 t_{++} + \frac{p_x^-}{p_x} 
+                 <\chi_N^+|\sigma_z|\chi_{SO}^-> t_{-+} \right)\\
+    \label{eq:b2}
+    -r_{-+}
+        =& \frac{p_x^+}{p_x} <\chi_N^-|\chi_{SO}^+> t_{++}
+           + \frac{p_x^-}{p_x} <\chi_N^-|\chi_{SO}^-> t_{-+} \nonumber\\
+         &   - \frac{\ta}{\cos \phi} \left( \frac{p_x^+}{p_x} 
+                 <\chi_N^-|\sigma_z|\chi_{SO}^+>
+                 t_{++} + \frac{p_x^-}{p_x} 
+                 <\chi_N^-|\sigma_z|\chi_{SO}^-> t_{-+} \right)
 \end{align}
 
 (The scalar products of the spinors are indicated in bracket notation
 for clarity, even though they don't imply in integration over any
 variable).
-
-$(\ref{eq:a1}) - \frac{1}{\cos \phi} (\ref{eq:b1})$
-and
-$(\ref{eq:a2}) - \frac{1}{\cos \phi} (\ref{eq:b2})$ form a linear,
-homogeneous system of equations, which obviously has the trivial
-solution $t_{++}, t_{-+} = 0$, which isn't a very physical solution.
-
-Introducing
-
-\begin{align}
-    \beta = \frac{p_{x,SO}}{p \cos \phi}
-\end{align}
-
-we obtain for the determinant of that equation system
-
-\begin{align}
-    d = \left(<\chi_{N}^+|\chi_{SO}^+>( \beta - 1) +  
-            \frac{\ta}{\cos \phi} <\chi_{N}^+|\sigma_z|\chi_{SO}^+>\right) \nonumber \\
-        \cdot \left(<\chi_{N}^-|\chi_{SO}^->( \beta - 1) +  
-            \frac{\ta}{\cos \phi} <\chi_{N}^-|\sigma_z|\chi_{SO}^->\right) \nonumber \\
-     - \left(<\chi_{N}^-|\chi_{SO}^+>( \beta - 1) +  
-            \frac{\ta}{\cos \phi} <\chi_{N}^+|\sigma_z|\chi_{SO}^->\right) \nonumber \\
-        \cdot \left(<\chi_{N}^+|\chi_{SO}^->( \beta - 1) +  
-            \frac{\ta}{\cos \phi} <\chi_{N}^+|\sigma_z|\chi_{SO}^->\right) \nonumber \\
-\end{align}
-
 
 Using the geometric relations
 
@@ -223,16 +201,6 @@ Using the geometric relations
 
 together with eqn. \ref{eq:pso} we have all quantities to calculate
 the scalar products.
-
-As the Mathematica notebook \texttt{spinoptics-scratch.nb} shows,
-a calculation up to the second order of $\ta$ gives us
-
-\begin{align}
-    d &= \ta^2 \sec^2 \phi \tan^2 \phi \nonumber\\
-      &= \frac{\ta^2}{\cos^2 \phi}
-\end{align}
-
-So a not too approximative calculation gives no physical solutions to our boundary conditions.
 
 \end{document}
 
