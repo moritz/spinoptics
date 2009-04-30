@@ -108,8 +108,12 @@ const num width_disorder  = 0.0;
 num alpha = -0.02 / a_sample / 2.0;
 
 ostream *out = &cout;
+bool quiet = false;
 
 void log_tick(const char* desc) {
+    if (quiet) {
+        return;
+    }
     static time_t prev = time(NULL);
     time_t t = time(NULL);
     printf("[Tick] %06ld %s\n", t-prev, desc);
@@ -485,12 +489,11 @@ ub::matrix<num>* transmission(esm *H, const num flux, const num gauge) {
 
 
 int main (int argc, char** argv) {
-    log_tick("start");
     num Bz = +6;
 
     int opt;
     ofstream *fout = new ofstream();
-    while ((opt = getopt(argc, argv, "r:b:p:o:")) != -1) {
+    while ((opt = getopt(argc, argv, "qr:b:o:p:")) != -1) {
        switch (opt) {
             case 'r':
                 alpha = atof(optarg);
@@ -508,12 +511,16 @@ int main (int argc, char** argv) {
             case 'p':
                 stripe_angle = atof(optarg);
                 break;
+            case 'q':
+                quiet = true;
+                break;
             default:
                 cerr << "Error while processing command line args\n";
                 exit(1);
 
         }
     }
+    log_tick("start");
 
     for (int i = 0; i < N_leads; i++) {
         lead_offset[i] = 0;
