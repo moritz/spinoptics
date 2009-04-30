@@ -1,6 +1,6 @@
 #include <iostream>
+#include <fstream>
 #include <complex>
-#include <vector>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/matrix_sparse.hpp>
 #include <boost/numeric/ublas/io.hpp>
@@ -40,7 +40,7 @@ const int Spin_idx         = Nx * Ny;
 const int N_leads          = 8;
 
 // width of leads in units of lattice sites
-const int lead_sites       = Nx / 2;
+const int lead_sites       = Nx;
 
 /*   Numbering  scheme for the sites
  *
@@ -106,6 +106,8 @@ const num e_tot      = -2.0 * V;
 const num width_disorder  = 0.0;
 
 num alpha = -0.02 / a_sample / 2.0;
+
+ostream *out = &cout;
 
 void log_tick(const char* desc) {
     static time_t prev = time(NULL);
@@ -192,7 +194,6 @@ esm* hamiltonian(const num rashb, const num B) {
     num gauge = global_gauge;
     num xflux = gauge * flux;
     num yflux = (1.0 - gauge) * flux;
-    cout << "Zeeman term: " << zeeman << endl;
 
     // diagonal elements
     for (int i = 0; i < size / 2; i++) {
@@ -260,7 +261,6 @@ esm* hamiltonian(const num rashb, const num B) {
     log_tick("hamiltonian");
 
     return H;
-
 };
 
 esm** self_energy(const num flux, const num gauge) {
@@ -412,7 +412,7 @@ ub::matrix<num>* transmission(esm *H, const num flux, const num gauge) {
     // first carry out the two products
     // \Gamma_p * G^R and \Gamma_q * G^A
     for (int i = 0; i < N_leads; i++) {
-        cout << "working on lead " << i << endl;
+//        cout << "working on lead " << i << endl;
         esm *g_adv = new esm(size, size);
         esm *g_ret = new esm(size, size);
 
@@ -446,7 +446,6 @@ ub::matrix<num>* transmission(esm *H, const num flux, const num gauge) {
     delete[] sigma_r;
     sigma_r = NULL;
 
-    cout << "trace...\n";
     // Now calculate the trace
     cnum null = cnum(0, 0);
     for (int i = 0; i < N_leads; i++){
@@ -490,7 +489,8 @@ int main (int argc, char** argv) {
     num Bz = +6;
 
     int opt;
-    while ((opt = getopt(argc, argv, "r:b:p:")) != -1) {
+    ofstream *fout = new ofstream();
+    while ((opt = getopt(argc, argv, "r:b:p:o:")) != -1) {
        switch (opt) {
             case 'r':
                 alpha = atof(optarg);
@@ -498,6 +498,13 @@ int main (int argc, char** argv) {
             case 'b':
                 Bz = atof(optarg);
                 break;
+            case 'o':
+                fout->open(optarg);
+                if (!*fout) {
+                    cerr << "Error: file '" << optarg << "' could not be opened\n";
+                    exit(1);
+                }
+                out = fout;
             case 'p':
                 stripe_angle = atof(optarg);
                 break;
@@ -512,10 +519,10 @@ int main (int argc, char** argv) {
         lead_offset[i] = 0;
     }
 
-    cout << "PID:        " << getpid() << endl;
-    cout << "Size:       " << Nx << "x" << Ny << endl;
-    cout << "lead width: " << lead_sites << endl;
-    cout << "Bz:         " << Bz << endl;
+    *out << "PID:        " << getpid() << endl;
+    *out << "Size:       " << Nx << "x" << Ny << endl;
+    *out << "lead width: " << lead_sites << endl;
+    *out << "Bz:         " << Bz << endl;
 
 #ifdef VISUALIZE
     esm ra(Nx, Ny);
@@ -549,7 +556,7 @@ int main (int argc, char** argv) {
 
     num flux = flux_from_field(Bz);
     ub::matrix<num> *tpq = transmission(H, flux, global_gauge);
-    cout << "final tpq" << *tpq << endl;
+    *out << "final tpq" << *tpq << endl;
     boost::numeric::ublas::vector<num> r;
     boost::numeric::ublas::vector<num> c;
     bool is_first = true;
@@ -565,15 +572,15 @@ int main (int argc, char** argv) {
         }
         if (is_first) {
             ref = r_sum;
-            cout << "Number of modes: " << ref << endl;
+            *out << "Number of modes: " << ref << endl;
             is_first = false;
         }
         if (abs(r_sum - ref) > epsilon) {
-            cout << "ERROR: sum rule violated for row " << i
+            *out << "ERROR: sum rule violated for row " << i
                  << "  (" << r_sum << ")" << endl;
         }
         if (abs(c_sum - ref) > epsilon) {
-            cout << "ERROR: sum rule violated for column " << i
+            *out << "ERROR: sum rule violated for column " << i
                  << "  (" << c_sum << ")" << endl;
         }
     }
