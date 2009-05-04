@@ -99,8 +99,8 @@ region:
 
 \begin{align*}
    \chi_{SO}^{\pm} &= \frac{1}{n_{\pm}} 
-                      \vect{p_{x,SO}^{\pm} \pm p_{SO}^\pm}{p_z} \\
-    n_{\pm}^2      &= (p_{x,SO}^{\pm} \pm p_{SO}^\pm)^2 + p_z^2
+                      \vect{-p_{x,SO}^{\pm} \pm p_{SO}^\pm}{p_z} \\
+    n_{\pm}^2      &= (-p_{x,SO}^{\pm} \pm p_{SO}^\pm)^2 + p_z^2
 \end{align*}
 
 Where the lower index $x$ means that the value is projected onto the
@@ -148,8 +148,8 @@ carrying out the derivation (and multiplied by $m$), yielding
 \begin{align}
     p_x \chi_N^+ (1 - r_{++}) - p_x \chi_N^- r_{-+}
         =& p_x^+ \chi_{SO}^+ t_{++} + p_x^- \chi_{SO}^- t_{-+} \nonumber\\
-         &   - m \alpha \left( p_x^+ \sigma_z \chi_{SO}^+ t_{++} + p_x^-
-                     \sigma_z \chi_{SO}^- t_{-+} \right)
+         &   - m \alpha \left(  \sigma_z \chi_{SO}^+ t_{++}
+                            + \sigma_z \chi_{SO}^- t_{-+} \right)
 \end{align}
 
 Dividing it by  $p_x = p \cos \phi$: 
@@ -157,8 +157,8 @@ Dividing it by  $p_x = p \cos \phi$:
 \begin{align}
     \chi_N^+ (1 - r_{++}) - \chi_N^- r_{-+}
         =& \frac{p_x^+}{p_x} \chi_{SO}^+ t_{++} + \frac{p_x^-}{p_x} \chi_{SO}^- t_{-+} \nonumber\\
-         &   - \frac{\ta}{\cos \phi} \left( \frac{p_x^+}{p_x} \sigma_z \chi_{SO}^+
-                 t_{++} + \frac{p_x^-}{p_x} \sigma_z \chi_{SO}^- t_{-+} \right)
+         &   - \frac{\ta}{\cos \phi} \left(\sigma_z \chi_{SO}^+
+                 t_{++} + \sigma_z \chi_{SO}^- t_{-+} \right)
 \end{align}
 
 Multiplying both equations with $\chi_N^+$ and $\chi_N^-$ gives us
@@ -174,7 +174,7 @@ four scalar equations:
     1 - r_{++}
         =& \frac{p_x^+}{p_x} <\chi_N^+|\chi_{SO}^+> t_{++}
            + \frac{p_x^-}{p_x} <\chi_N^+|\chi_{SO}^-> t_{-+} \nonumber\\
-         &   - \frac{\ta}{\cos \phi} \left( \frac{p_x^+}{p_x} 
+         &   - \frac{\ta}{\cos \phi} \left(
                  <\chi_N^+|\sigma_z|\chi_{SO}^+>
                  t_{++} + \frac{p_x^-}{p_x} 
                  <\chi_N^+|\sigma_z|\chi_{SO}^-> t_{-+} \right)\\
@@ -182,14 +182,14 @@ four scalar equations:
     -r_{-+}
         =& \frac{p_x^+}{p_x} <\chi_N^-|\chi_{SO}^+> t_{++}
            + \frac{p_x^-}{p_x} <\chi_N^-|\chi_{SO}^-> t_{-+} \nonumber\\
-         &   - \frac{\ta}{\cos \phi} \left( \frac{p_x^+}{p_x} 
+         &   - \frac{\ta}{\cos \phi} \left(
                  <\chi_N^-|\sigma_z|\chi_{SO}^+>
                  t_{++} + \frac{p_x^-}{p_x} 
                  <\chi_N^-|\sigma_z|\chi_{SO}^-> t_{-+} \right)
 \end{align}
 
 (The scalar products of the spinors are indicated in bracket notation
-for clarity, even though they don't imply in integration over any
+for clarity, even though they don't imply an integration over any
 variable).
 
 Using the geometric relations
