@@ -493,13 +493,18 @@ int main (int argc, char** argv) {
 
     int opt;
     ofstream *fout = new ofstream();
-    while ((opt = getopt(argc, argv, "qr:b:o:p:")) != -1) {
+    int n;
+    while ((opt = getopt(argc, argv, "qr:b:o:p:n:")) != -1) {
        switch (opt) {
             case 'r':
                 alpha = atof(optarg);
                 break;
             case 'b':
                 Bz = atof(optarg);
+                break;
+            case 'n':
+                n = atoi(optarg);
+                nice(n);
                 break;
             case 'o':
                 fout->open(optarg);
