@@ -56,3 +56,12 @@ default:    0m53.482s
 60x60:
 0x0300:     1m1.354s
 0x0400:     0m59.187s
+
+200x200, reduced leads
+MinimumDegree_ATA	2m19.405s
+MinimumDegree_AT_PLUS_A	2m28.616s
+ColApproxMinimumDegree	2m17.738s
+
+
+ColApproxMinimumDegree + CompleteFactorization		2m18.437s
+ColApproxMinimumDegree + IncompleteFactorization	2m20.987s
