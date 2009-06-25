@@ -98,9 +98,9 @@ Solving the eigenvalue equation leads us to the eigenvectors in the SO
 region:
 
 \begin{align*}
-   \chi_{SO}^{\pm} &= \frac{1}{n_{\pm}} 
+   \chi_{SO}^{\pm} &= \frac{1}{n_{SO}^{\pm}} 
                       \vect{-p_{x,SO}^{\pm} \pm p_{SO}^\pm}{p_z} \\
-    n_{\pm}^2      &= (-p_{x,SO}^{\pm} \pm p_{SO}^\pm)^2 + p_z^2
+    (n_{SO}^{\pm})^2 &= (-p_{x,SO}^{\pm} \pm p_{SO}^\pm)^2 + p_z^2
 \end{align*}
 
 Where the lower index $x$ means that the value is projected onto the
@@ -109,8 +109,8 @@ incident wave is called $\phi$, so that $p_x = p \cos \phi$.
 
 Note that in the N regime $H$ is a diagonal matrix, and the direction
 of the eigenvectors can be chosen with some freedom. We pick
-$\chi_N^{pm} = \lim_{\alpha \mapsto 0} \chi_{SO}^{\pm}$ to ensure that
-$<\chi_N^+|\chi_{SO}^+> = 1$ holds true.
+$\chi_N^{\pm} = \lim_{\alpha \mapsto 0} \chi_{SO}^{\pm}$ to ensure that
+$<\chi_N^+|\chi_{SO}^+> = 1$ holds true at a vanishing interface.
 
 
 The overall wave function consists of an incident wave, 
@@ -120,14 +120,19 @@ and reflected and transmitted part:
     \Psi^+ = e^{i p_z z} * \left\{
         \begin{array}{ll}
             e^{i p_x x} \chi_N^+ + e^{- i p_x x} (\chi_N^+ r_{++} +
-                    \chi_N^- r_{-})     & x < 0\\
-            e^{i p_x^+ x} \chi_{SO}^+ t_{++} + e^{-i p_x^- x}
+                    \chi_N^- r_{-+})    & x < 0\\
+            e^{i p_x^+ x} \chi_{SO}^+ t_{++} + e^{i p_x^- x}
             \chi_{SO}^- t_{-+}          & x > 0
         \end{array} \right.
 \end{align}
 
 The coefficient $r_{-+}$ is the amplitude with which the incident wave
-of $+$ chirality is reflected into $-$ chirality etc.
+of $+$ chirality is reflected into $-$ chirality etc. while $t$
+coefficients stand for transmission coefficients.
+
+Analog equations can be found for the incident wave with $-$ chirality
+by changing all signs that appear either as a subscript or
+superscript.
 
 To obtain the values for these coefficients one has to solve the
 boundary conditions at the interface. The wave function is continuous
@@ -135,10 +140,10 @@ and the current is conserved, so $\frac{\partial H}{p_x} \Psi$ is also
 continuous.
 
 \begin{align}
-    \Psi_N|_{x = -0}    &= \Psi_{SO}|_{x = +0}\\
+    \Psi_N|_{x = -0}    &= \Psi_{SO}|_{x = +0} \label{eq:continuous}\\
     \left.\frac{\hat p_x}{m} \Psi_N\right|_{x = -0}
                         &= \left. \left(\frac{\hat p_x}{m} -\alpha \sigma_z\right)
-                                    \Psi_{SO}\right|_{x = +0}
+                                \Psi_{SO}\right|_{x = +0}
 \end{align}
 
 The second equation can be evaluated with $\hat p_x = -i \partial_x$
@@ -159,48 +164,67 @@ Dividing it by  $p_x = p \cos \phi$:
         =& \frac{p_x^+}{p_x} \chi_{SO}^+ t_{++} + \frac{p_x^-}{p_x} \chi_{SO}^- t_{-+} \nonumber\\
          &   - \frac{\ta}{\cos \phi} \left(\sigma_z \chi_{SO}^+
                  t_{++} + \sigma_z \chi_{SO}^- t_{-+} \right)
+                                \label{eq:j_continuous}
 \end{align}
 
-Multiplying both equations with $\chi_N^+$ and $\chi_N^-$ gives us
-four scalar equations:
-
-\begin{align} 
-    \label{eq:a1}
-    1 + r_{++}  =& <\chi_{SO}^+|\chi_N^+> t_{++} +
-                    <\chi_{SO}^-|\chi_N^+> t_{-+}\\
-    \label{eq:a2}
-        r_{-+}  =& <\chi_{SO}^+|\chi_N^-> t_{++} + <\chi_{SO}^-|\chi_N^-> t_{-+}\\
-    \label{eq:b1}
-    1 - r_{++}
-        =& \frac{p_x^+}{p_x} <\chi_N^+|\chi_{SO}^+> t_{++}
-           + \frac{p_x^-}{p_x} <\chi_N^+|\chi_{SO}^-> t_{-+} \nonumber\\
-         &   - \frac{\ta}{\cos \phi} \left(
-                 <\chi_N^+|\sigma_z|\chi_{SO}^+>
-                 t_{++} + \frac{p_x^-}{p_x} 
-                 <\chi_N^+|\sigma_z|\chi_{SO}^-> t_{-+} \right)\\
-    \label{eq:b2}
-    -r_{-+}
-        =& \frac{p_x^+}{p_x} <\chi_N^-|\chi_{SO}^+> t_{++}
-           + \frac{p_x^-}{p_x} <\chi_N^-|\chi_{SO}^-> t_{-+} \nonumber\\
-         &   - \frac{\ta}{\cos \phi} \left(
-                 <\chi_N^-|\sigma_z|\chi_{SO}^+>
-                 t_{++} + \frac{p_x^-}{p_x} 
-                 <\chi_N^-|\sigma_z|\chi_{SO}^-> t_{-+} \right)
-\end{align}
-
-(The scalar products of the spinors are indicated in bracket notation
-for clarity, even though they don't imply an integration over any
-variable).
-
-Using the geometric relations
+Equations \ref{eq:continuous} and \ref{eq:j_continuous} can be
+expanded in powers of $\ta$. In second order the solutions are
 
 \begin{align}
-    p^2         &= p_z^2 + p_x^2\\
-    p_{SO}^2    &= p_z^2 + p_{x,SO}^2
+    t_{++} &= 1 -
+            \frac{\ta}{2}(\frac{1}{\cos \phi} + \frac{1}{\cos^2 \phi})
+            -\frac{\ta^2}{4}(1+\frac{1}{\cos \phi} + \frac{1}{\cos^2 \phi}
+                    -\frac{3}{\cos^3\phi} - \frac{2}{\cos^4\phi})\\
+    t_{+-} &= \frac{\ta^2}{4}(1 + \frac{1}{\cos \phi})\\
+    r_{++} &= \frac{\ta}{16}\frac{\cos(4 \phi) -1}{\cos^4 \phi}  +
+            O(\ta^2)\\
+    r_{+-} &= -\frac{\ta}{2} \frac{\cos^2\frac{\phi}{2}}{\cos \phi}
 \end{align}
 
-together with eqn. \ref{eq:pso} we have all quantities to calculate
-the scalar products.
+%and $n_{N}^\pm = n_{SO}^\pm$. With $n_N^- / n_N^+ = \tan
+%\frac{\phi}{2}$ 
+
+%
+%Multiplying both equations with $\chi_N^+$ and $\chi_N^-$ gives us
+%four scalar equations:
+%
+%\begin{align} 
+%    \label{eq:a1}
+%    1 + r_{++}  =& <\chi_{SO}^+|\chi_N^+> t_{++} +
+%                    <\chi_{SO}^-|\chi_N^+> t_{-+}\\
+%    \label{eq:a2}
+%        r_{-+}  =& <\chi_{SO}^+|\chi_N^-> t_{++} + <\chi_{SO}^-|\chi_N^-> t_{-+}\\
+%    \label{eq:b1}
+%    1 - r_{++}
+%        =& \frac{p_x^+}{p_x} <\chi_N^+|\chi_{SO}^+> t_{++}
+%           + \frac{p_x^-}{p_x} <\chi_N^+|\chi_{SO}^-> t_{-+} \nonumber\\
+%         &   - \frac{\ta}{\cos \phi} \left(
+%                 <\chi_N^+|\sigma_z|\chi_{SO}^+> t_{++}
+%                 + <\chi_N^+|\sigma_z|\chi_{SO}^-> t_{-+} \right)\\
+%    \label{eq:b2}
+%    -r_{-+}
+%        =& \frac{p_x^+}{p_x} <\chi_N^-|\chi_{SO}^+> t_{++}
+%           + \frac{p_x^-}{p_x} <\chi_N^-|\chi_{SO}^-> t_{-+} \nonumber\\
+%         &   - \frac{\ta}{\cos \phi} \left(
+%                 <\chi_N^-|\sigma_z|\chi_{SO}^+> t_{++}
+%                 + <\chi_N^-|\sigma_z|\chi_{SO}^-> t_{-+} \right)
+%\end{align}
+%
+%(The scalar products of the spinors are indicated in bracket notation
+%for clarity, even though they don't imply an integration over any
+%variable).
+
+%Using the geometric relations
+%
+%\begin{align}
+%    p^2         &= p_z^2 + p_x^2\\
+%    p_{SO}^2    &= p_z^2 + p_{x,SO}^2
+%\end{align}
+%
+%together with eqn. \ref{eq:pso} we have all quantities to calculate
+%the scalar products.
+%
+%we have the means to solve these equations. 
 
 \end{document}
 
