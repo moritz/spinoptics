@@ -1,11 +1,17 @@
 CC=gfortran
 CFLAGS=-g -I/usr/include/ -O2 -Wuninitialized
-LDFLAGS= -L$(HOME)/local/lib -lm
-INCLUDEPATH=-I$(HOME)/tmp/eigen2-git/ -I/usr/include/superlu -I$(HOME)/local/include
+MUMPS=$(HOME)/tmp/MUMPS_4.8.4/
+LDFLAGS= -L$(HOME)/local/lib \
+         $(MUMPS)/lib/libmumps_common.a \
+         $(MUMPS)/lib/libzmumps.a \
+         -lm  -lsuperlu
+INCLUDEPATH=-I$(HOME)/tmp/eigen2/ -I/usr/include/superlu \
+            -I$(HOME)/local/include -I$(HOME)/tmp/MUMPS_4.8.4/include
+
 OPTFLAGS=-DNDEBUG -msse2 -O3 -fweb -fwhole-program -ffast-math -fassociative-math -freciprocal-math  -ffinite-math-only
 DEBUGFLAGS=-Wextra -g -O -fbounds-check -fstack-protector-all
 # GPPFLAGS=$(INCLUDEPATH) $(LDFLAGS) -ltaucs -lsuperlu -DEIGEN_SUPERLU_SUPPORT -DEIGEN_TAUCS_SUPPORT
-GPPFLAGS=$(INCLUDEPATH) $(LDFLAGS) -lsuperlu -DEIGEN_SUPERLU_SUPPORT 
+GPPFLAGS=$(INCLUDEPATH) $(LDFLAGS) -DEIGEN_SUPERLU_SUPPORT 
 
 all: cppspin
 

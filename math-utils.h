@@ -10,6 +10,7 @@
 #include <boost/numeric/ublas/matrix_sparse.hpp>
 #include <boost/numeric/ublas/io.hpp>
 #include <boost/numeric/ublas/operation_blocked.hpp>
+#include "zmumps_c.h"
 
 namespace ub = boost::numeric::ublas;
 
@@ -111,6 +112,68 @@ num r_prod_trace(const esm &a, const esm &b) {
     }
 
     return sum;
+}
+
+typedef struct {
+    int             size;
+    int             nz; // non-zeros
+    int             *row_ptr;
+    int             *col_ptr;
+    ZMUMPS_COMPLEX  *values;
+} MUMPS_complex_sparse;
+
+MUMPS_complex_sparse* eigen_to_mumps(const esm &e) {
+    assert(e.rows() == e.cols());
+    int nz = e.nonZeros();
+    MUMPS_complex_sparse *m = new MUMPS_complex_sparse;
+    m->size     = e.rows();
+    m->nz       = nz;
+    m->row_ptr  = new int[nz];
+    m->col_ptr  = new int[nz];
+    m->values   = new ZMUMPS_COMPLEX[nz];
+    int i = 0 ;
+    for (int k=0; k < e.outerSize(); ++k) {
+        for (esm::InnerIterator it(e,k); it; ++it) {
+            m->row_ptr[i]   = 1 + it.row();
+            m->col_ptr[i]   = 1 + it.col();
+            m->values[i].r  = real(it.value());
+            m->values[i].i  = imag(it.value());
+        }
+    }
+    return m;
+}
+
+ZMUMPS_STRUC_C* MUMPS_lr(const esm &e) {
+    assert(e.rows() == e.cols());
+    ZMUMPS_STRUC_C *id = new ZMUMPS_STRUC_C;
+    id->job = -1;           // initialize
+    id->par = 1;            // just one job in parallel
+    id->sym = 0;            // no symmetries
+    id->comm_fortran = -987654; // black magic
+//    zmumps_c(id);           // init
+    MUMPS_complex_sparse *m = eigen_to_mumps(e);
+    id->n   = m->size;
+    id->nz  = m->nz;
+    id->irn = m->row_ptr;
+    id->jcn = m->col_ptr;
+
+#define ICNTL(I) icntl[(I)-1] /* macro s.t. indices match documentation */
+    id->ICNTL(1) = -1;      // be silent
+    id->ICNTL(2) = -1;      // be silent
+    id->ICNTL(3) = -1;      // be silent
+    id->ICNTL(4) =  0;      // be silent
+
+    id->job      = 4;       // analyze + decompose
+//    zmumps_c(id);
+    return id;
+}
+
+void MUMPS_solve(ZMUMPS_STRUC_C *id, const esm &e, esm &result) {
+    assert(id->n    == e.rows());
+    assert(e.rows() == e.cols());
+    assert(e.rows() == result.rows());
+    assert(e.rows() == result.cols());
+
 }
 
 #endif /* __MATH_UTILS_H */
