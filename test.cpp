@@ -2,41 +2,67 @@
 #include <complex>
 #include <Eigen/Core>
 #include <Eigen/Sparse>
+#include <stdlib.h>
 using namespace std;
 
 using namespace Eigen;
 
-typedef double num;
-typedef complex<num> cnum;
+typedef std::complex<double> cnum;
 typedef Eigen::SparseMatrix< cnum , Eigen::RowMajor> esm;
 typedef Eigen::RandomSetter< esm > ers;
 typedef Eigen::SparseLU<esm, Eigen::SuperLU> eslu;
 
+
+void pseudo_sparse_solve(const eslu * const slu,
+                         const esm &rhs,
+                         esm &result,
+                         const bool adjoint = false) {
+    assert( rhs.cols() == rhs.rows() );
+    int n = rhs.cols();
+
+    ers setter(result);
+    Eigen::VectorXcd *invCol = new Eigen::VectorXcd(n);
+    int transpose_flag;
+    if (adjoint) {
+        transpose_flag = Eigen::SvAdjoint;
+    } else {
+        transpose_flag = Eigen::SvNoTrans;
+    }
+    for (int k=0; k<rhs.outerSize(); ++k) {
+        Eigen::VectorXcd base(n);
+        int i = 0;
+        for (esm::InnerIterator it(rhs,k); it; ++it) {
+            base(it.col()) = it.value();
+            i++;
+        }
+        if (i != 0) {
+            slu->solve(base, invCol, transpose_flag);
+            for (int j = 0; j < n; j++) {
+                if (abs((*invCol)[j]) > 1e-18) {
+                    setter(j, k) = (*invCol)[j];
+                }
+            }
+        }
+    }
+    delete invCol;
+}
+
+
 int main(int argc, char** argv) {
-    esm a(2, 2);
+    srand(1);
+    esm a(100, 100);
     {
         ers s(a);
-        s(0, 0) = cnum(2, 0);
-        s(0, 1) = cnum(1, 1);
-        s(1, 0) = cnum(2, 1);
+        for (int x = 0; x < 100; x++) {
+            for (int y = 0; y < 100; y++) {
+                if (rand() < RAND_MAX / 2)
+                    s(x, y) = 3;
+            }
+        }
     }
-    {
-        eslu s(a);
-        VectorXcd rhs(2);
-        VectorXcd solution(2);
-        rhs(0) = cnum(1, 0);
-        rhs(1) = cnum(2, 0);
+    esm b(100, 100);
+    eslu slu(a);
+    pseudo_sparse_solve(&slu, a, b, false);
 
-        s.solve(rhs, &solution);
-        cout << solution << "\n\n";
-        cout << a * solution << "\n\n";
-
-        s.solve(rhs, &solution, SvTranspose);
-        cout << solution << "\n\n";
-        cout << a.transpose() * solution << "\n\n";
-
-        s.solve(rhs, &solution, SvAdjoint);
-        cout << solution << "\n\n";
-        cout << a.adjoint() * solution << "\n\n";
-    }
 }
+ // vim: ts=4 sw=4 expandtab

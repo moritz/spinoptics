@@ -12,7 +12,6 @@ sub real_matrix  {
     $str =~ m/\[(\d+),(\d+)\]/g
         or die "Matrix format not recognized (missing dimension marker like [4,4]\n";
     my ($w, $h) = ($1, $2);
-    print pos($str), $/;
     my $par = qr{ \(  [^()]+ \) }x;
     $str =~ m/\G\(($par(?:,$par)*)\)/g or die "Can't match nested parenthesis";
     $str = $1;

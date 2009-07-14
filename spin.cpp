@@ -33,11 +33,11 @@ using namespace std;
 #include "math-utils.h"
 typedef int idx_t;
 
-const int Nx               = 60;
-const int Ny               = Nx;
+const int Nx               = 10;
+const int Ny               = 20;
 const int Spin_idx         = Nx * Ny;
 
-const int N_leads          = 8;
+const int N_leads          = 4;
 
 // width of leads in units of lattice sites
 const int lead_sites       = Nx;
@@ -78,6 +78,7 @@ int lead_offset[N_leads];
 
 const num epsilon    = 1e-5;
 
+// constants
 const num pi         = 3.14159265358979323846264;
 const num h_bar      = 6.582122E-16;     // [eV*s]
 const num h_planck   = 4.135669E-15;     // [eV*s]
@@ -88,6 +89,7 @@ const num e_charge   = 1.60217653E-19;   // [C = A*s]
 const num bohr_magneton
                      = 9.27400915E-24;   // [A * m^2]
 
+// parameters
 const num width_sample
                      = 30.0;             // [nm]
 const num g_factor   = 20.0;
@@ -98,7 +100,7 @@ num stripe_angle     = pi / 4;
 
 // XXX is the +1 correct?
 const num a_sample   = width_sample / (num) (Nx + 1);
-const int size       = Nx * Ny * 2;      // `Nfin'
+const int size       = Nx * Ny * 2;      // total number of indices
 const num V          = 1.0;              // hopping term
 
 // e_tot is our choice of energy zero-level.
@@ -329,23 +331,23 @@ esm** self_energy(const num flux, const num gauge) {
             (*s[1])(IDX(0, i+lead_offset[2], 1),
                     IDX(0, j+lead_offset[2], 1))      = g;
 
-            /* right */
-            (*s[2])(IDX(Nx-1, i+lead_offset[1], 0),
-                    IDX(Nx-1, j+lead_offset[1], 0))   = g;
-            (*s[3])(IDX(Nx-1, i+lead_offset[3], 1),
-                    IDX(Nx-1, j+lead_offset[3], 1))   = g;
+//            /* right */
+//            (*s[2])(IDX(Nx-1, i+lead_offset[1], 0),
+//                    IDX(Nx-1, j+lead_offset[1], 0))   = g;
+//            (*s[3])(IDX(Nx-1, i+lead_offset[3], 1),
+//                    IDX(Nx-1, j+lead_offset[3], 1))   = g;
 
             /* top */
-            (*s[4])(IDX(i+lead_offset[4], 0, 0),
-                    IDX(j+lead_offset[4], 0, 0))      = g;
-            (*s[5])(IDX(i+lead_offset[5], 0, 1),
-                    IDX(j+lead_offset[5], 0, 1))      = g;
+            (*s[2])(IDX(i+lead_offset[2], 0, 0),
+                    IDX(j+lead_offset[2], 0, 0))      = g;
+            (*s[3])(IDX(i+lead_offset[3], 0, 1),
+                    IDX(j+lead_offset[3], 0, 1))      = g;
 
-            /* bottom */
-            (*s[6])(IDX(i+lead_offset[6], Ny-1, 0),
-                    IDX(j+lead_offset[6], Ny-1, 0))   = g;
-            (*s[7])(IDX(i+lead_offset[7], Ny-1, 1),
-                    IDX(j+lead_offset[7], Ny-1, 1))   = g;
+//            /* bottom */
+//            (*s[6])(IDX(i+lead_offset[6], Ny-1, 0),
+//                    IDX(j+lead_offset[6], Ny-1, 0))   = g;
+//            (*s[7])(IDX(i+lead_offset[7], Ny-1, 1),
+//                    IDX(j+lead_offset[7], Ny-1, 1))   = g;
         }
     }
 
@@ -381,10 +383,11 @@ ub::matrix<num>* transmission(esm *H, const num flux, const num gauge) {
     viz(*sigma_r[1], "lead_1.png");
     viz(*sigma_r[2], "lead_2.png");
     viz(*sigma_r[3], "lead_3.png");
-    viz(*sigma_r[4], "lead_4.png");
+/*    viz(*sigma_r[4], "lead_4.png");
     viz(*sigma_r[5], "lead_5.png");
     viz(*sigma_r[6], "lead_6.png");
     viz(*sigma_r[7], "lead_7.png");
+    */
 
     for (int k = 0; k < N_leads; k++){
         *H -= *sigma_r[k];
@@ -528,7 +531,7 @@ int main (int argc, char** argv) {
     log_tick("start");
 
     for (int i = 0; i < N_leads; i++) {
-        lead_offset[i] = 0;
+        lead_offset[i] = Nx - lead_sites;
     }
 
     *out << "PID:        " << getpid() << endl;
@@ -597,6 +600,7 @@ int main (int argc, char** argv) {
         }
     }
     log_tick("Done");
+    delete fout;
     delete tpq;
     return 0;
 }
