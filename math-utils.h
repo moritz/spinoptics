@@ -162,14 +162,15 @@ ZMUMPS_STRUC_C* MUMPS_lr(const esm &e) {
     id->a   = m->values;
 
 #define ICNTL(I) icntl[(I)-1] /* macro s.t. indices match documentation */
-/*    id->ICNTL(1) = -1;      // be silent
+    id->ICNTL(1) = -1;      // be silent
     id->ICNTL(2) = -1;      // be silent
     id->ICNTL(3) = -1;      // be silent (really)
     id->ICNTL(4) =  1;      // error messages are allowed
-    */
 
     id->job      = 4;       // analyze + decompose
     zmumps_c(id);
+    delete m;               // note that .a, .jrn and .jcn are cleaned
+                            // in MUMPS_free
     return id;
 }
 
@@ -222,7 +223,6 @@ void MUMPS_solve(ZMUMPS_STRUC_C *id, const esm &e, esm &result,
             for (int j = 0; j < n; j++) {
                 cnum z(dense_result[j].r, dense_result[j].i);
                 if (abs(z) > 1e-18) {
-                    cout << "found something\n";
                     setter(k,j) = z;
                 }
             }
@@ -231,8 +231,15 @@ void MUMPS_solve(ZMUMPS_STRUC_C *id, const esm &e, esm &result,
         }
     }
     delete[] dense_result;
-   
+}
 
+void MUMPS_free(ZMUMPS_STRUC_C *id) {
+    delete[] id->a;
+    delete[] id->jcn;
+    delete[] id->irn;
+    id->job = -2;
+    zmumps_c(id);
+    delete id;
 }
 
 #endif /* __MATH_UTILS_H */
