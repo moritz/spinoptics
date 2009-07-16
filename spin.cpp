@@ -34,7 +34,7 @@ using namespace std;
 typedef int idx_t;
 
 const int Nx               = 10;
-const int Ny               = 20;
+const int Ny               = 10;
 const int Spin_idx         = Nx * Ny;
 
 const int N_leads          = 4;
@@ -399,8 +399,9 @@ ub::matrix<num>* transmission(esm *H, const num flux, const num gauge) {
     // the second parameter is the ordering method that the solver uses
     // internally. Doesn't change results, only execution time
     eslu *slu = new eslu(*H, Eigen::MinimumDegree_ATA);
-    delete H;
-    H = NULL;
+    ZMUMPS_STRUC_C* mumps = MUMPS_lr(*H);
+//    delete H;
+//    H = NULL;
     log_tick("LU decomposition");
 
 
@@ -432,10 +433,18 @@ ub::matrix<num>* transmission(esm *H, const num flux, const num gauge) {
 
         // since *sigma_r[i] is a real matrix by now (although declared
         // complex) we can use transpose() instead of adjoint();
+
         pseudo_sparse_solve(slu, sigma_r[i]->transpose(), result, true);
         *g_ret = result.adjoint();
 
         pseudo_sparse_solve(slu, *sigma_r[i], result, false);
+        esm t1(size, size);
+        MUMPS_solve(mumps, *sigma_r[i], t1, 1);
+//        cout << t1;
+        cout << t1.nonZeros() << "\n";
+        t1 = ((*H) *t1).eval();
+        cout << t1.nonZeros() << "\n";
+        cout << t1 << "\n";
         delete sigma_r[i];
         sigma_r[i] = NULL;
 
@@ -445,6 +454,10 @@ ub::matrix<num>* transmission(esm *H, const num flux, const num gauge) {
         gamma_g_adv[i] = g_adv;
         gamma_g_ret[i] = g_ret;
     }
+    MUMPS_free(mumps);
+    mumps = NULL;
+    delete H;
+    H = NULL;
 
     log_tick("solving");
 
@@ -558,14 +571,21 @@ int main (int argc, char** argv) {
     viz(*H, "hamiltonian.png");
 #ifndef NDEBUG
     {
+        /*
         esm Hcheck(size, size);
-        Hcheck = *H - esm(H->adjoint()).eval();
+        cout << "alive 2\n";
+        cout << H->rows() << " " << H->cols() << "\n";
+        esm m3 = esm(H->adjoint());
+        cout << "alive 3\n";
+        Hcheck = *H - esm(m3);
+        cout << "alive 4\n";
         num x = Hcheck.cwise().abs().sum();
         if (x > 0.01) {
             cerr << "ERROR: Hamiltonian is not hermitian ("
                  << x << ")\n";
             exit(1);
         }
+        */
     }
 #endif
 
