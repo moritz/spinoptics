@@ -88,7 +88,7 @@ region. The momentum in the SO region then follows as
 
 \begin{align}
     \label{eq:pso}
-    p_{SO}^{\pm} &= m v_F (\sqrt{1 + \tilde \alpha} \mp \tilde \alpha) \\
+    p_{SO}^{\pm} &= m v_F (\sqrt{1 + \ta^2} \mp \tilde \alpha) \\
     \tilde\alpha &= \frac{\alpha}{v_F}
 \end{align}
 
@@ -113,8 +113,12 @@ $\chi_N^{\pm} = \lim_{\alpha \mapsto 0} \chi_{SO}^{\pm}$ to ensure that
 $<\chi_N^+|\chi_{SO}^+> = 1$ holds true at a vanishing interface.
 
 
+
 The overall wave function consists of an incident wave, 
-and reflected and transmitted part:
+and reflected and transmitted part. In general the incident wave can
+be decomposed into one with $+$ and one with $-$ chirality, which
+propagate and scatter independently. Let's consider the incident $+$
+wave:
 
 \begin{align}
     \Psi^+ = e^{i p_z z} * \left\{
