@@ -172,17 +172,18 @@ Dividing it by  $p_x = p \cos \phi$:
 \end{align}
 
 Equations \ref{eq:continuous} and \ref{eq:j_continuous} can be
-expanded in powers of $\ta$. In second order the solutions are
+expanded in powers of $\ta$. In solutions expanded to the first
+non-zero order each are
 
 \begin{align}
-    t_{++} &= 1 -
-            \frac{\ta}{2}(\frac{1}{\cos \phi} + \frac{1}{\cos^2 \phi})
-            -\frac{\ta^2}{4}(1+\frac{1}{\cos \phi} + \frac{1}{\cos^2 \phi}
-                    -\frac{3}{\cos^3\phi} - \frac{2}{\cos^4\phi})\\
-    t_{+-} &= \frac{\ta^2}{4}(1 + \frac{1}{\cos \phi})\\
-    r_{++} &= \frac{\ta}{16}\frac{\cos(4 \phi) -1}{\cos^4 \phi}  +
-            O(\ta^2)\\
-    r_{+-} &= -\frac{\ta}{2} \frac{\cos^2\frac{\phi}{2}}{\cos \phi}
+    t_{++} &= 1 +
+            \frac{\ta}{2}\left( \frac{1}{\cos^2\phi} - 1 \right)\\
+%            \frac{\ta}{2}(\frac{1}{\cos \phi} + \frac{1}{\cos^2 \phi})
+%            -\frac{\ta^2}{4}(1+\frac{1}{\cos \phi} + \frac{1}{\cos^2 \phi}
+%                    -\frac{3}{\cos^3\phi} - \frac{2}{\cos^4\phi})\\
+    t_{-+} &= \frac{\ta^2}{4}\tan \phi \\
+    r_{++} &= \frac{\ta}{2} \tan^2 \phi\\
+    r_{-+} &= -\frac{\ta}{2} \tan \phi
 \end{align}
 
 %and $n_{N}^\pm = n_{SO}^\pm$. With $n_N^- / n_N^+ = \tan
