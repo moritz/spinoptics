@@ -9,7 +9,7 @@ mkdir $dir or die "Can't mkdir `$dir': $!";
 
 print "Writing data to `$dir'\n";
 
-for my $phi (0..45) {
+for my $phi (0..90) {
     my $angle = $phi / 180 * 3.14159;
     print "Phi = ", $phi, " degrees\n";
 #    for my $bf (-25..25) {
@@ -21,5 +21,7 @@ for my $phi (0..45) {
             or die "can't run ./cppsin: $?";
 #    }
 }
+
+print "finished run `$dir'\n";
 
 # vim: ft=perl sw=4 ts=4 expandtab

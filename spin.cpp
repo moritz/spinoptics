@@ -33,14 +33,14 @@ using namespace std;
 #include "math-utils.h"
 typedef int idx_t;
 
-const int Nx               = 10;
-const int Ny               = 10;
+const int Nx               = 100;
+const int Ny               = 20;
 const int Spin_idx         = Nx * Ny;
 
-const int N_leads          = 4;
+const int N_leads          = 6;
 
 // width of leads in units of lattice sites
-const int lead_sites       = Nx;
+const int lead_sites       = Ny;
 
 /*   Numbering  scheme for the sites
  *
@@ -107,7 +107,7 @@ const num V          = 1.0;              // hopping term
 const num e_tot      = -2.0 * V;
 const num width_disorder  = 0.0;
 
-num alpha = -0.02 / a_sample / 2.0;
+num alpha = -0.02; // / a_sample / 2.0;
 
 ostream *out = &cout;
 bool quiet = false;
@@ -123,6 +123,18 @@ void log_tick(const char* desc) {
 }
 
 num rashba_for_site(idx_t x, idx_t y) {
+    // Interface at angle stripe_angle
+
+    float r = tan(stripe_angle);
+    num scale = 0.0;
+
+    if (((float) y / (float) x) > r) {
+        return scale * alpha;
+    } else {
+        return alpha;
+    }
+
+    /*
     // stripe with angle `stripe_angle' against the x axis and height h.
     // Inside the strip
     // the spin-orbit coupling is `alpha', outside it's
@@ -136,6 +148,7 @@ num rashba_for_site(idx_t x, idx_t y) {
     } else {
         return scale * alpha;
     }
+    */
 }
 
 num flux_from_field(const num B) {
@@ -178,8 +191,7 @@ inline num rashba(const num alpha) {
 }
 
 inline num mods(const int n, const int nle) {
-    return 2.0 * V * (cos(pi * (num) (n+1) / ((num) nle + 1.0))
-            - 1.0);
+    return 2.0 * V * (cos(pi * (num) (n+1) / ((num) nle + 1.0)) - 1.0);
 }
 
 cnum findk(const num Emod) {
@@ -316,7 +328,8 @@ esm** self_energy(const num flux, const num gauge) {
     ers** s = new ers*[N_leads];
 
     for (int i = 0; i < N_leads; i++) {
-        assert(lead_sites + lead_offset[i] <= Nx);
+        // XXX not so easy for Nx != Ny
+//        assert(lead_sites + lead_offset[i] <= Nx);
         e[i]  = new esm(size, size);
         s[i]  = new ers( *e[i] );
     }
@@ -331,17 +344,17 @@ esm** self_energy(const num flux, const num gauge) {
             (*s[1])(IDX(0, i+lead_offset[2], 1),
                     IDX(0, j+lead_offset[2], 1))      = g;
 
-//            /* right */
-//            (*s[2])(IDX(Nx-1, i+lead_offset[1], 0),
-//                    IDX(Nx-1, j+lead_offset[1], 0))   = g;
-//            (*s[3])(IDX(Nx-1, i+lead_offset[3], 1),
-//                    IDX(Nx-1, j+lead_offset[3], 1))   = g;
+            /* right */
+            (*s[2])(IDX(Nx-1, i+lead_offset[1], 0),
+                    IDX(Nx-1, j+lead_offset[1], 0))   = g;
+            (*s[3])(IDX(Nx-1, i+lead_offset[3], 1),
+                    IDX(Nx-1, j+lead_offset[3], 1))   = g;
 
             /* top */
-            (*s[2])(IDX(i+lead_offset[2], 0, 0),
-                    IDX(j+lead_offset[2], 0, 0))      = g;
-            (*s[3])(IDX(i+lead_offset[3], 0, 1),
-                    IDX(j+lead_offset[3], 0, 1))      = g;
+            (*s[4])(IDX(i+lead_offset[4], 0, 0),
+                    IDX(j+lead_offset[4], 0, 0))      = g;
+            (*s[5])(IDX(i+lead_offset[5], 0, 1),
+                    IDX(j+lead_offset[5], 0, 1))      = g;
 
 //            /* bottom */
 //            (*s[6])(IDX(i+lead_offset[6], Ny-1, 0),
@@ -399,9 +412,8 @@ ub::matrix<num>* transmission(esm *H, const num flux, const num gauge) {
     // the second parameter is the ordering method that the solver uses
     // internally. Doesn't change results, only execution time
     eslu *slu = new eslu(*H, Eigen::MinimumDegree_ATA);
-    ZMUMPS_STRUC_C* mumps = MUMPS_lr(*H);
-//    delete H;
-//    H = NULL;
+    delete H;
+    H = NULL;
     log_tick("LU decomposition");
 
 
@@ -439,12 +451,6 @@ ub::matrix<num>* transmission(esm *H, const num flux, const num gauge) {
 
         pseudo_sparse_solve(slu, *sigma_r[i], result, false);
         esm t1(size, size);
-        MUMPS_solve(mumps, *sigma_r[i], t1, 1);
-//        cout << t1;
-        cout << t1.nonZeros() << "\n";
-        t1 = ((*H) *t1).eval();
-        cout << t1.nonZeros() << "\n";
-        cout << t1 << "\n";
         delete sigma_r[i];
         sigma_r[i] = NULL;
 
@@ -454,10 +460,6 @@ ub::matrix<num>* transmission(esm *H, const num flux, const num gauge) {
         gamma_g_adv[i] = g_adv;
         gamma_g_ret[i] = g_ret;
     }
-    MUMPS_free(mumps);
-    mumps = NULL;
-    delete H;
-    H = NULL;
 
     log_tick("solving");
 
@@ -543,8 +545,11 @@ int main (int argc, char** argv) {
     }
     log_tick("start");
 
-    for (int i = 0; i < N_leads; i++) {
-        lead_offset[i] = Nx - lead_sites;
+    for (int i = 0; i < 4; i++) {
+        lead_offset[i] = 0;
+    }
+    for (int i = 5; i < N_leads; i++) {
+        lead_offset[i] = (Nx - lead_sites) / 2;
     }
 
     *out << "PID:        " << getpid() << endl;
@@ -564,6 +569,7 @@ int main (int argc, char** argv) {
             }
         }
     }
+    cout << ra;
     viz(ra, "rashba.png");
 #endif
 
@@ -571,21 +577,16 @@ int main (int argc, char** argv) {
     viz(*H, "hamiltonian.png");
 #ifndef NDEBUG
     {
-        /*
         esm Hcheck(size, size);
-        cout << "alive 2\n";
         cout << H->rows() << " " << H->cols() << "\n";
         esm m3 = esm(H->adjoint());
-        cout << "alive 3\n";
         Hcheck = *H - esm(m3);
-        cout << "alive 4\n";
         num x = Hcheck.cwise().abs().sum();
         if (x > 0.01) {
             cerr << "ERROR: Hamiltonian is not hermitian ("
                  << x << ")\n";
             exit(1);
         }
-        */
     }
 #endif
 

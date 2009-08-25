@@ -6,7 +6,8 @@
 #include <Imlib2.h>
 
 template <typename T, int _Flags>
-void visualize(Eigen::SparseMatrix<T, _Flags> &matrix, const char* filename) {
+void visualize(const Eigen::SparseMatrix<T, _Flags> &matrix, const char* filename) {
+    using namespace std;
     int my = matrix.rows();
     int mx = matrix.cols();
     if (mx * my > 1000000) {
@@ -20,6 +21,8 @@ void visualize(Eigen::SparseMatrix<T, _Flags> &matrix, const char* filename) {
     for (int k = 0; k < matrix.outerSize(); ++k) {
         for (typename Eigen::SparseMatrix<T>::InnerIterator it(matrix,k); it; ++it) {
             int i = it.col() * mx + it.row();
+//            cout << mx << " " << my << " " << it.col() << " " << it.row() << endl;
+            assert(4 * i + 1 < 4 * mx * my);
             pixmap[4 * i    ] = 0;
             pixmap[4 * i + 1] = 0;
             pixmap[4 * i + 2] = 0;

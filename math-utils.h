@@ -9,10 +9,13 @@
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/matrix_sparse.hpp>
 #include <boost/numeric/ublas/io.hpp>
-#include "zmumps_c.h"
 
 // for bzero
 #include <strings.h>
+// for debugging
+#include <iostream>
+using std::cout;
+using std::endl;
 
 namespace ub = boost::numeric::ublas;
 
@@ -114,132 +117,6 @@ num r_prod_trace(const esm &a, const esm &b) {
     }
 
     return sum;
-}
-
-typedef struct {
-    int             size;
-    int             nz; // non-zeros
-    int             *row_ptr;
-    int             *col_ptr;
-    ZMUMPS_COMPLEX  *values;
-} MUMPS_complex_sparse;
-
-MUMPS_complex_sparse* eigen_to_mumps(const esm &e) {
-    assert(e.rows() == e.cols());
-    int nz = e.nonZeros();
-    MUMPS_complex_sparse *m = new MUMPS_complex_sparse;
-    m->size     = e.rows();
-    m->nz       = nz;
-    m->row_ptr  = new int[nz];
-    m->col_ptr  = new int[nz];
-    m->values   = new ZMUMPS_COMPLEX[nz];
-    int i = 0 ;
-    for (int k=0; k < e.outerSize(); ++k) {
-        for (esm::InnerIterator it(e,k); it; ++it) {
-            m->row_ptr[i]   = 1 + it.row();
-            m->col_ptr[i]   = 1 + it.col();
-            m->values[i].r  = real(it.value());
-            m->values[i].i  = imag(it.value());
-            i++;
-        }
-    }
-    return m;
-}
-
-ZMUMPS_STRUC_C* MUMPS_lr(const esm &e) {
-    assert(e.rows() == e.cols());
-    ZMUMPS_STRUC_C *id = new ZMUMPS_STRUC_C;
-    id->job = -1;           // initialize
-    id->par = 1;            // just one job in parallel
-    id->sym = 0;            // no symmetries
-    id->comm_fortran = -987654; // black magi//c
-    zmumps_c(id);           // init
-    MUMPS_complex_sparse *m = eigen_to_mumps(e);
-    id->n   = m->size;
-    id->nz  = m->nz;
-    id->irn = m->row_ptr;
-    id->jcn = m->col_ptr;
-    id->a   = m->values;
-
-#define ICNTL(I) icntl[(I)-1] /* macro s.t. indices match documentation */
-    id->ICNTL(1) = -1;      // be silent
-    id->ICNTL(2) = -1;      // be silent
-    id->ICNTL(3) = -1;      // be silent (really)
-    id->ICNTL(4) =  1;      // error messages are allowed
-
-    id->job      = 4;       // analyze + decompose
-    zmumps_c(id);
-    delete m;               // note that .a, .jrn and .jcn are cleaned
-                            // in MUMPS_free
-    return id;
-}
-
-void MUMPS_solve(ZMUMPS_STRUC_C *id, const esm &e, esm &result,
-        int transposed = 0) {
-    const int n = e.rows();
-    assert(id->n         == n);
-    assert(e.cols()      == n);
-    assert(result.rows() == n);
-    assert(result.cols() == n);
-    ZMUMPS_COMPLEX* dense_result = new ZMUMPS_COMPLEX[n];
-    bzero(dense_result, n * sizeof(ZMUMPS_COMPLEX));
-    result.setZero();
-    ers setter(result);
-
-    int irhs_ptr[]  = {1, 2};
-    id->job         = 3;        // solution phase
-    id->ICNTL(20)   = 1;        // sparse RHS
-    id->ICNTL(9)    = 1 - transposed; 
-    id->nrhs        = 1;        // ... really!
-    id->rhs         = dense_result;
-
-    for (int k=0; k < e.outerSize(); ++k) {
-        int nz = e.innerVector(k).size();
-        if (nz > 0) {
-            ZMUMPS_COMPLEX* sparse_rhs = new ZMUMPS_COMPLEX[nz];
-            int i = 0;
-            int* irhs = new int[nz];
-            for (esm::InnerIterator it(e,k); it; ++it) {
-                ZMUMPS_COMPLEX z;
-                z.r = real(it.value());
-                z.i = imag(it.value());
-                sparse_rhs[i] = z;
-                // TODO: is that correct?
-                if (esm::Flags&Eigen::RowMajorBit) {
-                    irhs[i]       = it.col() + 1;
-                } else {
-                    irhs[i]       = it.row() + 1;
-                }
-            
-                ++i;
-            }
-            id->irhs_sparse = irhs;
-            id->rhs_sparse  = sparse_rhs;
-            id->nz_rhs      = i;
-            irhs_ptr[1]     = i + 1;
-            id->irhs_ptr    = irhs_ptr; // one column at a time
-
-            zmumps_c(id);
-            for (int j = 0; j < n; j++) {
-                cnum z(dense_result[j].r, dense_result[j].i);
-                if (abs(z) > 1e-18) {
-                    setter(k,j) = z;
-                }
-            }
-            delete[] sparse_rhs;
-            delete[] irhs;
-        }
-    }
-    delete[] dense_result;
-}
-
-void MUMPS_free(ZMUMPS_STRUC_C *id) {
-    delete[] id->a;
-    delete[] id->jcn;
-    delete[] id->irn;
-    id->job = -2;
-    zmumps_c(id);
-    delete id;
 }
 
 #endif /* __MATH_UTILS_H */
