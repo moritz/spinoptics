@@ -7,6 +7,7 @@ vspin
 a.out
 spin
 cout
+plot
 t
 *.[ao]
 cachegrind.out.*
