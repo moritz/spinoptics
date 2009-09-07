@@ -72,7 +72,7 @@ const int lead_sites       = Ny;
 #define IDX(x, y, s) ((x) + Nx * (y) + (s) * Spin_idx)
 #define X_IDX(i) (((i) % Spin_idx) % Nx)
 #define Y_IDX(i) (((i) % Spin_idx) / Nx)
-#define S_IDX(i) ((int) (i) / Spin_idx)
+#define S_IDX(i) ((int) (i) / (Spin_idx))
 
 int lead_offset[N_leads];
 
@@ -194,10 +194,10 @@ inline num mods(const int n, const int nle) {
     return 2.0 * V * (cos(pi * (num) (n+1) / ((num) nle + 1.0)) - 1.0);
 }
 
-cnum findk(const num Emod) {
+cnum findk(const num Emod, const num energy) {
     return sqrt(
             cnum(2 * mass / (h_bar * h_bar)
-            * (e_tot - Emod) * 10.0 / 1.60219, 0)
+            * (energy - Emod) * 10.0 / 1.60219, 0)
         );
 }
 
@@ -489,8 +489,9 @@ ub::matrix<num>* transmission(esm *H, const num flux, const num gauge) {
         delete gamma_g_ret[i];
     }
     for (int i = 0; i < lead_sites; i++){
-        cnum k = findk(mods(i, lead_sites));
+        cnum k = findk(mods(i, lead_sites), e_tot);
         if (imag(k) == 0.0) {
+            *out << "Ev. mode\n";
             for (int j = 0; j < N_leads; j++){
                 (*tpq)(j, j) += 1.0;
             }
@@ -583,7 +584,7 @@ int main (int argc, char** argv) {
         Hcheck = *H - esm(m3);
         num x = Hcheck.cwise().abs().sum();
         if (x > 0.01) {
-            cerr << "ERROR: Hamiltonian is not hermitian ("
+            cerr << "ERROR: Hamiltonian is not hermitian (epsilon = "
                  << x << ")\n";
             exit(1);
         }
@@ -597,12 +598,16 @@ int main (int argc, char** argv) {
     boost::numeric::ublas::vector<num> c;
     bool is_first = true;
     num ref = 0.0;
+    num min = 1e100;
     for (int i = 0; i < N_leads; i++) {
         num r_sum = 0.0;
         num c_sum = 0.0;
         r = row(*tpq, i);
         c = column(*tpq, i);
         for (int j = 0; j < N_leads; j++) {
+            if (c(j) < min) {
+                min = c(j);
+            }
             r_sum += r(j);
             c_sum += c(j);
         }
@@ -619,6 +624,9 @@ int main (int argc, char** argv) {
             *out << "ERROR: sum rule violated for column " << i
                  << "  (" << c_sum << ")" << endl;
         }
+    }
+    if (min < 0) {
+        *out << "ERROR: found a negative transmission coefficient\n";
     }
     log_tick("Done");
     delete fout;
