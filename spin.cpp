@@ -175,13 +175,8 @@ void correct_phase(esm &m, const num flux) {
             int y2 = Y_IDX(it.col());
             assert(it.col() == IDX(x2, y2, S_IDX(it.col())));
 
-//            cout << "product: " << x2 * y2 - x1 * y1 << endl;
             cnum phi = b_factor(flux, x2 * y2 - x1 * y1);
-//            cout << "phi: " << phi << endl;
-//            cout << "before: " << *y;
-//            (*y) *= phi;
             it.value() *= phi;
-//            cout << " after: " << *y << endl;
         }
     }
 }
