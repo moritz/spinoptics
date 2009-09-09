@@ -9,13 +9,14 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="744.09448819"
-   height="1052.3622047"
+   width="395.96964"
+   height="283.2561"
    id="svg2"
    sodipodi:version="0.32"
    inkscape:version="0.46"
    sodipodi:docname="setup-simple.svg"
-   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   version="1.0">
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -28,14 +29,14 @@
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
      inkscape:cx="290.94883"
-     inkscape:cy="826.72233"
+     inkscape:cy="90.79778"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="918"
      inkscape:window-height="838"
-     inkscape:window-x="72"
-     inkscape:window-y="69" />
+     inkscape:window-x="71"
+     inkscape:window-y="50" />
   <defs
      id="defs4">
     <inkscape:perspective
@@ -60,7 +61,8 @@
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1">
+     id="layer1"
+     transform="translate(-107.58632,-95.505131)">
     <g
        id="g3523">
       <path
@@ -124,7 +126,7 @@
          height="106.25633"
          width="2.8087299"
          id="rect3179"
-         style="fill:#ff0000;fill-opacity:1;stroke:#fd0000;stroke-width:0.4603688;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+         style="fill:#ff0000;fill-opacity:1;stroke:#fd0000;stroke-width:0.46036881;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
     </g>
     <g
        id="g3261">
@@ -151,7 +153,7 @@
          height="140.26042"
          width="3.7075775"
          id="rect3185"
-         style="fill:#0000ff;fill-opacity:1;stroke:#0000ff;stroke-width:0.60800001;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+         style="fill:#0000ff;fill-opacity:1;stroke:#0000ff;stroke-width:0.60799998;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
     </g>
     <g
        id="g3247"
@@ -335,5 +337,25 @@
          id="tspan3519"
          x="313.57144"
          y="103.79075">z</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="140.44347"
+       y="144.54877"
+       id="text2451"><tspan
+         sodipodi:role="line"
+         id="tspan2453"
+         x="140.44347"
+         y="144.54877">N</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="424.76825"
+       y="144.52924"
+       id="text2455"><tspan
+         sodipodi:role="line"
+         id="tspan2457"
+         x="424.76825"
+         y="144.52924">SO</tspan></text>
   </g>
 </svg>

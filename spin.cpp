@@ -33,8 +33,8 @@ using namespace std;
 #include "math-utils.h"
 typedef int idx_t;
 
-const int Nx               = 100;
-const int Ny               = 20;
+const int Nx               = 50;
+const int Ny               = 10;
 const int Spin_idx         = Nx * Ny;
 
 const int N_leads          = 6;
@@ -118,7 +118,7 @@ void log_tick(const char* desc) {
     }
     static time_t prev = time(NULL);
     time_t t = time(NULL);
-    printf("[Tick] %06ld %s\n", t-prev, desc);
+//    printf("[Tick] %06ld %s\n", t-prev, desc);
     prev = t;
 }
 
@@ -284,7 +284,7 @@ esm** self_energy(const num flux, const num gauge) {
 
 
     for (int r = 0; r < Nx; r++) {
-        num x = (e_tot - mods(r, lead_sites)) / (2.0 * V) + 1.0;
+        num x = (e_tot - mods(r, lead_sites)) / (-e_tot) + 1.0;
         cnum theta;
         if (x > 1.0) {
             // evanescent mode, calculate cosh^-1
@@ -486,7 +486,7 @@ ub::matrix<num>* transmission(esm *H, const num flux, const num gauge) {
     for (int i = 0; i < lead_sites; i++){
         cnum k = findk(mods(i, lead_sites), e_tot);
         if (imag(k) == 0.0) {
-            *out << "Ev. mode\n";
+//            *out << "Ev. mode\n";
             for (int j = 0; j < N_leads; j++){
                 (*tpq)(j, j) += 1.0;
             }
