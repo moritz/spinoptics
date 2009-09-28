@@ -56,7 +56,8 @@
 \begin{document}
 \maketitle
 
-This is an attempt to reproduce what Khodas wrote in {\em Spin 
+This is an attempt to reproduce and generalize/extend what Khodas et
+al. wrote in {\em Spin 
 Polarization of Nonmagnetic Heterostructures: The Basics of Spin
 Optics}, PRL 92.086602.
 
@@ -64,9 +65,9 @@ Optics}, PRL 92.086602.
     \begin{center}
         \includegraphics{setup-simple.pdf}
     \end{center}
-    \label{fig:setup-zero}
     \caption{Scheme of the interface between normal (N)
             and spin-orbit (SO) regime}
+    \label{fig:setup-zero}
 \end{figure}
 
 The setup consists of a 2D electron gas in the $x-z$ plane, where the
@@ -182,9 +183,9 @@ Dividing it by  $p_x = p \cos \phi$:
                                 \label{eq:j_continuous}
 \end{align}
 
-Equations \ref{eq:continuous} and \ref{eq:j_continuous} can be
-expanded in powers of $\ta$. In solutions expanded to the first
-non-zero order each are
+Equations \ref{eq:continuous} and \ref{eq:j_continuous} have two
+components each, and can be solved unambiguously. 
+The solutions expanded to the first non-zero order in $\ta$ each are
 
 \begin{align}
     t_{++} &= 1 +
@@ -206,10 +207,10 @@ And for the incident wave with $-$ chirality
 \begin{figure}[h!tp]
     \includegraphics[width=\textwidth]{zero-plus.pdf}
     \includegraphics[width=\textwidth]{zero-minus.pdf}
-    \label{fig:trans-zero}
     \caption{Transmission and reflection coefficients for the
             incident beam with $+$ (upper) and $-$ (lower) chirality
             and $\ta = 0.1$}
+    \label{fig:trans-zero}
 \end{figure}
 
 Figure \ref{fig:trans-zero} shows the transmission and reflection
@@ -222,7 +223,7 @@ call the corresponding $\phi_c$ a critical angle. (Note that $t_{++}$
 is not zero in that region, but since the wave doesn't propagate, no
 current flows).
 
-Since
+With
 
 \begin{align}
     \cos \phi       &= \frac{p_x}{p}\\
@@ -246,9 +247,9 @@ coupling (SO1 and SO2).
     \begin{center}
         \includegraphics{setup-two-so-regions.pdf}
     \end{center}
-    \label{fig:setup-nonzero}
     \caption{Scheme of the interface between two regions with
         different, non-zero spin orbit coupling}
+    \label{fig:setup-nonzero}
 \end{figure}
 
 One just has to remember that the incident beam is split up
@@ -256,6 +257,34 @@ into two beams of different chirality, which propagate at different
 angles. In general each beam is split up into two beams at the
 interface, so there are up to four beams in SO2 region, two of each
 chirality.
+
+\begin{figure}
+    \begin{center}
+        \includegraphics{nonzero-plus.pdf}
+        \includegraphics{nonzero-minus.pdf}
+    \end{center}
+    \caption{Transmission and reflection coefficients for the
+        incident $+$ (top) and $-$ (bottom) wave, with
+        $\alpha_1 = 0.1$ and $\alpha_2 = 0.2$.}
+    \label{fig:plots-nonzero}
+\end{figure}
+
+As before, equations \ref{eq:continuous} and \ref{eq:j_continuous}
+apply and can be solved unambiguously. Figure \ref{fig:plots-nonzero}
+shows the results.
+
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=0.8\textwidth]{rpp-zero-point.png}
+    \end{center}
+    \caption{$\phi_0$, the angle for which $r_{++}$ vanishes, as a
+        function of $\ta_1$ and $\ta_2$ (numerically determined)}
+    \label{fig:rpp-zero-point}    
+\end{figure}
+
+For $\ta_2 > \ta_1$ there's a point for which $r_{++}(\phi_0) =
+0$. Figure \ref{fig:rpp-zero-point} shows $\phi_0$ as a function of
+$\ta_1$ and $\ta_2$.
 
 \end{document}
 

@@ -33,14 +33,14 @@ using namespace std;
 #include "math-utils.h"
 typedef int idx_t;
 
-const int Nx               = 50;
-const int Ny               = 10;
+const int Nx               = 20;
+const int Ny               = 20;
 const int Spin_idx         = Nx * Ny;
 
 const int N_leads          = 6;
 
 // width of leads in units of lattice sites
-const int lead_sites       = Ny;
+const int lead_sites       = 20;
 
 /*   Numbering  scheme for the sites
  *
@@ -103,8 +103,9 @@ const num a_sample   = width_sample / (num) (Nx + 1);
 const int size       = Nx * Ny * 2;      // total number of indices
 const num V          = 1.0;              // hopping term
 
-// e_tot is our choice of energy zero-level.
-const num e_tot      = -2.0 * V;
+// e_tot is our choice of energy zero-level in the leads.
+// Adjust Fermi energy here.
+num e_tot      = 8.0;
 const num width_disorder  = 0.0;
 
 num alpha = -0.02; // / a_sample / 2.0;
@@ -125,8 +126,9 @@ void log_tick(const char* desc) {
 num rashba_for_site(idx_t x, idx_t y) {
     // Interface at angle stripe_angle
 
+    return alpha;
     float r = tan(stripe_angle);
-    num scale = 0.0;
+    num scale = 1.0;
 
     if (((float) y / (float) x) > r) {
         return scale * alpha;
@@ -214,7 +216,7 @@ esm* hamiltonian(const num rashb, const num B) {
         // in which case these items might be different per
         // iteration, but every two diagonal items with distance
         // (size/2) must still have the same value
-        cnum energy = 4.0 * V + e_tot;
+        cnum energy = 4.0 * V + 2.0 * V;
         Hnn(i, i)                     = energy - zeeman;
         Hnn(i + size/2, i + size/2)   = energy + zeeman;
     }
@@ -361,7 +363,7 @@ esm** self_energy(const num flux, const num gauge) {
 
     for (int i = 0; i < N_leads; i++) {
         delete s[i];
-
+/*
         switch(i) {
             case 0:
             case 1:
@@ -377,7 +379,9 @@ esm** self_energy(const num flux, const num gauge) {
                 correct_phase(*e[i], gauge * flux);
                 break;
         }
+        */
     }
+
     delete[] s;
 
     log_tick("self-energy");
@@ -508,13 +512,16 @@ int main (int argc, char** argv) {
     int opt;
     ofstream *fout = new ofstream();
     int n;
-    while ((opt = getopt(argc, argv, "qr:b:o:p:n:")) != -1) {
+    while ((opt = getopt(argc, argv, "qr:b:e:o:p:n:")) != -1) {
        switch (opt) {
             case 'r':
                 alpha = atof(optarg);
                 break;
             case 'b':
                 Bz = atof(optarg);
+                break;
+            case 'e':
+                e_tot = atof(optarg);
                 break;
             case 'n':
                 n = atoi(optarg);
@@ -595,6 +602,7 @@ int main (int argc, char** argv) {
     num ref = 0.0;
     num min = 1e100;
     for (int i = 0; i < N_leads; i++) {
+
         num r_sum = 0.0;
         num c_sum = 0.0;
         r = row(*tpq, i);
@@ -606,6 +614,7 @@ int main (int argc, char** argv) {
             r_sum += r(j);
             c_sum += c(j);
         }
+
         if (is_first) {
             ref = r_sum;
             *out << "Number of modes: " << ref << endl;
@@ -620,6 +629,18 @@ int main (int argc, char** argv) {
                  << "  (" << c_sum << ")" << endl;
         }
     }
+
+    num min_diagonal = 1e100;
+    for (int i = 0; i < N_leads; i++) {
+        if ((*tpq)(i, i) < min_diagonal) {
+            min_diagonal = (*tpq)(i, i);
+        }
+    }
+    ref -= (int) min_diagonal;
+
+    *out << "Number of propagating modes: " << ref << endl;
+
+
     if (min < 0) {
         *out << "ERROR: found a negative transmission coefficient\n";
     }

@@ -22,6 +22,9 @@ spin: nano0903c.f inv_general_complex_mat.o Makefile
 	$(CC) $(CFLAGS) $(LDFLAGS) -fbounds-check -o spin  inv_general_complex_mat.o nano0903c.f DBL_COMBO_generatorjs1.f
 #	$(CC) $(CFLAGS) $(LDFLAGS) -o spin  inv_general_complex_mat.o nano0903c.f
 
+check: spin.cpp Makefile math-utils.h 
+	g++ -fsyntax-only $(GPPFLAGS) spin.cpp
+
 cppspin.o: spin.cpp Makefile math-utils.h 
 	g++ $(GPPFLAGS) $(DEBUGFLAGS) -c -o cppspin.o spin.cpp
 #	g++ $(GPPFLAGS) $(OPTFLAGS) -c -o cppspin.o spin.cpp
@@ -40,6 +43,6 @@ t: test.cpp Makefile math-utils.h visualize.h
 clean:
 	rm -f *.o *~ spin cppspin vspin
 
-.PHONY: clean
+.PHONY: clean check
 
 # vim: tw=0
