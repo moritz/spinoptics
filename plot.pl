@@ -14,7 +14,7 @@ for my $fn (@files) {
     $fn =~ /phi(\d\d)\.dat/ or die "can't work with file name `$fn'";
     my $phi = $1;
     my $m = tpq_for_file($fn);
-    print $phi, " ", $m->[5][5], $/;
+    print $phi, " ", $m->[0][6], $/;
 }
 
 

@@ -33,14 +33,14 @@ using namespace std;
 #include "math-utils.h"
 typedef int idx_t;
 
-const int Nx               = 20;
+const int Nx               = 40;
 const int Ny               = 20;
 const int Spin_idx         = Nx * Ny;
 
-const int N_leads          = 6;
+const int N_leads          = 8;
 
 // width of leads in units of lattice sites
-const int lead_sites       = 20;
+const int lead_sites       = Ny;
 
 /*   Numbering  scheme for the sites
  *
@@ -126,9 +126,8 @@ void log_tick(const char* desc) {
 num rashba_for_site(idx_t x, idx_t y) {
     // Interface at angle stripe_angle
 
-    return alpha;
     float r = tan(stripe_angle);
-    num scale = 1.0;
+    num scale = 0.0;
 
     if (((float) y / (float) x) > r) {
         return scale * alpha;
@@ -338,12 +337,12 @@ esm** self_energy(const num flux, const num gauge) {
             /* left */
             (*s[0])(IDX(0, i+lead_offset[0], 0),
                     IDX(0, j+lead_offset[0], 0))      = g;
-            (*s[1])(IDX(0, i+lead_offset[2], 1),
-                    IDX(0, j+lead_offset[2], 1))      = g;
+            (*s[1])(IDX(0, i+lead_offset[1], 1),
+                    IDX(0, j+lead_offset[1], 1))      = g;
 
             /* right */
-            (*s[2])(IDX(Nx-1, i+lead_offset[1], 0),
-                    IDX(Nx-1, j+lead_offset[1], 0))   = g;
+            (*s[2])(IDX(Nx-1, i+lead_offset[2], 0),
+                    IDX(Nx-1, j+lead_offset[3], 0))   = g;
             (*s[3])(IDX(Nx-1, i+lead_offset[3], 1),
                     IDX(Nx-1, j+lead_offset[3], 1))   = g;
 
@@ -354,10 +353,10 @@ esm** self_energy(const num flux, const num gauge) {
                     IDX(j+lead_offset[5], 0, 1))      = g;
 
 //            /* bottom */
-//            (*s[6])(IDX(i+lead_offset[6], Ny-1, 0),
-//                    IDX(j+lead_offset[6], Ny-1, 0))   = g;
-//            (*s[7])(IDX(i+lead_offset[7], Ny-1, 1),
-//                    IDX(j+lead_offset[7], Ny-1, 1))   = g;
+            (*s[6])(IDX(i+lead_offset[6], Ny-1, 0),
+                    IDX(j+lead_offset[6], Ny-1, 0))   = g;
+            (*s[7])(IDX(i+lead_offset[7], Ny-1, 1),
+                    IDX(j+lead_offset[7], Ny-1, 1))   = g;
         }
     }
 
@@ -559,6 +558,7 @@ int main (int argc, char** argv) {
     *out << "Size:       " << Nx << "x" << Ny << endl;
     *out << "lead width: " << lead_sites << endl;
     *out << "Bz:         " << Bz << endl;
+    *out << "E_tot:      " << e_tot << endl;
 
 #ifdef VISUALIZE
     esm ra(Nx, Ny);
@@ -572,7 +572,6 @@ int main (int argc, char** argv) {
             }
         }
     }
-    cout << ra;
     viz(ra, "rashba.png");
 #endif
 
@@ -581,7 +580,7 @@ int main (int argc, char** argv) {
 #ifndef NDEBUG
     {
         esm Hcheck(size, size);
-        cout << H->rows() << " " << H->cols() << "\n";
+//        cout << H->rows() << " " << H->cols() << "\n";
         esm m3 = esm(H->adjoint());
         Hcheck = *H - esm(m3);
         num x = Hcheck.cwise().abs().sum();
