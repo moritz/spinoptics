@@ -215,7 +215,7 @@ esm* hamiltonian(const num rashb, const num B) {
         // in which case these items might be different per
         // iteration, but every two diagonal items with distance
         // (size/2) must still have the same value
-        cnum energy = 4.0 * V + 2.0 * V;
+        cnum energy = 4.0 * V;
         Hnn(i, i)                     = energy - zeeman;
         Hnn(i + size/2, i + size/2)   = energy + zeeman;
     }
@@ -504,7 +504,7 @@ ub::matrix<num>* transmission(esm *H, const num flux, const num gauge) {
 
 
 int main (int argc, char** argv) {
-    num Bz = +6;
+    num Bz = 0;
 
     int opt;
     ofstream *fout = new ofstream();
