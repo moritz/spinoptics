@@ -105,7 +105,7 @@ const num V          = 1.0;              // hopping term
 
 // e_tot is our choice of energy zero-level in the leads.
 // Adjust Fermi energy here.
-num e_tot      = 8.0;
+num e_tot      = 4.0;
 const num width_disorder  = 0.0;
 
 num alpha = -0.02; // / a_sample / 2.0;
@@ -186,7 +186,7 @@ inline num rashba(const num alpha) {
     return 2.0 * alpha * a_sample;
 }
 
-inline num mods(const int n, const int nle) {
+inline num mode_energy(const int n, const int nle) {
     return 2.0 * V * (cos(pi * (num) (n+1) / ((num) nle + 1.0)) - 1.0);
 }
 
@@ -285,7 +285,7 @@ esm** self_energy(const num flux, const num gauge) {
 
 
     for (int r = 0; r < Nx; r++) {
-        num x = (e_tot - mods(r, lead_sites)) / (-e_tot) + 1.0;
+        num x = (e_tot - mode_energy(r, lead_sites)) / (2 * V) + 1.0;
         cnum theta;
         if (x > 1.0) {
             // evanescent mode, calculate cosh^-1
@@ -490,9 +490,7 @@ ub::matrix<num>* transmission(esm *H, const num flux, const num gauge) {
     delete[] gamma_g_ret;
 
     for (int i = 0; i < lead_sites; i++){
-        cnum k = findk(mods(i, lead_sites), e_tot);
-        if (imag(k) == 0.0) {
-//            *out << "Ev. mode\n";
+        if (mode_energy(i, lead_sites) < e_tot) {
             for (int j = 0; j < N_leads; j++){
                 (*tpq)(j, j) += 1.0;
             }
