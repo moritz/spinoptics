@@ -486,6 +486,9 @@ ub::matrix<num>* transmission(esm *H, const num flux, const num gauge) {
         delete gamma_g_adv[i];
         delete gamma_g_ret[i];
     }
+    delete[] gamma_g_adv;
+    delete[] gamma_g_ret;
+
     for (int i = 0; i < lead_sites; i++){
         cnum k = findk(mods(i, lead_sites), e_tot);
         if (imag(k) == 0.0) {
@@ -497,9 +500,6 @@ ub::matrix<num>* transmission(esm *H, const num flux, const num gauge) {
 
     }
     log_tick("tpq corrections");
-
-    delete[] gamma_g_adv;
-    delete[] gamma_g_ret;
 
     return tpq;
 }
