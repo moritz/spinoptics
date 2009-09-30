@@ -33,7 +33,7 @@ using namespace std;
 #include "math-utils.h"
 typedef int idx_t;
 
-const int Nx               = 40;
+const int Nx               = 100;
 const int Ny               = 20;
 const int Spin_idx         = Nx * Ny;
 
@@ -105,7 +105,7 @@ const num V          = 1.0;              // hopping term
 
 // e_tot is our choice of energy zero-level in the leads.
 // Adjust Fermi energy here.
-num e_tot      = 4.0;
+num e_tot      = 2.0;
 const num width_disorder  = 0.0;
 
 num alpha = -0.02; // / a_sample / 2.0;
