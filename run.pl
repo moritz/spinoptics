@@ -17,7 +17,7 @@ for my $phi (0..90) {
         my $fn = sprintf "%s/bz%+.2f,phi%02d.dat", $dir, $b, $phi;
         system('./cppspin',
                 -b => $b,
-                -e => 0,
+                -e => -2.5,
                 -o => $fn,
                 -r => -0.5,
                 -p => $angle,
