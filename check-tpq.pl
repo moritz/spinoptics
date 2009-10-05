@@ -22,7 +22,7 @@ sub read_file {
     my @items;
     while (<$h>) {
         s/\[.*?\]//g;
-        push @items, $1 while m/(\b\d([\d.eEdD]*\d\b)?)/g;
+        push @items, $1 while m/(\b\d([\d.eEdD-]*\d\b)?)/g;
     }
     my $count = scalar @items;
     my $size = int sqrt($count) + 0.5;
@@ -55,11 +55,11 @@ $checks{"time rev"} = \&check1;
 
 
 # for spin_hall:
-my @leads = (1,2,5,7);
-my %other_spin = (1, 3, 3, 1, 2, 4, 4, 2, 5, 6, 6, 5, 7, 8, 8, 7);
+# my @leads = (1,2,5,7);
+# my %other_spin = (1, 3, 3, 1, 2, 4, 4, 2, 5, 6, 6, 5, 7, 8, 8, 7);
 # for spin_optics: (!!! check again)
-# my @leads = (1,3,5,7);
-# my %other_spin = (1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5, 7, 8, 8, 7);
+my @leads = (1,3,5,7);
+my %other_spin = (1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5, 7, 8, 8, 7);
 
 sub check2() {
     my ($set, $x, $y) = @_;
