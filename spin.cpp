@@ -280,11 +280,11 @@ esm* hamiltonian(const num rashb, const num B) {
 esm** self_energy(const num flux, const num gauge) {
     // analytical green's function in the leads
     // gl = G_{l+1, l+1}n
-    Eigen::MatrixXcd gl(Nx, Nx);
+    Eigen::MatrixXcd gl(lead_sites, lead_sites);
     gl.setZero();
 
 
-    for (int r = 0; r < Nx; r++) {
+    for (int r = 0; r < lead_sites; r++) {
         num x = (e_tot - mode_energy(r, lead_sites)) / (2 * V) + 1.0;
         cnum theta;
         if (x > 1.0) {
@@ -299,22 +299,22 @@ esm** self_energy(const num flux, const num gauge) {
         }
 
         cnum unit = cnum(1.0, 0.0);
-        num  f    = (num) (Nx + 1);
+        num  f    = (num) (lead_sites + 1);
         cnum tmpp = exp(cnum(0, 1) * (num) (2.0 * pi
-                    * (((num) ((r+1) * Nx )) / f)));
+                    * (((num) ((r+1) * lead_sites )) / f)));
         cnum tmpm = exp(cnum(0, -1) *(num)  (2.0 * pi
                     * ((num) (r+1) / f)));
 
         // "AnorN1(mm)" in nano0903c.f
-        num y = 1.0 / sqrt(0.5 * Nx +
+        num y = 1.0 / sqrt(0.5 * lead_sites +
             real((unit - tmpp) / (unit-tmpm) * cnum(0.5, 0.0)));
 
-        for (int p = 0; p < Nx; p++) {
+        for (int p = 0; p < lead_sites; p++) {
             // "psiN1(ii)" in nano0903c.f
-            cnum y1 = y * sin(pi * (num) ((p+1) * (r+1))/(1.0 + Nx));
-            for (int q = 0; q < Nx; q++) {
+            cnum y1 = y * sin(pi * (num) ((p+1) * (r+1))/(1.0 + lead_sites));
+            for (int q = 0; q < lead_sites; q++) {
                 // "psiN1(jj)" in nano0903c.f
-                cnum y2 = y * sin(pi * (num) ((q+1) * (r+1))/(1.0 + Nx));
+                cnum y2 = y * sin(pi * (num) ((q+1) * (r+1))/(1.0 + lead_sites));
                 gl(p, q) += exp(cnum(0.0,1.0) * theta)/V * y1 * y2;
             }
         }
