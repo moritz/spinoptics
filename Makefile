@@ -8,7 +8,7 @@ INCLUDEPATH=-I$(HOME)/tmp/eigen2/ -I/usr/include/superlu \
 OPTFLAGS=-DNDEBUG -msse2 -O3 -fweb -fwhole-program -ffast-math -fassociative-math -freciprocal-math  -ffinite-math-only
 DEBUGFLAGS=-Wextra -g -O -fbounds-check -fstack-protector-all
 # GPPFLAGS=$(INCLUDEPATH) $(LDFLAGS) -ltaucs -lsuperlu -DEIGEN_SUPERLU_SUPPORT -DEIGEN_TAUCS_SUPPORT
-GPPFLAGS=$(INCLUDEPATH) -Wall -DEIGEN_SUPERLU_SUPPORT 
+GPPFLAGS=$(INCLUDEPATH) -Wall -DEIGEN_SUPERLU_SUPPORT -malign-double
 
 all: cppspin
 
