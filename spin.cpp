@@ -40,7 +40,7 @@ const int Spin_idx         = Nx * Ny;
 const int N_leads          = 8;
 
 // width of leads in units of lattice sites
-const int lead_sites       = Ny;
+const int lead_sites       = 10;
 
 /*   Numbering  scheme for the sites
  *
@@ -105,10 +105,10 @@ const num V          = 1.0;              // hopping term
 
 // e_tot is our choice of energy zero-level in the leads.
 // Adjust Fermi energy here.
-num e_tot      = -1.0;
+num e_tot      = -2.0;
 const num width_disorder  = 0.0;
 
-num alpha = -0.02; // / a_sample / 2.0;
+num alpha = 0.02; // / a_sample / 2.0;
 
 ostream *out = &cout;
 bool quiet = false;
@@ -128,8 +128,9 @@ num rashba_for_site(idx_t x, idx_t y) {
 
     float r = tan(stripe_angle);
     num scale = 0.0;
+    int x_offset = (Nx - lead_sites) / 5;
 
-    if (((float) y / (float) x) > r) {
+    if (((float) y / (float) (x - x_offset)) > r) {
         return scale * alpha;
     } else {
         return alpha;
@@ -215,7 +216,7 @@ esm* hamiltonian(const num rashb, const num B) {
         // in which case these items might be different per
         // iteration, but every two diagonal items with distance
         // (size/2) must still have the same value
-        cnum energy = 4.0 * V;
+        cnum energy = 2.0 * V;
         Hnn(i, i)                     = energy - zeeman;
         Hnn(i + size/2, i + size/2)   = energy + zeeman;
     }
@@ -233,7 +234,7 @@ esm* hamiltonian(const num rashb, const num B) {
             // Rashba terms
             // "1 and 102"
             // with spin flip
-            cnum r = rashba(rashba_for_site(x, y));
+            cnum r = rashba_for_site(x, y);
             if (r == (num) 0)
                 break;
             cnum b = b_factor(xflux, y);
@@ -532,7 +533,7 @@ int main (int argc, char** argv) {
                 }
                 out = fout;
             case 'p':
-                stripe_angle = atof(optarg);
+                stripe_angle = atof(optarg) / 180 * pi;
                 break;
             case 'q':
                 quiet = true;
@@ -574,6 +575,7 @@ int main (int argc, char** argv) {
 #endif
 
     esm *H = hamiltonian(alpha, Bz);
+//    cout << *H << endl;
     viz(*H, "hamiltonian.png");
 #ifndef NDEBUG
     {

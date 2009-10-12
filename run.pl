@@ -4,7 +4,7 @@ use warnings;
 use Parallel::ForkManager;
 use Data::Dumper;
 
-my @hosts = glob "wvbh07{1,2,3,5,6,7,8}";
+my @hosts = glob "wvbh07{2,3,3,6,7,8}";
 my $parallel_jobs = @hosts;
 
 my $dir = 'data/' . int(rand() * 10_000);
@@ -22,16 +22,15 @@ my $count = -1;
 for my $phi (0..90) {
     $count++;
     my $pid = $pm->start and next;
-    my $angle = $phi / 180 * 3.14159;
     my $host = $hosts[$count % @hosts];
     print "($host) Phi = ", $phi, " degrees\n";
         my $fn = sprintf "%s/bz%+.2f,phi%02d.dat", $dir, $b, $phi;
         my @args = (
             -b => $b,
-            -e => -2.5,
+            -e => -0.2,
             -o => $fn,
-            -r => -0.5,
-            -p => $angle,
+            -r => 0.05,
+            -p => $phi,
             '-q',
             -n => 19,
         );
