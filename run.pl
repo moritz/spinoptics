@@ -27,7 +27,7 @@ for my $phi (0..90) {
         my $fn = sprintf "%s/bz%+.2f,phi%02d.dat", $dir, $b, $phi;
         my @args = (
             -b => $b,
-            -e => -0.2,
+            -e => 0.2,
             -o => $fn,
             -r => 0.05,
             -p => $phi,

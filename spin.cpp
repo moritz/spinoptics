@@ -104,8 +104,8 @@ const int size       = Nx * Ny * 2;      // total number of indices
 const num V          = 1.0;              // hopping term
 
 // e_tot is our choice of energy zero-level in the leads.
-// Adjust Fermi energy here.
-num e_tot      = -2.0;
+// Adjust Fermi energy here (or with "-e" command line option).
+num e_tot      = 2.0;
 const num width_disorder  = 0.0;
 
 num alpha = 0.02; // / a_sample / 2.0;
@@ -544,6 +544,7 @@ int main (int argc, char** argv) {
 
         }
     }
+    e_tot *= -1;
     log_tick("start");
 
     for (int i = 0; i < 4; i++) {
