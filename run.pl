@@ -4,26 +4,33 @@ use warnings;
 use Parallel::ForkManager;
 use Data::Dumper;
 
-my @hosts = glob "wvbh07{2,3,3,6,7,8}";
+my @hosts = glob "wvbh07{2,3,3,5,6,7,8} wthp10{4,4,5,5,6,6}";
 my $parallel_jobs = @hosts;
+my $revoke;
+$revoke = 1 if $ARGV[0] && $ARGV[0] eq 'revoke';
 
 my $dir = 'data/' . int(rand() * 10_000);
-die "bad luck" if -e $dir;
+unless ($revoke) {
+    die "bad luck" if -e $dir;
+    mkdir $dir or die "Can't mkdir `$dir': $!";
 
-mkdir $dir or die "Can't mkdir `$dir': $!";
+    print "Writing data to `$dir'\n";
+}
 
-print "Writing data to `$dir'\n";
 
 my $b = 0;
 
 my $pm = Parallel::ForkManager->new($parallel_jobs);
 
 my $count = -1;
-for my $phi (0..90) {
+for my $phi (8..20) {
     $count++;
     my $pid = $pm->start and next;
     my $host = $hosts[$count % @hosts];
-    print "($host) Phi = ", $phi, " degrees\n";
+    if ($revoke) {
+        system 'ssh', '-X', $host, 'killall', 'cppspin';
+    } else {
+        print "($host) Phi = ", $phi, " degrees\n";
         my $fn = sprintf "%s/bz%+.2f,phi%02d.dat", $dir, $b, $phi;
         my @args = (
             -b => $b,
@@ -40,6 +47,7 @@ for my $phi (0..90) {
             warn "re-running it locally...\n";
             system './cppspin', @args;
         }
+    }
     $pm->finish;
 }
 
