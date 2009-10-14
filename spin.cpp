@@ -33,14 +33,14 @@ using namespace std;
 #include "math-utils.h"
 typedef int idx_t;
 
-const int Nx               = 100;
-const int Ny               = 20;
+const int Nx               = 200;
+const int Ny               = 40;
 const int Spin_idx         = Nx * Ny;
 
 const int N_leads          = 8;
 
 // width of leads in units of lattice sites
-const int lead_sites       = 10;
+const int lead_sites       = 20;
 
 /*   Numbering  scheme for the sites
  *
@@ -59,7 +59,8 @@ const int lead_sites       = 10;
  *      0   1     ...       (Nx-1)
  *      Nx  Nx+1  ...       (2*Nx -1)
  *
- *      The same is repeated once more for spin down electrons
+ *      The same is repeated once more for spin-down electrons,
+ *      with index-offset Nx*Ny.
  *
  *      IDX(x, y, spin) returns an index into the site matrices
  *      (where `x' and `y' are zero based, and `spin' is either 0 or 1
@@ -128,7 +129,8 @@ num rashba_for_site(idx_t x, idx_t y) {
 
     float r = tan(stripe_angle);
     num scale = 0.0;
-    int x_offset = (Nx - lead_sites) / 5;
+//    int x_offset = (Nx - lead_sites) / 5;
+    int x_offset = 0.0;
 
     if (((float) y / (float) (x - x_offset)) > r) {
         return scale * alpha;
