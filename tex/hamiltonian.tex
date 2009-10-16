@@ -54,6 +54,10 @@
 \begin{document}
 \maketitle
 
+In order to numerically simulate electrical and spin transport in the 2DEG, we
+discretize the sample into sites and assume that electrons only travel from
+one site to an immediate neighbor.
+
 For a two-dimensional electron gas with Rashba spin-orbit coupling (of
 strength $\alpha$) the Hamiltonian is
 
@@ -62,7 +66,7 @@ strength $\alpha$) the Hamiltonian is
     \frac{\alpha}{\hbar} \inp{p_y\sigma_x - p_x\sigma_y}
 \end{equation}
 
-Taking in account only nearest neighbour interactions, and discretizing to a
+Taking in account only nearest neighbor interactions, and discretizing to a
 tight binding model we get
 
 \begin{eqnarray}
@@ -97,7 +101,6 @@ interaction that involves a spin flip from $\uparrow$ to $\downarrow$ is
 described by $H_{i, j+N^2} = H_{1, 13}$.
 
 \begin{figure}
-    \label{fig:hamiltonian}
     \begin{align*}
         H &&= \inp{
            \begin{array}{cc}
@@ -132,6 +135,7 @@ described by $H_{i, j+N^2} = H_{1, 13}$.
         } 
     \end{align*}
     \caption{Tight binding Hamiltonian for $ 3 \times 3 $ lattice sites}
+    \label{fig:hamiltonian}
 \end{figure}
 
 Figure \ref{fig:hamiltonian} shows an example Hamiltonian for a system of
@@ -140,4 +144,4 @@ field).
 
 \end{document}
 
-% vim: ts=4 sw=4 expandtab spell spelllang=en_us
+% vim: ts=4 sw=4 expandtab spell spelllang=en_us tw=78
