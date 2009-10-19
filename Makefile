@@ -30,8 +30,8 @@ cppspin.o: spin.cpp Makefile math-utils.h
 #	g++ $(GPPFLAGS) $(OPTFLAGS) -c -o cppspin.o spin.cpp
 
 cppspin: cppspin.o Makefile
-	g++ $(GPPFLAGS) $(DEBUGFLAGS) -o cppspin cppspin.o $(LDFLAGS)
-#	g++ $(GPPFLAGS) $(OPTFLAGS) -o cppspin cppspin.o $(LDFLAGS)
+	g++ $(GPPFLAGS) $(OPTFLAGS) -o cppspin cppspin.o $(LDFLAGS)
+#	g++ $(GPPFLAGS) $(DEBUGFLAGS) -o cppspin cppspin.o $(LDFLAGS)
 #	g++ $(GPPFLAGS) -Wall $(OPTFLAGS) -o cppspin spin.cpp
 
 
