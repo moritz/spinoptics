@@ -84,8 +84,13 @@ strength $\alpha$) the Hamiltonian is
     \frac{\alpha}{\hbar} \inp{p_y\sigma_x - p_x\sigma_y}
 \end{equation}
 
-Taking in account only nearest neighbor interactions, and discretizing to a
-tight binding model we get
+To map this to a discrete lattice we substitute the derivation by a discrete
+difference, so $\dell_x f(x)|_{x_0}$ becomes $(f(x_0+a) - f(x_0))/a$. For the
+second derivation we chose the symmetric difference $\dell_x^2 f(x)_{x_0} =
+(f(x_0+a) - f(x_0-a))/2a$. In the continuum limit $a \mapsto 0$ both reproduce
+the derivation exactly.
+
+Written in terms of creation and destruction operators we obtain
 
 \begin{eqnarray}
     H   &&= H_0 + H_r\\
@@ -159,6 +164,11 @@ described by $H_{i, j+N^2} = H_{1, 13}$.
 Figure \ref{fig:hamiltonian} shows an example Hamiltonian for a system of
 $3 \times 3$ lattice sites with Rashba spin-orbit coupling (and no magnetic
 field).
+
+Sites at the edge of the sample have no hopping element to a neighboring site
+at the outside of the sample, so we have hard wall boundary conditions. All
+interaction with the outside world is modeled through the self-energy induced
+by the attached leads.
 
 \end{document}
 
