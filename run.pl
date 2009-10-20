@@ -23,25 +23,25 @@ my $b = 0;
 my $pm = Parallel::ForkManager->new($parallel_jobs);
 
 my $count = -1;
-for my $phi (8..20) {
+for my $phi (0..90) {
     $count++;
     my $pid = $pm->start and next;
     my $host = $hosts[$count % @hosts];
     if ($revoke) {
         system 'ssh', '-X', $host, 'killall', 'cppspin';
     } else {
-        print "($host) Phi = ", $phi, " degrees\n";
         my $fn = sprintf "%s/bz%+.2f,phi%02d.dat", $dir, $b, $phi;
         my @args = (
             -b => $b,
-            -e => 0.2,
+            -e => 2.0,
             -o => $fn,
-            -r => 0.05,
+            -r => 0.02,
             -p => $phi,
             '-q',
             -n => 19,
         );
         my $ret = system('ssh', '-x', $host, './run.sh', @args);
+        print "($host) Phi = ", $phi, " degrees\n";
         if ($ret != 0) {
             warn "can't run ssh $host run.sh: $?, $!\n";
             warn "re-running it locally...\n";
