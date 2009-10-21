@@ -280,6 +280,18 @@ esm* hamiltonian(const num rashb, const num B) {
     return H;
 };
 
+cnum theta_from_energy(num e_f, num e_mode) {
+    num x = (e_f - e_mode) / (2 * V) + 1.0;
+    if (x > 1.0) {
+        // evanescent mode, calculate cosh^-1
+        return cnum(0, 1) * log((cnum) (x + sqrt(x*x - 1.0)));
+    } else if (x < -1.0) {
+        return cnum(0, 1) * log((cnum) (x - sqrt(x*x - 1.0)));
+    } else {
+        return acos(x);
+    }
+}
+
 esm** self_energy(const num flux, const num gauge) {
     // analytical green's function in the leads
     // gl = G_{l+1, l+1}n
@@ -288,18 +300,7 @@ esm** self_energy(const num flux, const num gauge) {
 
 
     for (int r = 0; r < lead_sites; r++) {
-        num x = (e_tot - mode_energy(r, lead_sites)) / (2 * V) + 1.0;
-        cnum theta;
-        if (x > 1.0) {
-            // evanescent mode, calculate cosh^-1
-            theta = cnum(0, 1)
-                * log((cnum) (x + sqrt(x*x - 1.0)));
-        } else if (x < -1.0) {
-            theta = cnum(0, 1)
-                * log((cnum) (x - sqrt(x*x - 1.0)));
-        } else {
-            theta = acos(x);
-        }
+        cnum theta = theta_from_energy(e_tot, mode_energy(r, lead_sites));
 
         cnum unit = cnum(1.0, 0.0);
         num  f    = (num) (lead_sites + 1);
