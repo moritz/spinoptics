@@ -33,12 +33,12 @@ for my $phi (0..90) {
         my $fn = sprintf "%s/bz%+.2f,phi%02d.dat", $dir, $b, $phi;
         my @args = (
             -b => $b,
-            -e => 0.02,
+            -e => 0.5,
             -o => $fn,
             -r => 0.05,
             -p => $phi,
-            '-q',
             -n => 19,
+            '-q',
         );
         print "START: ($host) Phi = ", $phi, " degrees\n";
         my $ret = system('ssh', '-x', $host, './run.sh', @args);

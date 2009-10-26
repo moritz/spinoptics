@@ -33,14 +33,14 @@ using namespace std;
 #include "math-utils.h"
 typedef int idx_t;
 
-const int Nx               = 200;
-const int Ny               = 40;
+const int Nx               = 400;
+const int Ny               = 80;
 const int Spin_idx         = Nx * Ny;
 
-const int N_leads          = 8;
+const int N_leads          = 4;
 
 // width of leads in units of lattice sites
-const int lead_sites       = 20;
+const int lead_sites       = 80;
 
 /*   Numbering  scheme for the sites
  *
@@ -350,17 +350,18 @@ esm** self_energy(const num flux, const num gauge) {
             (*s[3])(IDX(Nx-1, i+lead_offset[3], 1),
                     IDX(Nx-1, j+lead_offset[3], 1))   = g;
 
+
             /* top */
-            (*s[4])(IDX(i+lead_offset[4], 0, 0),
-                    IDX(j+lead_offset[4], 0, 0))      = g;
-            (*s[5])(IDX(i+lead_offset[5], 0, 1),
-                    IDX(j+lead_offset[5], 0, 1))      = g;
+//            (*s[4])(IDX(i+lead_offset[4], 0, 0),
+//                    IDX(j+lead_offset[4], 0, 0))      = g;
+//            (*s[5])(IDX(i+lead_offset[5], 0, 1),
+//                    IDX(j+lead_offset[5], 0, 1))      = g;
 
 //            /* bottom */
-            (*s[6])(IDX(i+lead_offset[6], Ny-1, 0),
-                    IDX(j+lead_offset[6], Ny-1, 0))   = g;
-            (*s[7])(IDX(i+lead_offset[7], Ny-1, 1),
-                    IDX(j+lead_offset[7], Ny-1, 1))   = g;
+//            (*s[6])(IDX(i+lead_offset[6], Ny-1, 0),
+//                    IDX(j+lead_offset[6], Ny-1, 0))   = g;
+//            (*s[7])(IDX(i+lead_offset[7], Ny-1, 1),
+//                    IDX(j+lead_offset[7], Ny-1, 1))   = g;
         }
     }
 
