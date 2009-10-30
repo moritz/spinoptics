@@ -346,7 +346,7 @@ esm** self_energy(const num flux, const num gauge) {
 
             /* right */
             (*s[2])(IDX(Nx-1, i+lead_offset[2], 0),
-                    IDX(Nx-1, j+lead_offset[3], 0))   = g;
+                    IDX(Nx-1, j+lead_offset[2], 0))   = g;
             (*s[3])(IDX(Nx-1, i+lead_offset[3], 1),
                     IDX(Nx-1, j+lead_offset[3], 1))   = g;
 
