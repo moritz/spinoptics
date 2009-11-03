@@ -10,7 +10,14 @@ my @x;
 my @d;
 my $isfirst = 1;
 for my $d (@ARGV) {
-    my @files = glob "data/$d/*.dat" or die "No files in `data/$d/*'";
+    my $number;
+    if ($d =~ m/(\d+)/) {
+        $number = $1;
+    } else {
+        die "Don't know what to do with $d (doesn't contain a number)";
+    }
+
+    my @files = glob "data/$number/*.dat" or die "No files in `data/$number/*'";
 
     my $i = 0;
     for my $fn (@files) {
@@ -25,7 +32,14 @@ for my $d (@ARGV) {
                     . "  for the ${i}th set I expected $x[$i] and got $alpha";
             }
         }
-        push @{$d[$i]}, $m->[0][2] + $m->[1][2];
+        my $agg = 0;
+        if ($d =~ /up/) {
+            $agg += $m->[0][2] + $m->[1][2];
+        }
+        if ($d =~ /down/) {
+            $agg += $m->[0][3] + $m->[1][3];
+        }
+        push @{$d[$i]}, $agg;
     } continue {
         $i++;
     }
