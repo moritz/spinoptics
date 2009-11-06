@@ -248,17 +248,16 @@ esm* hamiltonian(const num rashb, const num B) {
         }
     }
 
-    // kinetic energy in y direction
-    // spin up
+    // interaction in y direction
 
     for (int x = 0; x < Nx; x++){
-        for (int y = 0; y < Ny - 1; y++) {
+        for (int y = 1; y < Ny; y++) {
             cnum b = b_factor(yflux, x);
             cnum h = -V * b;
-            Hnn(IDX(x, y, 0)  , IDX(x, y+1, 0)) = h;
-            Hnn(IDX(x, y+1, 0), IDX(x, y  , 0)) = conj(h);
-            Hnn(IDX(x, y, 1)  , IDX(x, y+1, 1)) = h;
-            Hnn(IDX(x, y+1, 1), IDX(x, y  , 1)) = conj(h);
+            Hnn(IDX(x, y-1, 0), IDX(x, y  , 0)) = h;
+            Hnn(IDX(x, y  , 0), IDX(x, y-1, 0)) = conj(h);
+            Hnn(IDX(x, y-1, 1), IDX(x, y  , 1)) = h;
+            Hnn(IDX(x, y,   1), IDX(x, y-1, 1)) = conj(h);
 
             cnum r = rashba(rashba_for_site(x, y));
             if (r == (num) 0)
@@ -267,11 +266,11 @@ esm* hamiltonian(const num rashb, const num B) {
             // Rashba terms
             // "11 and 101"
             h = cnum(0, 1) * b * r;
-            Hnn(IDX(x, y+1, 0), IDX(x, y  , 1)) = conj(h);
-            Hnn(IDX(x, y  , 1), IDX(x, y+1, 0)) = h;
+            Hnn(IDX(x, y,   0), IDX(x, y-1  , 1)) = conj(h);
+            Hnn(IDX(x, y-1, 1), IDX(x, y  , 0)) = h;
             // "1 and 111"
-            Hnn(IDX(x, y  , 0), IDX(x, y+1, 1)) = h;
-            Hnn(IDX(x, y+1, 1), IDX(x, y  , 0)) = conj(h);
+            Hnn(IDX(x, y-1, 0), IDX(x, y,   1)) = h;
+            Hnn(IDX(x, y,   1), IDX(x, y-1, 0)) = conj(h);
         }
     }
 
@@ -561,8 +560,10 @@ int main (int argc, char** argv) {
     *out << "PID:        " << getpid() << endl;
     *out << "Size:       " << Nx << "x" << Ny << endl;
     *out << "lead width: " << lead_sites << endl;
+    *out << "# leads:    " << N_leads << endl;
     *out << "Bz:         " << Bz << endl;
     *out << "E_tot:      " << e_tot << endl;
+    *out << "t_SO:       " << alpha << endl;
 
 #ifdef VISUALIZE
     esm ra(Nx, Ny);
