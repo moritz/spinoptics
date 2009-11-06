@@ -1,0 +1,48 @@
+#!/usr/bin/perl
+use 5.010;
+use strict;
+use warnings;
+use List::Util qw(max);
+
+my %x;
+my %y;
+
+my $max = 0;
+while (<>) {
+    chomp;
+    my ($what, $x, $y) = /^([xy])(\d+) (\d+)$/;
+    die "Can't parse line <<$_>>\n" unless $what;
+    $max = max $x, $y, $max;
+    if ($what eq 'x') {
+        $x{$x}{$y}++;
+    } else {
+        $y{$x}{$y}++;
+    }
+}
+
+use GD;
+
+
+my $im 		= GD::Image->new(4 * $max + 4, 4 * $max + 4);
+my $red 	= $im->colorAllocate(255, 0, 0);
+my $white 	= $im->colorAllocate(255, 255, 255);
+my $black	= $im->colorAllocate(0, 0, 0);
+$im->fill(0, 0, $white);
+for my $x (0..($max+1)) {
+    for my $y (0..($max+1)) {
+        $im->rectangle(4*$x, 4*$y, 4*$x+1, 4*$y+1, $red);
+        if ($x{$x}{$y}) {
+            $im->rectangle(4*$x+2, 4*$y, 4*$x+3, 4*$y+1, $black);
+        }
+        if ($y{$x}{$y}) {
+            $im->rectangle(4*$x, 4*$y+2, 4*$x+1, 4*$y+3, $black);
+        }
+    }
+}
+
+open my $out, '>', 'hopping.png' or die $!;
+binmode $out;
+print $out $im->png;
+close $out or warn $!;
+
+# vim: ft=perl sw=4 ts=4 expandtab
