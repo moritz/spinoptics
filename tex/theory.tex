@@ -68,7 +68,44 @@ that this means the resistance is zero.
 Still experiments show that a finite resistance can be observed. That's
 because the sample can't be measured in isolation; it is attached to the
 macroscopic measuring system through \emph{leads}. Even if the leads are very
-good conductors themselves, a contact resistance arises.
+good conductors themselves, a contact resistance arises. So the theory has to
+take into account both the sample and the leads.
+
+\subsection*{Landauer Formula}
+
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=0.5\textwidth]{sample-leads}
+    \end{center}
+    \caption{Schematic setup to derive the Landauer Formula}
+    \label{fig:sample-leads}
+\end{figure}
+
+The sample is attached to two leads, which we assume to be perfect, ballistic
+conductors with $M$ modes each. We assume that the contacts are
+reflectionless, that is electrons can travel from the sample into the contacts
+without reflection.
+
+This means that the $k_x$ states in the left lead are occupied by electrons
+coming from contact 1, and thus have the same electrochemical potential as
+the contact, $\mu_1$. Likewise the $-k_x$ states in the right lead have the
+potential $\mu_2$.
+
+At zero temperature, only electrons with energies between $\mu_1$ and $\mu_2$
+are transported, and the influx from the left lead is
+$I_1^+ = (2e/h)M(\mu_1-\mu_2)$. We call the transmission probability through
+the sample $T$, so the outflux from lead 2 is $I_2^+ = T I_1^+$, the rest
+is reflected back: $I_1^- = (1-T) I_1^+$. The net current $I$ then is
+
+\begin{align*}
+    I = I_1^+ - I_1^- = \frac{2e}{h} M T (\mu_1 - \mu_2)
+\end{align*}
+
+The conductance is
+
+\begin{align*}
+    G = \frac{I |e|}{\mu_1 - \mu_2} = \frac{2 e^2}{h} MT
+\end{align*}
 
 \end{document}
 
