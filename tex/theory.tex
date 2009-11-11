@@ -97,15 +97,77 @@ $I_1^+ = (2e/h)M(\mu_1-\mu_2)$. We call the transmission probability through
 the sample $T$, so the outflux from lead 2 is $I_2^+ = T I_1^+$, the rest
 is reflected back: $I_1^- = (1-T) I_1^+$. The net current $I$ then is
 
-\begin{align*}
+\begin{align}
     I = I_1^+ - I_1^- = \frac{2e}{h} M T (\mu_1 - \mu_2)
-\end{align*}
+\end{align}
 
 The conductance is
 
-\begin{align*}
+\begin{align}
     G = \frac{I |e|}{\mu_1 - \mu_2} = \frac{2 e^2}{h} MT
-\end{align*}
+\end{align}
+
+\subsection*{Transmission and Green's functions}
+
+To calculate the value $T$, one can make use of the so-called \emph{Green's
+functions}. A Green function $G$ is, loosely speaking, an inverse of a
+differential operator $D$. More precisely if the relation between an
+excitation $\delta$ and a response $R$ is $D R = \delta$, then every
+operator $G$ for
+which the equation $R = G \delta$ holds is called a Green's function.
+
+To calculate the wave function $\psi$ in response to an excitation $\delta$ at a
+given energy $E$ we can use the inhomogeneous Schrödinger Equation
+
+\begin{align}
+    \label{eq:green-define}
+    (E - H) \psi = \delta
+\end{align}
+
+Where $H$ is the Hamiltonian operator. In a one-dimensional wire oriented
+along the $x$ axis we expect an excitation of the form
+$\delta = \delta(x - x_0)$ to result in two waves propagating away from $x_0$,
+so our ansatz is
+
+TODO: explicit form of $H$
+
+\begin{align}
+    G(x, x_0) = \begin{cases}
+        A^+ e^{i k(x-x_0) } \qquad \textnormal{ for } x > x_0 \\
+        A^- e^{-i k(x-x_0) } \qquad \textnormal{ for } x < x_0 \\
+    \end{cases}
+%    \left\{   \right.
+\end{align}
+
+This function satisfies Eqn. \ref{eq:green-define} for every point $x \not=
+x_0$  for $ k = \sqrt{\frac{2mE}{\hbar^2}}$.
+
+From the boundary conditions
+
+\begin{align}
+    G(x = x_0 + 0, x_0) - G(x = x_0 - 0, x_0) &= 0 \\
+    \frac{\partial G(x, x_0)}{\partial x}\left.\right|_{x=x_0 +0}
+    -\frac{\partial G(x, x_0)}{\partial x}\left.\right|_{x=x_0 -0}
+        &= \frac{2m}{\hbar^2}
+\end{align}
+
+we obtain $A^+ = A^- = -\frac{i}{\hbar v}$ where $v := \frac{\hbar k}{m} $.
+
+We call this particular solution the \emph{retarded Green's function} $G^R$,
+to distinguish it from a second solution with opposite sign both in the $A$s
+and in the exponent, which we call the \emph{advanced} Green's function $G^A$. 
+
+In a wire with finite width multiple modes can propagate, but since we can
+separate the $x$ and $y$ components, the Green's functions become only
+marginally more complex:
+
+\begin{align}
+    G^R(x, x_0) = \sum_m A^\pm_m \chi_m(y) e^{i k_m |x - x_0|}
+\end{align}
+
+where the transverse wave functions $\chi_m(y)$ satisfy the Schrödinger
+Equation in $y$ direction with eigenvalue $\epsilom_m$.
+
 
 \end{document}
 
