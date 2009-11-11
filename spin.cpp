@@ -240,7 +240,7 @@ esm* hamiltonian(const num rashb, const num B) {
             if (r == (num) 0)
                 break;
             cnum b = b_factor(xflux, y);
-            cout << "x" << x << " " << y << endl;
+//            cout << "x" << x << " " << y << endl;
             Hnn(IDX(x,   y, 0), IDX(x+1, y, 1)) = -r * conj(b);
             Hnn(IDX(x+1, y, 1), IDX(x,   y, 0)) = -r * b;
             // "101 and 2"
@@ -264,7 +264,7 @@ esm* hamiltonian(const num rashb, const num B) {
             if (r == (num) 0)
                 break;
 
-            cout << "y" << x << " " << y-1 << endl;
+//            cout << "y" << x << " " << y-1 << endl;
             // Rashba terms
             // "11 and 101"
             h = cnum(0, 1) * b * r;
@@ -296,7 +296,7 @@ cnum theta_from_energy(num e_f, num e_mode) {
 esm** self_energy(const num flux, const num gauge) {
     // analytical green's function in the leads
     // gl = G_{l+1, l+1}n
-    Eigen::MatrixXcd gl(lead_sites, lead_sites);
+    Eigen::MatrixXcf gl(lead_sites, lead_sites);
     gl.setZero();
 
 
