@@ -4,7 +4,7 @@ use warnings;
 use Parallel::ForkManager;
 use Data::Dumper;
 
-my @hosts = glob "wvbh07{0,2,3,3,5,6,7,8} wvbh06{6,9} wthp00{6,9} wthp010 wthp10{4,4,5,5,6,6}";
+my @hosts = glob "wvbh07{0,1,2,3,3,5,7,8} wvbh06{6,9} wthp009 wthp010 wthp10{4,4,5,5,6,6}";
 my $parallel_jobs = @hosts;
 my $revoke;
 $revoke = 1 if $ARGV[0] && $ARGV[0] eq 'revoke';
