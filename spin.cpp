@@ -33,14 +33,14 @@ using namespace std;
 #include "math-utils.h"
 typedef int idx_t;
 
-const int Nx               = 400;
-const int Ny               = 80;
+const int Nx               = 100;
+const int Ny               = Nx;
 const int Spin_idx         = Nx * Ny;
 
 const int N_leads          = 4;
 
 // width of leads in units of lattice sites
-const int lead_sites       = 80;
+const int lead_sites       = Nx;
 
 /*   Numbering  scheme for the sites
  *
@@ -240,6 +240,7 @@ esm* hamiltonian(const num rashb, const num B) {
             if (r == (num) 0)
                 break;
             cnum b = b_factor(xflux, y);
+            cout << "x" << x << " " << y << endl;
             Hnn(IDX(x,   y, 0), IDX(x+1, y, 1)) = -r * conj(b);
             Hnn(IDX(x+1, y, 1), IDX(x,   y, 0)) = -r * b;
             // "101 and 2"
@@ -263,6 +264,7 @@ esm* hamiltonian(const num rashb, const num B) {
             if (r == (num) 0)
                 break;
 
+            cout << "y" << x << " " << y-1 << endl;
             // Rashba terms
             // "11 and 101"
             h = cnum(0, 1) * b * r;
@@ -349,13 +351,18 @@ esm** self_energy(const num flux, const num gauge) {
             (*s[3])(IDX(Nx-1, i+lead_offset[3], 1),
                     IDX(Nx-1, j+lead_offset[3], 1))   = g;
 
+//            /* bottom */
+//            (*s[2])(IDX(i+lead_offset[2], Ny-1, 0),
+//                    IDX(j+lead_offset[2], Ny-1, 0))   = g;
+//            (*s[3])(IDX(i+lead_offset[3], Ny-1, 1),
+//                    IDX(j+lead_offset[3], Ny-1, 1))   = g;
 
-            /* top */
+//            /* top */
 //            (*s[4])(IDX(i+lead_offset[4], 0, 0),
 //                    IDX(j+lead_offset[4], 0, 0))      = g;
 //            (*s[5])(IDX(i+lead_offset[5], 0, 1),
 //                    IDX(j+lead_offset[5], 0, 1))      = g;
-
+//
 //            /* bottom */
 //            (*s[6])(IDX(i+lead_offset[6], Ny-1, 0),
 //                    IDX(j+lead_offset[6], Ny-1, 0))   = g;
