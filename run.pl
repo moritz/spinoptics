@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
+use 5.010;
 use Parallel::ForkManager;
 use Data::Dumper;
 
@@ -17,32 +18,52 @@ unless ($revoke) {
     print "Writing data to `$dir'\n";
 }
 
+my %defaults = (
+    -b => 0,
+    -e => 2.0,
+    -r => 0.02,
+    -p => 40,
+    -n => 21,
+);
 
-my $b = 0;
+my %vars = (
+    alpha => {
+        from    => 0,
+        to      => 1.0,
+        step    => 0.01,
+	option  => '-r',
+    },
+    phi => {
+        name    => 'phi',
+        from    => 0,
+        to      => 45,
+	step	=> 0.2,
+	format  => 'phi%04.1f',
+	option  => '-p',
+    },
+);
 
+my $what = 'phi';
+
+my %v = %{$vars{$what}};
 my $pm = Parallel::ForkManager->new($parallel_jobs);
 
 my $count = -1;
-for (my $alpha = 0; $alpha <= 1.5; $alpha += 0.002) {
+for (my $var = $v{from}; $var <= $v{to}; $var += $v{step}) {
     $count++;
     my $pid = $pm->start and next;
     my $host = $hosts[$count % @hosts];
     if ($revoke) {
         system 'ssh', '-x', $host, 'killall', 'cppspin';
     } else {
-        my $fn = sprintf "%s/alpha%.3f.dat", $dir, $alpha;
-        my @args = (
-            -b => $b,
-            -e => 2.0,
-            -o => $fn,
-            -r => $alpha,
-            -p => 40,
-            -n => 19,
-            '-q',
-        );
-        print "START: ($host) alpha = $alpha\n";
+        my $fn = sprintf "%s/$v{format}.dat", $dir, $var;
+        my %args = %defaults;
+        $args{'-o'} = $fn;
+        $args{$v{option}} = $var;
+        my @args = ( %args, '-q');
+        printf "START: (%s) $v{format}\n", $host, $var;
         my $ret = system('ssh', '-x', $host, './run.sh', @args);
-        print "END:   ($host) alpha = $alpha\n";
+        printf "END:   (%s) $v{format}\n", $host, $var;
         if ($ret != 0) {
             warn "can't run ssh $host run.sh: $?, $!\n";
             warn "re-running it locally...\n";
@@ -56,3 +77,4 @@ $pm->wait_all_children;
 print "finished run `$dir'\n";
 
 # vim: ft=perl sw=4 ts=4 expandtab
+

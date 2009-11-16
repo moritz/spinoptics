@@ -21,7 +21,7 @@ for my $d (@ARGV) {
 
     my $i = 0;
     for my $fn (@files) {
-        $fn =~ /alpha([\d.]+)\.dat/ or die "can't work with file name `$fn'";
+        $fn =~ /(?>alpha|phi)([\d.]+)\.dat/ or die "can't work with file name `$fn'";
         my $alpha = $1;
         my $m = tpq_for_file($fn);
         if ($isfirst) {
@@ -38,6 +38,9 @@ for my $d (@ARGV) {
         }
         if ($d =~ /down/) {
             $agg += $m->[0][3] + $m->[1][3];
+        }
+        if ($d =~ /dud/) {
+            $agg += $m->[0][2] - $m->[1][3];
         }
         push @{$d[$i]}, $agg;
     } continue {
