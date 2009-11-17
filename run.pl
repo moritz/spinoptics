@@ -80,9 +80,8 @@ if ($revoke) {
         my $ret = system('ssh', '-x', $host, './run.sh', @args);
         printf "END:   (%s) $v{format}\n", $host, $var;
         if ($ret != 0) {
-            warn "can't run ssh $host run.sh: $?, $!\n";
-            warn "re-running it locally...\n";
-            system './cppspin', @args;
+            warn "can't run ssh $host run.sh @args\n"
+                 ."You need to re-run it later on yourself\n";
         }
         $pm->finish;
     }
