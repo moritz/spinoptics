@@ -242,7 +242,11 @@ Where $g_p^R$ is the retarded Green's function for the isolated lead $p$,
 \end{align}
 
 $g_p^R$ can often be calculated analytically. We call the term $\tau^\dagger
-g_p^R \tau_p$ \emph{self-energy}. When multiple independent leads are attached
+g_p^R \tau_p$ \emph{self-energy} $\Sigma^R_p$. Its real part describes the
+energy shift of an electron entering the sample, and the imaginary part
+determines the life time of a state in the sample.
+
+When multiple independent leads are attached
 to the same sample, the effects of the self-energies for each lead simply add
 up, and we get
 
@@ -264,7 +268,31 @@ phenomena we're looking at.
 
 \subsection*{Rashba Spin-Orbit Coupling}
 
-TODO
+The Dirac equation from relativistic quantum theory describes an electron
+coupled to a positron. Since the gap $\Delta = 2 m_e c^2$ is quite large, the
+effect of the positron on the electron very small at low energies, and can be
+taken into account by folding the $4\times4$ Hamiltonian (two dimension to
+take spin into account, two for electron and positron) to an effective
+$2\times 2$ Hamiltonian.
+
+One of the terms in the Pauli equation resulting from this folding is the
+\emph{Pauli Spin-Orbit coupling} term\cite{winkler2003}
+
+\begin{align}
+    \left( \ldots - \frac{e\hbar \vec\sigma \cdot \vec p \times \vec E}
+                    {2\Delta} \ldots\right)\Psi = E \Psi
+\end{align}
+
+where $\vec E$ is the electric field and $\vec \sigma$ is the vector
+which contains the Pauli matrices.
+
+In solids the coupling takes place between holes and electrons. Since the
+energy difference between the bands can be in the order of meV or eV
+(as opposed to $\Delta \approx 1GeV$ for electrons in vacuum), the spin orbit
+coupling strength can as much as one million times higher (TODO: citation)
+than in vacuum.
+
+
 
 \subsection*{Tight Binding Hamiltonian}
 
