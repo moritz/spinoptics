@@ -6,7 +6,7 @@ use Parallel::ForkManager;
 use Data::Dumper;
 
 
-my @hosts = glob "wvbh07{0,1,2,3,3,5,8} wvbh06{6,9} wthp009 wthp010 wthp10{4,4,5,5,6,6}";
+my @hosts = glob "wvbh07{0,1,3,3,5,8,9} wvbh06{6,9} wthp009 wthp010 wthp10{4,4,5,5,6,6}";
 my $parallel_jobs = @hosts;
 my $revoke;
 $revoke = 1 if $ARGV[0] && $ARGV[0] eq 'revoke';
@@ -18,7 +18,6 @@ my $dir = 'data/' . int(rand() * 10_000);
 if (@ARGV) {
     $dir = "data/$ARGV[0]";
     print "Writing data to `$dir'\n";
-
 } elsif (!$revoke) {
     die "bad luck" if -e $dir;
     mkdir $dir or die "Can't mkdir `$dir': $!";
@@ -38,15 +37,16 @@ my %vars = (
         from    => 0,
         to      => 1.0,
         step    => 0.01,
-	option  => '-r',
+        option  => '-r',
+        format  => 'alpha%.2f',
     },
     phi => {
         name    => 'phi',
         from    => 0,
         to      => 90,
-	step	=> 0.1,
-	format  => 'phi%04.1f',
-	option  => '-p',
+        step    => 0.1,
+        format  => 'phi%04.1f',
+        option  => '-p',
     },
 );
 
@@ -83,6 +83,7 @@ if ($revoke) {
             warn "can't run ssh $host run.sh @args\n"
                  ."You need to re-run it later on yourself\n";
         }
+        sleep(60);
         $pm->finish;
     }
 }
