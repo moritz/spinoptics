@@ -1,10 +1,59 @@
+\NeedsTeXFormat{LaTeX2e}
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{ae}
+\usepackage[intlimits, sumlimits, namelimits]{amsmath}
+\usepackage{bbm}
+\newcommand{\inp}[1]{\ensuremath{\left(#1\right)}}
+\newcommand{\sqr}{\ensuremath{^{2}}}
+\newcommand{\cube}{\ensuremath{^{3}}}
+\newcommand{\set}[1]{\ensuremath{\mathbbm{#1}}}
+\newcommand{\norm}[1]{\ensuremath{\left|#1\right|}}
+\newcommand{\svec}[3]{\ensuremath{\inp{\hspace{-.8ex}\begin{array}{r}#1\\#2\\#3\end{array}\hspace{-.4ex}}}}
+\newcommand{\entspr}{\ensuremath{\,\,\hat{=}\,\,}}%
+\newcommand{\dx}[1][x]{\ensuremath{\textnormal d #1}}
+\newcommand{\trace}{\textnormal{Tr}}
+
+% For stupid thinkos:
+\newcommand{\cross}{\times}
+\newcommand{\dell}{\partial}
+
+\usepackage{array}
+\setlength{\extrarowheight}{.2mm}
+\usepackage{hyperref}
+\usepackage{graphics,graphicx,fancyvrb}
+%Raender einstellen
+%\usepackage[a4paper, margin=15mm, top=30mm]{geometry}
+\usepackage[a4paper]{geometry}
+\usepackage{lastpage}
+\usepackage{fancyhdr}
+	\lhead{Moritz Lenz}
+	\chead{\bfseries{-- \thepage\ --}}
+	\rhead{\thetitle}
+	\lfoot{}
+	\rfoot{}
+	\cfoot{}
+	\pagestyle{fancy}
+\pagestyle{empty}
+
+\sffamily
+
+\bibliographystyle{alpha}
+
+
+\author{Moritz Lenz}
+\title{Introduction}
+\begin{document}
+\maketitle
+
 Spin manipulation opens up an interesting range of possible applications, from
 spin powered nano devices to Quantum Information and Quantum Cryptography.
 
 However spin manipulation has traditionally been hard to achieve on nanometer
 scales. Using ferromagnetic materials it is possible inject spin polarized
-currents into semiconductor structures, but they are rather hard to handle
-and build.
+currents into semiconductor structures, but building ferromagnetic devices on
+the nano scale is a serious technological channel.
 
 In this Diploma Thesis we therefore investigate spin manipulation in
 non-magnetic material. The Rashba spin-orbit coupling, which arises from
@@ -19,3 +68,8 @@ electron gas in a semiconductor at zero temperature, where electrons and holes
 are transported coherently (ie without dephasing) and ballistically (ie
 without or with very little scattering). Such an electron gas is
 experimentally accessible at heterojunctions in GaAs, HgTe and other semiconductors.
+
+We present both analytical calculations and numerical simulations based on
+tight-binding approximation.
+
+\end{document}
