@@ -156,7 +156,10 @@ From the boundary conditions
         &= \frac{2m}{\hbar^2}
 \end{align}
 
-we obtain $A^+ = A^- = -\frac{i}{\hbar v}$ where $v := \frac{\hbar k}{m} $.
+(where by $+0$ we mean \emph{evaluated from the right} a,d by $-0$ we mean
+\emph{evaluated from the left}).
+
+We obtain $A^+ = A^- = -\frac{i}{\hbar v}$ where $v := \frac{\hbar k}{m} $.
 
 We call this particular solution the \emph{retarded Green's function} $G^R$,
 to distinguish it from a second solution with opposite sign both in the $A$s
@@ -301,12 +304,19 @@ inversion asymmetry is called \emph{Bychkov-Rashba} term or simply
 \emph{Rashba} term (after \cite{rashba}), and is usually written as
 
 \begin{align}
-    H = \frac{\vec p ^2}{2m} + \alpha \inp{\vec I \times  \vec \sigma} \cdot \vec p
+    H = \frac{\vec p ^2}{2m^*} + \alpha \inp{\vec I \times  \vec \sigma} \cdot \vec p
 \end{align}
 
 Where $\vec I$ is a unit vector pointing into the direction of the asymmetry,
+$m^*$ is the effective mass
 and $\alpha$ denotes the strength of the spin-orbit coupling.
 
+This effect lifts the degeneracy of spin-up and spin-down electrons for
+$k \not= 0$:
+
+\begin{align}
+    E(k) = \frac{\hbar^2}{2 m^*} k^2 \pm \alpha k
+\end{align}
 TODO: illustrative explanation.
 
 
@@ -368,7 +378,10 @@ where $n$ runs over all lattice sites, $\delta$ over $\uparrow$ and
 $\downarrow$, and $a_x$ and $a_y$ denote the shift to the nearest neighbor in
 $x$ and $y$ direction, respectively. (Note that we assume that the lattice is
 equally spaced in $x$ and $y$ direction, $+a_x$ just means "go to the next
-neighbor in $x$ direction).
+neighbor in $x$ direction). $t$ is the so-called hopping term, and denotes the
+probability of an electron traveling to its nearest neighbor. $r$ is the
+Rashba hopping term, and corresponds to a nearest neighbor hop with spin
+flip.
 
 Assume we have a quadratic system of $N \times N$ lattice sites.
 For a two-dimensional system we enumerate all lattice sites row by row, and
@@ -406,15 +419,16 @@ described by $H_{i, j+N^2} = H_{1, 13}$.
         %
         H_{spin} &= \inp{
             \begin{array}{ccccccccc}
-                0 & -r &  & r\\
-                r & 0 & -r &  & r &  &  & 0\\
-                & r & 0 & 0 &  & r\\
-                -r &  & 0 & 0 & -r &  & r\\
-                & -r &  & r & 0 & -r &  & r\\
-                &  & -r &  & r & 0 & 0 &  & r\\
-                &  &  & -r &  & 0 & 0 & -r\\
-                & 0 &  &  & -r &  & r & 0 & -r\\
-                &  &  &  &  & -r &  & r & 0\end{array}
+                0 & -ir &  & ir\\
+                ir & 0 & -ir &  & ir &  &  & 0\\
+                & ir & 0 & 0 &  & ir\\
+                -ir &  & 0 & 0 & -ir &  & ir\\
+                & -ir &  & ir & 0 & -ir &  & ir\\
+                &  & -ir &  & ir & 0 & 0 &  & ir\\
+                &  &  & -ir &  & 0 & 0 & -ir\\
+                & 0 &  &  & -ir &  & ir & 0 & -ir\\
+                &  &  &  &  & -ir &  & ir & 0
+            \end{array}
         }
     \end{align*}
     \caption{Tight binding Hamiltonian for $ 3 \times 3 $ lattice sites}
