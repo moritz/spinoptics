@@ -1,0 +1,27 @@
+
+
+Numerical transport calculations have a huge advantage over the analytical
+calculation: once a formalism is implemented, it works for arbitrary
+configurations within the limits of the model. However it doesn't generally
+supply us with data that enhances physical understanding, so its best use as a
+means to expand on analytical calculations which we already understand.
+
+In that spirit we performed numeric calculations, simulating a sample with
+Rashba Spin-orbit coupling, and spin-resolved leads attached at the edges.
+
+The calculation follows this rough scheme:
+
+\begin{itemize}
+    \item Set up the Hamiltonian $H$
+    \item Calculate the self-energy matrices $\Sigma_p$
+    \item Calculate the Green's functions $G^A$ and $G^R$ by inverting
+          $H + \sum_p \Sigma_p$
+    \item Use the Fisher-Lee relation to calculate the transmission matrix $T$
+            from $G^R$, $G^A$ and $\Sigma_p$
+\end{itemize}
+
+\section*{Performance consideration}
+
+These numeric calculations are computationally expensive. If we simulate a
+lattice with a total of $n$ sites, the matrices $H$, $\Sigma_p$, $G^R$ and
+$G^A$ are of dimensions $2n^2 \times 2n^2$
