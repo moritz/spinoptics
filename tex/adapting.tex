@@ -67,60 +67,48 @@ the self-energy of the leads in these bases.
     \begin{center}
     \includegraphics[width=0.8\textwidth]{adapting-pic.pdf}
     \end{center}
-    \caption{Adapting the bases at the interfaces between leads and sample}
+    \caption{Injecting one spin-up charge carrier into the system}
 \end{figure}
 
-Since there is no dissipation in our model, and we assume that the mere
-process of injecting an electron doesn't change its spin, we know that
+% Since there is no dissipation in our model, and we assume that the mere
+% process of injecting an electron doesn't change its spin, we can project
+% the $|\uparrow>$ and $|\downarrow>$ states separately onto the wave
+% function in the sample:
+
+Since we assume that our leads are perfect semi-infinite wires, we can assume
+that the wave functions are plain waves
 
 \begin{align*}
-    |\uparrow> + |\downarrow> = a |\chi_N^+> + b |\chi_N^->.
+    \mathbf{\Psi^\uparrow}   &=  e^{i p_x x} e^{i p_z z} |\uparrow> \\
+    \mathbf{\Psi^\downarrow} &=  e^{i p_x x} e^{i p_z z} |\downarrow> \\
 \end{align*}
 
-This is an equation in two components with two variables which let us
-determine $a$ and $b$ unambiguously.
-
-With probability $C_{++} = t_{++} \frac{v_+}{v}$ an electron in
-the $\chi_N^+$ state is reaches the
-\textbf{R} lead in the $\chi_{SO}^+$ state, and with the probability $C_{+-}$
-into the $\chi_{SO}^-$ state and so on. So the total transmission is 
+and that the wave functions are continuous at the interface:
 
 \begin{align*}
-   T_{tot} =  a C_{++}|\chi_{SO}^+>
-            + a C_{+-}|\chi_{SO}^->
-            + b C_{--}|\chi_{SO}^->
-            + b C_{-+}|\chi_{SO}^+>
+    \mathbf{\Psi^\uparrow}(x=x_L) &=
+        a \mathbf{\Psi^+_U}(x=x_L) + b  \mathbf{\Psi^-_U}(x=x_L)\\
+    \mathbf{\Psi^\downarrow}(x=x_L) &=
+        c \mathbf{\Psi^+_U}(x=x_L) + d  \mathbf{\Psi^-_U}(x=x_L)
 \end{align*}
 
-On the other hand the numerical simulation also provides us with a
-transmission matrix, here the total transmitted current is 
+Where $x_L$ is the location where the left lead is connected to the sample, the
+interface is at $x = 0$ and the right lead is connected at $x = x_R$.
+Each of these equations has two components, which allows us to determine
+$a, b, c$ and $d$ unambiguously.
+
+With $\mathbf{\Psi^\pm_U}$ we mean the wave function normalized to 1 at the
+left hand side of the interface, so for example
+$|\mathbf{\Psi^\pm_U}(x=x_L)|=1$. 
+
+We can then look at the connection to the right lead, and obtain a matrix
+element of the transmission matrix in the $\uparrow, \downarrow$ bases:
 
 \begin{align*}
-	T_{tot} = T_{L+R+} |\uparrow>
-              T_{L+R-} |\uparrow>
-              T_{L-R-} |\downarrow>
-              T_{L-R+} |\downarrow>
+    T_{\uparrow\uparrow} = \left| \left( 
+        a \mathbf{\Psi^+_U}(x=x_R) + b  \mathbf{\Psi^-_U}(x=x_R)
+    \right)^\dagger \cdot \mathbf{\psi^\uparrow}(x=x_R) \right|^2
 \end{align*}
-
-where $T_{L+,R-}$ is the probability that an electron with spin up, injected from
-the \textbf{R} lead, is transmitted into the \textbf{L} lead with spin down.
-
-Comparing these two expressions for $T_{tot}$ we obtain another two-component
-equation,
-
-\begin{align*}
-      a C_{++}|\chi_{SO}^+>
-    + a C_{+-}|\chi_{SO}^->
-    + b C_{--}|\chi_{SO}^->
-    + b C_{-+}|\chi_{SO}^+>\\
-	 = T_{R+L+} |\uparrow>
-       T_{R+L-} |\uparrow>
-       T_{R-L-} |\downarrow>
-       T_{R-L+} |\downarrow>
-\end{align*}
-
-Each component of that equation can be calculated both analytically and by the
-simulation, giving us a way to compare the two methods.
 
 \end{document}
 
