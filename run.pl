@@ -6,7 +6,7 @@ use Parallel::ForkManager;
 use Data::Dumper;
 
 
-my @hosts = glob "wvbh07{0,1,3,3,5,8,9} wvbh06{6,9} wthp009 wthp010 wthp10{4,4,5,5,6,6}";
+my @hosts = glob "wvbh07{0,1,3,3,8,9} wvbh06{6,9} wthp009 wthp010 wthp10{4,4,5,5,6,6}";
 my $parallel_jobs = @hosts;
 my $revoke;
 $revoke = 1 if $ARGV[0] && $ARGV[0] eq 'revoke';
@@ -14,7 +14,8 @@ $revoke = 1 if $ARGV[0] && $ARGV[0] eq 'revoke';
 my $what =  shift(@ARGV) // 'phi';
 
 
-my $dir = 'data/' . int(rand() * 10_000);
+my $dir_num = int(rand() * 10_000);
+my $dir = 'data/' . $dir_num;
 if (@ARGV) {
     $dir = "data/$ARGV[0]";
     print "Writing data to `$dir'\n";
@@ -27,8 +28,8 @@ if (@ARGV) {
 my %defaults = (
     -b => 0,
     -e => 2.0,
-    -r => 0.02,
-    -p => 40,
+    -r => 0.01,
+    -p => 70,
     -n => 21,
 );
 
@@ -36,15 +37,15 @@ my %vars = (
     alpha => {
         from    => 0,
         to      => 1.0,
-        step    => 0.01,
+        step    => 0.001,
         option  => '-r',
-        format  => 'alpha%.2f',
+        format  => 'alpha%.4f',
     },
     phi => {
         name    => 'phi',
         from    => 0,
         to      => 90,
-        step    => 0.1,
+        step    => 0.5,
         format  => 'phi%04.1f',
         option  => '-p',
     },
@@ -76,20 +77,23 @@ if ($revoke) {
         $args{'-o'} = $fn;
         $args{$v{option}} = $var;
         my @args = ( %args, '-q');
-        printf "START: (%s) $v{format}\n", $host, $var;
+        printf "START: (%s) $v{format} (%4d)\n", $host, $var, $dir_num;
+        my $ts_before = time;
         my $ret = system('ssh', '-x', $host, './run.sh', @args);
         printf "END:   (%s) $v{format}\n", $host, $var;
         if ($ret != 0) {
             warn "can't run ssh $host run.sh @args\n"
                  ."You need to re-run it later on yourself\n";
+        } else {
+            my $diff = time - $ts_before;
+            sleep($diff / 5);
         }
-        sleep(60);
         $pm->finish;
     }
 }
 $pm->wait_all_children;
 
-print "finished run `$dir'\n";
+print "finished run `$dir'\n" unless $revoke;
 
 # vim: ft=perl sw=4 ts=4 expandtab
 
