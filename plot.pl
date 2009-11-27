@@ -21,26 +21,33 @@ for my $d (@ARGV) {
 
     my $i = 0;
     for my $fn (@files) {
-        $fn =~ /(?>alpha|phi)([\d.]+)\.dat/ or die "can't work with file name `$fn'";
-        my $alpha = $1;
+        $fn =~ /(energy|alpha|phi)([\d.]+)\.dat/ or die "can't work with file name `$fn'";
+        state $what //= $1;
+        my $datapoint = $2;
+        if ($what ne $1) {
+            die "Can't mix different variables on the X axis ($what vs. $1)";
+        }
         my $m = tpq_for_file($fn);
         if ($isfirst) {
-            push @x, $alpha;
+            push @x, $datapoint;
         } else {
-            if (abs($x[$i]-$alpha) > 1e5) {
+            if (abs($x[$i]-$datapoint) > 1e5) {
                 die "Can't merge datasets with different X axes\n"
-                    . "  for the ${i}th set I expected $x[$i] and got $alpha";
+                    . "  for the ${i}th set I expected $x[$i] and got $datapoint";
             }
         }
         my $agg = 0;
         if ($d =~ /up/) {
-            $agg += $m->[0][2] + $m->[1][2];
+            $agg += $m->[0][2];
         }
         if ($d =~ /down/) {
-            $agg += $m->[0][3] + $m->[1][3];
+            $agg += $m->[0][3];
         }
         if ($d =~ /dud/) {
             $agg += $m->[0][2] - $m->[1][3];
+        }
+        if ($d =~ /rel/) {
+            $agg += ($m->[0][2] - $m->[1][3]) / (($m->[0][2] + $m->[1][3]) || 1);
         }
         push @{$d[$i]}, $agg;
     } continue {

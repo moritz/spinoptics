@@ -27,7 +27,7 @@ if (@ARGV) {
 
 my %defaults = (
     -b => 0,
-    -e => 2.0,
+    -e => 0.1,
     -r => 0.01,
     -p => 70,
     -n => 21,
@@ -42,13 +42,19 @@ my %vars = (
         format  => 'alpha%.4f',
     },
     phi => {
-        name    => 'phi',
         from    => 0,
         to      => 90,
         step    => 0.5,
         format  => 'phi%04.1f',
         option  => '-p',
     },
+    energy => {
+        from    => 0,
+        to      => 2.0,
+        step    => 0.01,
+        format  => 'energy%.4f',
+        option  => '-e',
+    }
 );
 
 
