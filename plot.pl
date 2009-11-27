@@ -37,16 +37,17 @@ for my $d (@ARGV) {
             }
         }
         my $agg = 0;
-        if ($d =~ /up/) {
+        if ($d =~ /uu/) {
             $agg += $m->[0][2];
-        }
-        if ($d =~ /down/) {
+        } elsif ($d =~ /dd/) {
+            $agg += $m->[1][3];
+        } elsif ($d =~ /ud/) {
+            $agg += $m->[1][2];
+        } elsif ($d =~ /du/ ) {
             $agg += $m->[0][3];
-        }
-        if ($d =~ /dud/) {
+        } elsif ($d =~ /diff/) {
             $agg += $m->[0][2] - $m->[1][3];
-        }
-        if ($d =~ /rel/) {
+        } elsif ($d =~ /rel/) {
             $agg += ($m->[0][2] - $m->[1][3]) / (($m->[0][2] + $m->[1][3]) || 1);
         }
         push @{$d[$i]}, $agg;

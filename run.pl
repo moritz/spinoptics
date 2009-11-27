@@ -50,7 +50,7 @@ my %vars = (
     },
     energy => {
         from    => 0,
-        to      => 2.0,
+        to      => 3.5,
         step    => 0.01,
         format  => 'energy%.4f',
         option  => '-e',

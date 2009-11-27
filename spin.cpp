@@ -92,7 +92,7 @@ const num bohr_magneton
 
 // parameters
 const num width_sample
-                     = 30.0;             // [nm]
+                     = 200.0;             // [nm]
 const num g_factor   = 20.0;
 
 num global_gauge     = 1.0;
@@ -218,7 +218,7 @@ esm* hamiltonian(const num rashb, const num B) {
         // in which case these items might be different per
         // iteration, but every two diagonal items with distance
         // (size/2) must still have the same value
-        cnum energy = 2.0 * V;
+        cnum energy = 4.0 * V + e_tot;
         Hnn(i, i)                     = energy - zeeman;
         Hnn(i + size/2, i + size/2)   = energy + zeeman;
     }
@@ -570,6 +570,7 @@ int main (int argc, char** argv) {
     *out << "# leads:    " << N_leads << endl;
     *out << "Bz:         " << Bz << endl;
     *out << "E_tot:      " << e_tot << endl;
+    *out << "Angle:      " << stripe_angle << endl;
     *out << "t_SO:       " << alpha << endl;
 
 #ifdef VISUALIZE
@@ -630,6 +631,8 @@ int main (int argc, char** argv) {
         if (is_first) {
             ref = r_sum;
             *out << "Number of modes: " << ref << endl;
+            num error = abs((r_sum - (int) (r_sum+0.5))/int (r_sum + 0.5));
+            *out << "Error: " << error << endl;
             is_first = false;
         }
         if (abs(r_sum - ref) > epsilon) {
@@ -653,7 +656,7 @@ int main (int argc, char** argv) {
     *out << "Number of propagating modes: " << ref << endl;
 
 
-    if (min < 0) {
+    if (min < -epsilon) {
         *out << "ERROR: found a negative transmission coefficient\n";
     }
     log_tick("Done");

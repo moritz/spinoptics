@@ -26,8 +26,8 @@ check: spin.cpp Makefile math-utils.h
 	g++ -fsyntax-only $(GPPFLAGS) spin.cpp
 
 cppspin.o: spin.cpp Makefile math-utils.h 
-	g++ $(GPPFLAGS) $(DEBUGFLAGS) -c -o cppspin.o spin.cpp
-#	g++ $(GPPFLAGS) $(OPTFLAGS) -c -o cppspin.o spin.cpp
+	g++ $(GPPFLAGS) $(OPTFLAGS) -c -o cppspin.o spin.cpp
+#	g++ $(GPPFLAGS) $(DEBUGFLAGS) -c -o cppspin.o spin.cpp
 
 cppspin: cppspin.o Makefile
 	g++ $(GPPFLAGS) $(OPTFLAGS) -o cppspin cppspin.o $(LDFLAGS)
