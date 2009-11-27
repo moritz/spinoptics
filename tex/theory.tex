@@ -258,12 +258,14 @@ up, and we get
     \textnormal{with } \Sigma^R_p &= \tau^\dagger g_p^R \tau_p
 \end{align}
 
-It can be shown \cite{baranger} that the transmission $T_{pq}$ from lead
+It can be shown \cite{fischer-lee,baranger} that the transmission $T_{pq}$ from lead
 $q$ through the sample into lead $p$ is
 
 \begin{align}
     T_{pq} = \trace(\Sigma_p G_s^R \Sigma_q G_s^A)
 \end{align}
+
+This is called the Fischer-Lee-Relation.
 
 This allows numeric calculation of transmission coefficients for
 arbitrary Hamiltonian operators, and is thus independent of the individual
@@ -355,7 +357,8 @@ strength $\alpha$) the Hamiltonian is
 \end{equation}
 
 To map this to a discrete lattice we substitute the derivation by a discrete
-difference, so $\dell_x f(x)|_{x_0}$ becomes $(f(x_0+a) - f(x_0))/a$. For the
+difference, so $\dell_x f(x)|_{x_0}$ becomes $(f(x_0+a) - f(x_0))/a$. $a$ is
+the lattice constant. For the
 second derivation we chose the symmetric difference $\dell_x^2 f(x)_{x_0} =
 (f(x_0+a) - f(x_0-a))/2a$. In the continuum limit $a \mapsto 0$ both reproduce
 the derivation exactly.
@@ -378,7 +381,7 @@ where $n$ runs over all lattice sites, $\delta$ over $\uparrow$ and
 $\downarrow$, and $a_x$ and $a_y$ denote the shift to the nearest neighbor in
 $x$ and $y$ direction, respectively. (Note that we assume that the lattice is
 equally spaced in $x$ and $y$ direction, $+a_x$ just means "go to the next
-neighbor in $x$ direction). $t$ is the so-called hopping term, and denotes the
+neighbor in $x$ direction). $t = \frac{\hbar^2}{2ma}$ is the so-called hopping term, and denotes the
 probability of an electron traveling to its nearest neighbor. $r$ is the
 Rashba hopping term, and corresponds to a nearest neighbor hop with spin
 flip.
