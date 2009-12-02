@@ -1,4 +1,4 @@
-
+\chapter{Numerical Calculations}
 
 Numerical transport calculations have a huge advantage over the analytical
 calculation: once a formalism is implemented, it works for arbitrary
@@ -20,10 +20,10 @@ The calculation follows this rough scheme:
             from $G^R$, $G^A$ and $\Sigma_p$
 \end{itemize}
 
-\section*{Performance consideration}
+\section{Performance consideration}
 
 These numeric calculations are computationally expensive. If we simulate a
-lattice with a total of $n \x n$ sites, the matrices $H$, $\Sigma_p$, $G^R$ and
+lattice with a total of $n \times n$ sites, the matrices $H$, $\Sigma_p$, $G^R$ and
 $G^A$ are of dimensions $2n^2 \times 2n^2$. Inversion of an $m \times m $
 matrix and multiplication of two $ m \times m $ matrices both take $O(m^3)$
 steps\footnote{There are matrix product algorithms with slightly better
@@ -63,7 +63,7 @@ $\Sigma_p$, and thus on the nature of the interaction. For nearest neighbor
 hopping and Rashba spin-orbit coupling we observed a run time scaling of
 $O(n^{3.64})$ (See Fig. \ref{fig:scaling}).
 
-\section*{Numerical stability}
+\section{Numerical stability}
 
 The numerical
 calculation uses floating point numbers with limited machine precision,
@@ -74,6 +74,7 @@ leads (with same number of modes per lead) has to fulfill the sum rules
 
 \begin{align}
     \sum_p T_{pq} = \sum_q T_{pq} = M
+    \label{eq:sumrule}
 \end{align}
 
 Where $M$ is the number of modes (and thusly and integer). We can calculate
@@ -108,5 +109,35 @@ matrix which we need evaluating the Fischer-Lee relation.
 Fig. \ref{fig:numeric-errors} shows the estimate of the numerical errors, and
 that they are well below $10^{-13}$ for the investigated systems, and are
 thusly no source for worries.
+
+\section{Quality checks}
+
+Programming is constantly prone to subtle errors, so measures had to 
+be taken to ensure that no errors slipped in that might lead to wrong
+output.
+
+The program discussed herein is basically a function that constructs a
+Hamilton operator from the Rashba coupling strength, magnetic
+field and other parameters, and then calculates the transmission
+matrix $T_{pq}$ from that Hamilton operator.
+
+The very first sanity check is that $H$ is indeed a hermitian
+operator. This check of course only catches stupid programming
+mistakes.
+
+A more elaborate check is that $T_{pq}$ obeys the same symmetries as
+the Hamiltonian. Since it can be written as
+  
+\begin{equation}
+H = \frac{\vec{p}^2}{2 m^*} + \vec \sigma \cdot (\vec e_z \times \vec p)  
+    + \vec \sigma \cdot \vec B
+\end{equation}
+
+It is easy to see that $H(\vec p, \vec \sigma, \vec B) = H(-\vec p,
+-\vec \sigma, -\vec B)$, so the transmission matrix must follow the
+same symmetries.
+
+We checked these symmetries and the sum rule (eq. \ref{eq:sumrule}) regularly
+to ensure that no simple errors slipped in.
 
 % vim: ts=4 sw=4 expandtab spell spelllang=en_us tw=78

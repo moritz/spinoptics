@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\documentclass[11pt]{article}
+\documentclass[11pt]{report}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{ae}
@@ -10,6 +10,7 @@
 \newcommand{\cube}{\ensuremath{^{3}}}
 \newcommand{\set}[1]{\ensuremath{\mathbbm{#1}}}
 \newcommand{\norm}[1]{\ensuremath{\left|#1\right|}}
+\newcommand{\vect}[2]{\ensuremath{\inp{\hspace{-.8ex}\begin{array}{c}#1\\#2\end{array}\hspace{-.4ex}}}}
 \newcommand{\svec}[3]{\ensuremath{\inp{\hspace{-.8ex}\begin{array}{r}#1\\#2\\#3\end{array}\hspace{-.4ex}}}}
 \newcommand{\entspr}{\ensuremath{\,\,\hat{=}\,\,}}%
 \newcommand{\dx}[1][x]{\ensuremath{\textnormal d #1}}
@@ -43,9 +44,14 @@
 
 
 \author{Moritz Lenz}
-\title{Theory}
+\title{Ballistic Transport of Spin-Polarized Electron Beams in Mesoscopic
+Systems}
 \begin{document}
 \maketitle
+
+\input{intro.tex}
+
+\chapter{Theory}
 
 Consider a two-dimensional conductor of width $W$ and length $L$. If these two
 dimensions  are large enough, the conductance is
@@ -446,6 +452,9 @@ Sites at the edge of the sample have no hopping element to a neighboring site
 at the outside of the sample, so we have hard wall boundary conditions. All
 interaction with the outside world is modeled through the self-energy induced
 by the attached leads.
+
+\input{khodas.tex}
+\input{numerics.tex}
 
 
 \bibliography{bib}
