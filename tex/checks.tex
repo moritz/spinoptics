@@ -58,12 +58,7 @@ Programming is constantly prone to subtle errors, so measures had to
 be taken to ensure that no errors slipped in that might lead to wrong
 output.
 
-The program discussed herein is basically a function that constructs a
-Hamilton operator from the Rashba coupling strength, magnetic
-field and other parameters, and then calculates the transmission
-matrix $T_{pq}$ from that Hamilton operator.
-
-The very first sanity check is that $H$ is indeed a hermitian
+The very first sanity check is that the Hamiltonian $H$ is indeed a hermitian
 operator. This check of course only catches stupid programming
 mistakes.
 

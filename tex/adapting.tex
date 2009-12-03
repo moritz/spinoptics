@@ -54,12 +54,13 @@
 \begin{document}
 \maketitle
 
-The chiral spin bases are very natural for the analytical calculation, because the
+The chiral spin bases as introduced in chapter \ref{sec:analytica} are very
+natural for the analytical calculation, because the
 base vectors are also eigenstates to the Hamiltonian.
 
 However for the numerical simulation they are not suited, because they are
 dependent on the direction (in real space) in which the wave travels. This
-that's not known before the simulation runs, and because there can be several
+is not known before the simulation runs, and because there can be several
 waves with different directions in one place, it is not possible to calculate
 the self-energy of the leads in these bases.
 
@@ -99,16 +100,26 @@ $a, b, c$ and $d$ unambiguously.
 
 With $\mathbf{\Psi^\pm_U}$ we mean the wave function normalized to 1 at the
 left hand side of the interface, so for example
-$|\mathbf{\Psi^\pm_U}(x=x_L)|=1$. 
+$|\mathbf{\Psi^\pm_U}(x=x_L)|=1$. For $x>0$ the amplitude of the wave function
+is smaller than 1, due to reflection at the interface.
 
-We can then look at the connection to the right lead, and obtain a matrix
-element of the transmission matrix in the $\uparrow, \downarrow$ bases:
+We can then look at the connection to the right lead, and obtain the 
+elements of the transmission matrix in the $\uparrow, \downarrow$ bases:
 
-\begin{align*}
-    T_{\uparrow\uparrow} = \left| \left( 
+\begin{align}
+    T_{2\uparrow,1\uparrow} = \left| \left( 
         a \mathbf{\Psi^+_U}(x=x_R) + b  \mathbf{\Psi^-_U}(x=x_R)
-    \right)^\dagger \cdot \mathbf{\psi^\uparrow}(x=x_R) \right|^2
-\end{align*}
+    \right)^\dagger \cdot \mathbf{\Psi}^\uparrow(x=x_R) \right|^2\\
+    T_{2\downarrow,1\uparrow} = \left| \left( 
+        a \mathbf{\Psi^+_U}(x=x_R) + b  \mathbf{\Psi^-_U}(x=x_R)
+    \right)^\dagger \cdot \mathbf{\Psi}^\downarrow(x=x_R) \right|^2\\
+    T_{2\uparrow,1\downarrow} = \left| \left( 
+        c \mathbf{\Psi^+_U}(x=x_R) + d  \mathbf{\Psi^-_U}(x=x_R)
+    \right)^\dagger \cdot \mathbf{\Psi}^\uparrow(x=x_R) \right|^2\\
+    T_{2\downarrow,1\downarrow} = \left| \left( 
+        c \mathbf{\Psi^+_U}(x=x_R) + d  \mathbf{\Psi^-_U}(x=x_R)
+    \right)^\dagger \cdot \mathbf{\Psi}^\downarrow(x=x_R) \right|^2
+\end{align}
 
 \end{document}
 

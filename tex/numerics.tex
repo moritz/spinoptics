@@ -1,4 +1,6 @@
 \chapter{Numerical Calculations}
+\newcommand{\lso}{\ensuremath{L_{\textnormal{SO}}}}
+\newcommand{\tso}{\ensuremath{t_{\textnormal{SO}}}}
 
 Numerical transport calculations have a huge advantage over the analytical
 calculation: once a formalism is implemented, it works for arbitrary
@@ -32,7 +34,7 @@ conditioned, or only advantageous for huge systems; usually all three apply}
 \cite{matrixperformance}. All other steps are faster, and can be ignored for
 an asymptotic analysis.
 
-So the naive approach takes $O(n^6)$ steps for $n$ lattice sites.
+So the naive approach takes $O(n^6)$ steps for $n \times n$ lattice sites.
 
 An alternative approach, the \emph{Recursive Green's Function method} works by
 decomposing the sample into slices in such a way that the sites in each slice
@@ -48,7 +50,7 @@ to the specific form of the Hamiltonian.
         simulation, implemented with sparse matrices and the SuperLU sparse
         direct solver. The data was recorded for square samples including
         Rashba spin-orbit coupling, and 4 leads of the same width as the
-        sample, on a 2.9GHz AMD64 computer with SSE and 8GB RAM.
+        sample, on a 2.9GHz AMD64 computer with SSE2 and 8GB RAM.
         The run time approximately scales as $t(n) = 2
         n^{3.64}\mu s$}
         \label{fig:scaling}
@@ -139,5 +141,95 @@ same symmetries.
 
 We checked these symmetries and the sum rule (eq. \ref{eq:sumrule}) regularly
 to ensure that no simple errors slipped in.
+
+\section{Setup}
+
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=0.5\textwidth]{sample-lead-interface.pdf}%
+        \hspace{0.1\textwidth}%
+        \includegraphics[width=0.2\textwidth]{hopping.png}
+    \end{center}
+    \caption{\textbf{Left:} the sample is connected to one lead for each spin
+        on the left and on the right.
+        \textbf{Right:}
+        Detail from an interface between normal and spin-orbit coupling regime modeled
+        in the tight binding model, at angle $\phi = 70\,^{\circ}$.
+        Red dots show lattice sites, black dots
+        show non-zero hopping elements with spin flips.}
+    \label{fig:interface-setup}
+\end{figure}
+
+For the following simulations we used a square sample, typically of $100
+\times 100$ lattice sites, with two leads attached both on the left and on the
+right, on for spin up, one for spin down.
+
+To simulate an interface of an arbitrary angle $\phi$, we calculate the Rashba
+hopping elements separately for each lattice sites, and install them for
+hopping to the right and upper neighbor each. Fig. \ref{fig:interface-setup}
+shows how such an interface looks.
+
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=0.4\textwidth]{lead-tilted-1.pdf}
+        \hspace{0.1\textwidth}
+        \includegraphics[width=0.4\textwidth]{lead-tilted-2.pdf}
+    \end{center}
+    \caption{Two ways to attach a tilted lead. \textbf{Left:} equal lattice
+        spacing in lead and sample. \textbf{Right:} parallel projection from
+        the sample into the lead leads to uneven lattice spacing in the lead.}
+    \label{fig:tilted-leads}
+\end{figure}
+
+To obtain a smoother interface we also experimented with using a vertical
+interface, and
+injecting the electron beam with a tilted lead. There are two possible
+ways to do this (as illustrated by figure \ref{fig:tilted-leads}):
+either one can assume the same lattice spacing in lead and sample, and assume
+coupling even though the geometry doesn't match, or one can project the sites
+from the edge of the sample parallel into the lead, and then get a non-regular
+lattice spacing in the lead.
+
+The former turned out not to work the way we wanted it to: instead of one
+electron beam propagating in the same direction as the lead, there were two
+beams, one parallel to each side of the edge of the sample. The latter is
+physically hard to interpret and also much effort to implemented, so we set
+that idea aside.
+
+\section{Interface between normal and spin-orbit coupling region}
+
+\begin{figure}
+    \begin{center}
+    \includegraphics[angle=270,width=0.7\textwidth]{interface-precession.pdf}
+    \end{center}
+    \caption{$T_S = T_{2\uparrow,1\uparrow}-T_{2\downarrow,1\downarrow}$ as a
+        function of spin orbit coupling strength. The interface causes a
+        separation of spins, which oscillates and is dependent on the angle of
+        the interface.}
+    \label{fig:interface-precession}
+\end{figure}
+
+When plotting $T_S = T_{2\uparrow,1\uparrow}-T_{2\downarrow,1\downarrow}$ as a
+function of spin orbit coupling strength, one sees that the signal oscillates
+(see figure \ref{fig:interface-precession}).
+This is caused by the well-known % TODO: cite
+spin precession: in a medium with spin-orbit coupling $\sigma_z$ is not a good
+quantum number anymore, and the spin precesses. % around what?
+
+So if an electron is injected with spin up, and is measured after the
+precession length $\lso = \frac{t}{\tso}\pi a$ it is again found to have
+spin up, but after $\frac12 \lso$ or $\frac32 \lso$ the spin points
+downwards. 
+
+Since  $\lso$ is a function of $\tso$, the precession can also be
+observed when $\tso$ is varied (and not the width of the sample).
+If $n$ is an integer and $W$ with width of our sample, we should see the
+same signal for $W = n \cdot \lso(n)$ and $W = (n+1) \lso(n+1)$. So
+$\tso(n) = n\frac{\pi t}{W}$, and $\Delta \tso = \frac{\pi t}{W}$.  The green
+curve in figure \ref{fig:interface-precession} shows the curve
+$\sin{\frac{2 \pi \tso}{\Delta \tso}}$, and thus the expected spin precession.
+
+Only a part of the sample has non-zero spin-orbit coupling strength, so $T_S$
+actually precesses with a slightly longer period than $\Delta \tso$.
 
 % vim: ts=4 sw=4 expandtab spell spelllang=en_us tw=78

@@ -27,18 +27,23 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.9294581"
-     inkscape:cx="280.3896"
-     inkscape:cy="106.55678"
+     inkscape:zoom="1.9294582"
+     inkscape:cx="280.38958"
+     inkscape:cy="106.55677"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
-     showgrid="false"
+     showgrid="true"
      inkscape:window-width="1156"
      inkscape:window-height="670"
-     inkscape:window-x="24"
-     inkscape:window-y="168"
+     inkscape:window-x="23"
+     inkscape:window-y="149"
      showguides="true"
-     inkscape:guide-bbox="true" />
+     inkscape:guide-bbox="true"
+     inkscape:snap-global="false">
+    <inkscape:grid
+       type="xygrid"
+       id="grid2444" />
+  </sodipodi:namedview>
   <defs
      id="defs4">
     <marker
@@ -78,6 +83,12 @@
      inkscape:groupmode="layer"
      inkscape:label="Layer 1"
      transform="translate(-46.260727,-104.75305)">
+    <path
+       style="fill:#d4d4d4;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1"
+       d="M 140,70.52217 L 418.25212,160.24899 L 418.25212,71.623077 L 139.93565,70.586517"
+       id="path2446"
+       transform="translate(46.260727,104.75305)"
+       sodipodi:nodetypes="cccc" />
     <rect
        y="173.54884"
        x="185.47244"
@@ -453,7 +464,27 @@
    id="path5338"
    d="M 417.87,691.2 L 417.87,691.2 L 417.87,691.21 L 417.87,691.21 L 417.87,691.22 L 417.87,691.22 L 417.87,691.23 L 417.87,691.23 L 417.87,691.23 L 417.87,691.24 L 417.87,691.24 L 417.87,691.25 L 417.87,691.25 L 417.87,691.25 L 417.87,691.26 L 417.88,691.26 L 417.88,691.26 L 417.88,691.27 L 417.88,691.27 L 417.88,691.27 L 417.88,691.27 L 417.88,691.28 L 417.88,691.28 L 417.88,691.28 L 417.88,691.29 L 417.88,691.29 L 417.88,691.3 L 417.88,691.3 L 417.88,691.3 L 417.88,691.31 L 417.88,691.31 L 417.88,691.31 L 417.88,691.31 L 417.88,691.31 L 417.88,691.32 L 417.88,691.32 L 417.89,691.32 L 417.89,691.32 L 417.89,691.32 L 417.89,691.33 L 417.89,691.33 C 417.96,691.37 418.31,691.37 418.39,691.37 L 418.62,691.37 L 418.62,691.76 C 418.53,691.76 417.89,691.73 417.63,691.73 C 417.36,691.73 416.7,691.76 416.63,691.76 L 416.63,691.37 L 416.86,691.37 C 416.97,691.37 417.11,691.36 417.21,691.36 C 417.37,691.34 417.38,691.34 417.38,691.2 L 417.38,688.61 C 417.38,687.58 416.54,687.28 415.74,687.28 C 414.43,687.28 414.35,688.08 414.35,688.57 L 414.35,691.37 L 415.1,691.37 L 415.1,691.76 C 414.94,691.75 413.94,691.73 413.83,691.73 C 413.67,691.73 412.71,691.75 412.55,691.76 L 412.55,691.37 L 413.3,691.37 L 413.3,688.59 C 413.3,687.72 414.05,686.89 415.71,686.89 C 417.27,686.89 417.87,687.77 417.87,688.58 L 417.87,691.2 z"
    style="fill:#000000;stroke-width:0" />
-</g>  </g>
+</g>    <text
+       xml:space="preserve"
+       style="font-size:20px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="287.7793"
+       y="245.30739"
+       id="text3224"><tspan
+         sodipodi:role="line"
+         id="tspan3226"
+         x="287.7793"
+         y="245.30739">N</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:20px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="349.97293"
+       y="212.13747"
+       id="text3228"><tspan
+         sodipodi:role="line"
+         id="tspan3230"
+         x="349.97293"
+         y="212.13747">SO</tspan></text>
+  </g>
   <text
      xml:space="preserve"
      style="font-size:40px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
