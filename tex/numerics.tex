@@ -232,4 +232,76 @@ $\sin{\frac{2 \pi \tso}{\Delta \tso}}$, and thus the expected spin precession.
 Only a part of the sample has non-zero spin-orbit coupling strength, so $T_S$
 actually precesses with a slightly longer period than $\Delta \tso$.
 
+\subsection{Comparison to analytical results}
+
+The chiral spin bases as introduced in chapter \ref{sec:analytica} are very
+natural for the analytical calculation, because the
+base vectors are also eigenstates to the Hamiltonian.
+
+However for the numerical simulation they are not suited, because they are
+dependent on the direction (in real space) in which the wave travels. This
+is not known before the simulation runs, and because there can be several
+waves with different directions in one place, it is not possible to calculate
+the self-energy of the leads in these bases.
+
+\begin{figure}
+    \begin{center}
+    \includegraphics[width=0.8\textwidth]{adapting-pic.pdf}
+    \end{center}
+    \caption{Injecting one spin-up charge carrier into the system}
+\end{figure}
+
+% Since there is no dissipation in our model, and we assume that the mere
+% process of injecting an electron doesn't change its spin, we can project
+% the $|\uparrow>$ and $|\downarrow>$ states separately onto the wave
+% function in the sample:
+
+Since we assume that our leads are perfect semi-infinite wires, we can assume
+that the wave functions are plain waves
+
+\begin{align*}
+    \mathbf{\Psi^\uparrow}   &=  e^{i p_x x} e^{i p_z z} |\uparrow> \\
+    \mathbf{\Psi^\downarrow} &=  e^{i p_x x} e^{i p_z z} |\downarrow> \\
+\end{align*}
+
+and that the wave functions are continuous at the interface:
+
+\begin{align*}
+    \mathbf{\Psi^\uparrow}(x=x_L) &=
+        a \mathbf{\Psi^+_U}(x=x_L) + b  \mathbf{\Psi^-_U}(x=x_L)\\
+    \mathbf{\Psi^\downarrow}(x=x_L) &=
+        c \mathbf{\Psi^+_U}(x=x_L) + d  \mathbf{\Psi^-_U}(x=x_L)
+\end{align*}
+
+Where $x_L$ is the location where the left lead is connected to the sample, the
+interface is at $x = 0$ and the right lead is connected at $x = x_R$.
+Each of these equations has two components, which allows us to determine
+$a, b, c$ and $d$ unambiguously.
+
+With $\mathbf{\Psi^\pm_U}$ we mean the wave function normalized to 1 at the
+left hand side of the interface, so for example
+$|\mathbf{\Psi^\pm_U}(x=x_L)|=1$. For $x>0$ the amplitude of the wave function
+is smaller than 1, due to reflection at the interface.
+
+We can then look at the connection to the right lead, and obtain the 
+elements of the transmission matrix in the $\uparrow, \downarrow$ bases:
+
+\begin{align}
+    T_{2\uparrow,1\uparrow} = \left| \left( 
+        a \mathbf{\Psi^+_U}(x=x_R) + b  \mathbf{\Psi^-_U}(x=x_R)
+    \right)^\dagger \cdot \mathbf{\Psi}^\uparrow(x=x_R) \right|^2\\
+    T_{2\downarrow,1\uparrow} = \left| \left( 
+        a \mathbf{\Psi^+_U}(x=x_R) + b  \mathbf{\Psi^-_U}(x=x_R)
+    \right)^\dagger \cdot \mathbf{\Psi}^\downarrow(x=x_R) \right|^2\\
+    T_{2\uparrow,1\downarrow} = \left| \left( 
+        c \mathbf{\Psi^+_U}(x=x_R) + d  \mathbf{\Psi^-_U}(x=x_R)
+    \right)^\dagger \cdot \mathbf{\Psi}^\uparrow(x=x_R) \right|^2\\
+    T_{2\downarrow,1\downarrow} = \left| \left( 
+        c \mathbf{\Psi^+_U}(x=x_R) + d  \mathbf{\Psi^-_U}(x=x_R)
+    \right)^\dagger \cdot \mathbf{\Psi}^\downarrow(x=x_R) \right|^2
+\end{align}
+
+
+
+
 % vim: ts=4 sw=4 expandtab spell spelllang=en_us tw=78
