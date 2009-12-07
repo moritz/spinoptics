@@ -45,7 +45,9 @@ a significantly increased implementation complexity, and the algorithm is tied
 to the specific form of the Hamiltonian.
 
 \begin{figure}
+    \begin{center}
     \includegraphics[angle=270,width=0.7\textwidth]{scaling.pdf}
+    \end{center}
     \caption{Scaling of run time with system size for the tight binding
         simulation, implemented with sparse matrices and the SuperLU sparse
         direct solver. The data was recorded for square samples including
@@ -267,20 +269,20 @@ that the wave functions are plain waves
 and that the wave functions are continuous at the interface:
 
 \begin{align*}
-    \mathbf{\Psi^\uparrow}(x=x_L) &=
-        a \mathbf{\Psi^+_U}(x=x_L) + b  \mathbf{\Psi^-_U}(x=x_L)\\
-    \mathbf{\Psi^\downarrow}(x=x_L) &=
-        c \mathbf{\Psi^+_U}(x=x_L) + d  \mathbf{\Psi^-_U}(x=x_L)
+    \mathbf{\Psi^\uparrow}(x=x_1) &=
+        a \mathbf{\Psi^+_U}(x=x_1) + b  \mathbf{\Psi^-_U}(x=x_1)\\
+    \mathbf{\Psi^\downarrow}(x=x_1) &=
+        c \mathbf{\Psi^+_U}(x=x_1) + d  \mathbf{\Psi^-_U}(x=x_1)
 \end{align*}
 
-Where $x_L$ is the location where the left lead is connected to the sample, the
-interface is at $x = 0$ and the right lead is connected at $x = x_R$.
+Where $x_1$ is the location where the left lead is connected to the sample, the
+interface is at $x = 0$ and the right lead is connected at $x = x_2$.
 Each of these equations has two components, which allows us to determine
 $a, b, c$ and $d$ unambiguously.
 
 With $\mathbf{\Psi^\pm_U}$ we mean the wave function normalized to 1 at the
 left hand side of the interface, so for example
-$|\mathbf{\Psi^\pm_U}(x=x_L)|=1$. For $x>0$ the amplitude of the wave function
+$|\mathbf{\Psi^\pm_U}(x=x_1)|=1$. For $x>0$ the amplitude of the wave function
 is smaller than 1, due to reflection at the interface.
 
 We can then look at the connection to the right lead, and obtain the 
@@ -288,17 +290,17 @@ elements of the transmission matrix in the $\uparrow, \downarrow$ bases:
 
 \begin{align}
     T_{2\uparrow,1\uparrow} = \left| \left( 
-        a \mathbf{\Psi^+_U}(x=x_R) + b  \mathbf{\Psi^-_U}(x=x_R)
-    \right)^\dagger \cdot \mathbf{\Psi}^\uparrow(x=x_R) \right|^2\\
+        a \mathbf{\Psi^+_U}(x=x_2) + b  \mathbf{\Psi^-_U}(x=x_2)
+    \right)^\dagger \cdot \mathbf{\Psi}^\uparrow(x=x_2) \right|^2\\
     T_{2\downarrow,1\uparrow} = \left| \left( 
-        a \mathbf{\Psi^+_U}(x=x_R) + b  \mathbf{\Psi^-_U}(x=x_R)
-    \right)^\dagger \cdot \mathbf{\Psi}^\downarrow(x=x_R) \right|^2\\
+        a \mathbf{\Psi^+_U}(x=x_2) + b  \mathbf{\Psi^-_U}(x=x_2)
+    \right)^\dagger \cdot \mathbf{\Psi}^\downarrow(x=x_2) \right|^2\\
     T_{2\uparrow,1\downarrow} = \left| \left( 
-        c \mathbf{\Psi^+_U}(x=x_R) + d  \mathbf{\Psi^-_U}(x=x_R)
-    \right)^\dagger \cdot \mathbf{\Psi}^\uparrow(x=x_R) \right|^2\\
+        c \mathbf{\Psi^+_U}(x=x_2) + d  \mathbf{\Psi^-_U}(x=x_2)
+    \right)^\dagger \cdot \mathbf{\Psi}^\uparrow(x=x_2) \right|^2\\
     T_{2\downarrow,1\downarrow} = \left| \left( 
-        c \mathbf{\Psi^+_U}(x=x_R) + d  \mathbf{\Psi^-_U}(x=x_R)
-    \right)^\dagger \cdot \mathbf{\Psi}^\downarrow(x=x_R) \right|^2
+        c \mathbf{\Psi^+_U}(x=x_2) + d  \mathbf{\Psi^-_U}(x=x_2)
+    \right)^\dagger \cdot \mathbf{\Psi}^\downarrow(x=x_2) \right|^2
 \end{align}
 
 

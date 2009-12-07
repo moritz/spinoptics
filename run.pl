@@ -28,7 +28,7 @@ if (@ARGV) {
 my %defaults = (
     -b => 0,
     -e => 2.0,
-    -r => 0.01,
+    -r => 0.0013,
     -p => 29,
     -n => 21,
 );
@@ -36,15 +36,15 @@ my %defaults = (
 my %vars = (
     alpha => {
         from    => 0,
-        to      => 0.5,
-        step    => 0.002,
+        to      => 0.2,
+        step    => 0.001,
         option  => '-r',
         format  => 'alpha%.4f',
     },
     phi => {
         from    => 0,
         to      => 90,
-        step    => 0.5,
+        step    => 0.2,
         format  => 'phi%04.1f',
         option  => '-p',
     },
@@ -92,7 +92,7 @@ if ($revoke) {
                  ."You need to re-run it later on yourself\n";
         } else {
             my $diff = time - $ts_before;
-            sleep($diff / 5);
+            sleep($diff/5);
         }
         $pm->finish;
     }

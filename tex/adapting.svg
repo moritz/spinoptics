@@ -28,15 +28,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.9294582"
-     inkscape:cx="280.38958"
+     inkscape:cx="280.38957"
      inkscape:cy="106.55677"
      inkscape:document-units="px"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="svg2"
      showgrid="true"
      inkscape:window-width="1156"
      inkscape:window-height="670"
-     inkscape:window-x="23"
-     inkscape:window-y="149"
+     inkscape:window-x="22"
+     inkscape:window-y="130"
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:snap-global="false">
@@ -494,7 +494,7 @@
        sodipodi:role="line"
        id="tspan4056"
        x="0.66580963"
-       y="34.821709">Lead L</tspan></text>
+       y="34.821709">Lead 1</tspan></text>
   <text
      xml:space="preserve"
      style="font-size:40px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
@@ -504,7 +504,7 @@
        sodipodi:role="line"
        id="tspan4060"
        x="421.89575"
-       y="34.267578">Lead R</tspan></text>
+       y="34.267578">Lead 2</tspan></text>
   <text
      xml:space="preserve"
      style="font-size:40px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"

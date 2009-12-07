@@ -1,5 +1,6 @@
 \NeedsTeXFormat{LaTeX2e}
 \documentclass[11pt]{report}
+\usepackage{parskip}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{ae}
@@ -120,8 +121,8 @@ The conductance is
 
 \subsection*{Transmission and Green's functions}
 
-To calculate the value $T$, one can make use of the so-called \emph{Green's
-functions}. A Green function $G$ is, loosely speaking, an inverse of a
+To calculate the matrix $T$, one can make use of the so-called \emph{Green's
+functions}. A Green's function $G$ is, loosely speaking, an inverse of a
 differential operator $D$. More precisely if the relation between an
 excitation $\delta$ and a response $R$ is $D R = \delta$, then every
 operator $G$ for
@@ -162,7 +163,7 @@ From the boundary conditions
         &= \frac{2m}{\hbar^2}
 \end{align}
 
-(where by $+0$ we mean \emph{evaluated from the right} a,d by $-0$ we mean
+(where by $+0$ we mean \emph{evaluated from the right} and by $-0$ we mean
 \emph{evaluated from the left}).
 
 We obtain $A^+ = A^- = -\frac{i}{\hbar v}$ where $v := \frac{\hbar k}{m} $.
@@ -189,8 +190,8 @@ give us an expression for the amplitudes:
     A^\pm = - \frac{i}{\hbar v_m} \chi_m(y_0)
 \end{align}
 
-If $E$ is an eigenvalue of $H$, $(E-H)^{-1}$ might not exist. One guards
-against potential singularities by introducing a small number $\eta$ and
+If $E$ is an eigenvalue of $H$, $(E-H)^{-1}$ does not exist. One guards
+against such singularities by introducing a small, real number $\eta$ and
 defines
 
 \begin{align}
@@ -198,9 +199,11 @@ defines
     G^A &= \left( (E - i \eta)\mathbf{1} - H \right)^{-1}
 \end{align}
 
+where $i$ is the complex unit.
+
 One can (with some approximations) obtain a matrix representation for $H$
-(TODO: reference) and thus calculate the inverse, as long as we don't consider
-open systems.
+(see section \ref{sec:tight-binding}) and thus calculate the inverse, as
+long as we only consider closed systems.
 
 \begin{figure}
     \begin{center}
@@ -329,6 +332,7 @@ TODO: illustrative explanation.
 
 
 \subsection*{Tight Binding Hamiltonian}
+\label{sec:tight-binding}
 
 
 In order to numerically evaluate the Green's function, we
@@ -387,7 +391,7 @@ where $n$ runs over all lattice sites, $\delta$ over $\uparrow$ and
 $\downarrow$, and $a_x$ and $a_y$ denote the shift to the nearest neighbor in
 $x$ and $y$ direction, respectively. (Note that we assume that the lattice is
 equally spaced in $x$ and $y$ direction, $+a_x$ just means "go to the next
-neighbor in $x$ direction). $t = \frac{\hbar^2}{2ma}$ is the so-called hopping term, and denotes the
+neighbor in $x$ direction"). $t = \frac{\hbar^2}{2ma}$ is the so-called hopping term, and denotes the
 probability of an electron traveling to its nearest neighbor. $r$ is the
 Rashba hopping term, and corresponds to a nearest neighbor hop with spin
 flip.
@@ -405,7 +409,7 @@ flip) between these two sites can thus be found at $H_{i,j} = H_{1,4}$. The
 interaction that involves a spin flip from $\uparrow$ to $\downarrow$ is
 described by $H_{i, j+N^2} = H_{1, 13}$.
 
-\begin{figure}
+\begin{figure}[tb]
     \begin{align*}
         H &= \inp{
            \begin{array}{cc}

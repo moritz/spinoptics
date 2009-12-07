@@ -3,14 +3,15 @@
 \newcommand{\ta}{\ensuremath{\tilde \alpha}}
 In ref. \cite{khodas} Khodas et.~al. write about the effects of an
 interface between regions of different strengths of Rashba spin-orbit
-coupling. We take up there approach and expand on it.
+coupling. We take up their approach and expand on it.
 
 Note that
 we use a coordinate system here that differs from the one used in the
 rest of this thesis. In particular we assume the 2DEG in the $x-z$
 plane (instead of $x-y$ plane), both for consistency with
 Ref. \cite{khodas}, and because it makes the spinors real vectors and
-thus simpler to handle.
+thus simpler to handle. The results for the $T$ matrix in the end are
+the same in both coordinate systems are isomorphic.
 
 \begin{figure}
     \begin{center}
@@ -44,7 +45,7 @@ With the eigenvalues and the velocities
     v_{\pm} &= \frac{\partial E_{\pm}}{\partial p} = \frac{p}{m} \pm \alpha
 \end{align}
 
-When a wave travels from the N to the SO region it's energy doesn't
+When a wave travels from the N to the SO region its energy doesn't
 change. Since its dispersion relation changes, the momentum must also
 change. From here on when we write $p$ we mean the momentum in the N
 region. The momentum in the SO region then follows as
@@ -56,6 +57,12 @@ region. The momentum in the SO region then follows as
 \end{align}
 
 $p_z$ is conserved at the interface.
+
+Since $p_{SO}^+ \not = P_{SO}^-$ for $\ta \not = 0$, we see that
+the beam splits up at the interface into two beams of opposite
+chiralities and different angles.
+
+% TODO: difference between angles
 
 Solving the eigenvalue equation leads us to the eigenvectors in the SO
 region:
