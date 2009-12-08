@@ -303,7 +303,28 @@ elements of the transmission matrix in the $\uparrow, \downarrow$ bases:
     \right)^\dagger \cdot \mathbf{\Psi}^\downarrow(x=x_2) \right|^2
 \end{align}
 
+Since the analytical model looks at a single mode, but the numerical
+calculation allows one mode per spin-dependent lead (and thus two modes in
+sum) to propagate, we have to multiply the results from the analytical
+calculation by a factor of 2 when comparing with results from the numerical
+simulation.
 
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=0.8\textwidth]{a-n-matching-over-alpha.pdf}
+    \end{center}
+    \caption{$T_S = T_{2\uparrow,1\uparrow} - T_{2\downarrow,2\downarrow}$ as
+        a function of $\ta$. Bold curves show the results from the analytical
+        calculations, thin lines from the numerical calculation.
+        \textbf{Blue:} $\phi = 23^\circ$, \textbf{Red:} $\phi = 29^\circ$.
+    }
+    \label{fig:a-n-matching-alpha}
+\end{figure}
+
+Figure \ref{fig:a-n-matching-alpha} shows the signal for two different
+angles of the interface. For weak spin-orbit coupling the theory and the
+numerical results agree well, for stronger coupling both the oscillation
+period and the amplitude start to disagree.
 
 
 % vim: ts=4 sw=4 expandtab spell spelllang=en_us tw=78
