@@ -4,7 +4,11 @@ use warnings;
 use lib 'lib';
 use ReadMatrix qw(real_matrix);
 use Data::Dumper;
+use Getopt::Long;
 use 5.010;
+
+GetOptions("upto=s" => \my $upto)
+    or warn "some of these options look wrong\n";
 
 my @x;
 my @d;
@@ -26,6 +30,9 @@ for my $d (@ARGV) {
         my $datapoint = $2;
         if ($what ne $1) {
             die "Can't mix different variables on the X axis ($what vs. $1)";
+        }
+        if (defined($upto) && ($upto < $datapoint)) {
+            last;
         }
         my $m = tpq_for_file($fn);
         if ($isfirst) {
