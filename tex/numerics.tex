@@ -280,10 +280,11 @@ interface is at $x = 0$ and the right lead is connected at $x = x_2$.
 Each of these equations has two components, which allows us to determine
 $a, b, c$ and $d$ unambiguously.
 
-With $\mathbf{\Psi^\pm_U}$ we mean the wave function normalized to 1 at the
+With $\mathbf{\Psi^\pm_U}$ we mean the wave functions introduced in
+\ref{eq:chiral-wafe-function}, normalized to 1 at the
 left hand side of the interface, so for example
 $|\mathbf{\Psi^\pm_U}(x=x_1)|=1$. For $x>0$ the amplitude of the wave function
-is smaller than 1, due to reflection at the interface.
+is generally smaller than 1, because not the full beam is transmitted.
 
 We can then look at the connection to the right lead, and obtain the 
 elements of the transmission matrix in the $\uparrow, \downarrow$ bases:
@@ -313,7 +314,7 @@ simulation.
     \begin{center}
         \includegraphics[width=0.8\textwidth]{a-n-matching-over-alpha.pdf}
     \end{center}
-    \caption{$T_S = T_{2\uparrow,1\uparrow} - T_{2\downarrow,2\downarrow}$ as
+    \caption{$T_S = T_{2\uparrow,1\uparrow} - T_{2\downarrow,1\downarrow}$ as
         a function of $\ta$. Bold curves show the results from the analytical
         calculations, thin lines from the numerical calculation.
         \textbf{Blue:} $\phi = 23^\circ$, \textbf{Red:} $\phi = 29^\circ$.
