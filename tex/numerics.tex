@@ -144,7 +144,32 @@ same symmetries.
 We checked these symmetries and the sum rule (eq. \ref{eq:sumrule}) regularly
 to ensure that no simple errors slipped in.
 
+\section{Convergence}
+\begin{figure}
+    \begin{center}
+        \includegraphics[angle=270,width=0.7\textwidth]{convergence.pdf}
+    \end{center}
+    \caption{$T_S = T_{2\uparrow,1\uparrow}-T_{2\downarrow,1\downarrow}$ as a
+        function of spin-orbit coupling strength, for the setup described in
+        section \ref{sec:numeric-setup}, with different number of lattice
+        sites.}
+    \label{fig:convergence}
+\end{figure}
+
+The tight binding model is only exactly valid in the limit $ a \mapsto 0$, ie
+vanishingly small lattice constant. Since the simulation requires a finite
+$a$, we have to ensure that the $a$ is actually small enough to not make much
+of a difference. This can be done by choosing a smaller $a$ for comparison.
+
+Figure \ref{fig:convergence} shows this for a sample of $100nm \times 100nm$.
+The results for the resolutions $150 \times 150$, $180 \times 180$ and $200
+\times 200$ looks quite similar, but not quite identical. This is because for
+the larger resolution more modes propagate. Still the qualitative behavior is
+sufficiently similar to warrant the use of a $150 \times 150$ grid in the
+following simulations.
+
 \section{Setup}
+\label{sec:numeric-setup}
 
 \begin{figure}
     \begin{center}
@@ -162,8 +187,8 @@ to ensure that no simple errors slipped in.
     \label{fig:interface-setup}
 \end{figure}
 
-For the following simulations we used a square sample, typically of $100
-\times 100$ lattice sites, with two leads attached both on the left and on the
+For the following simulations we used a square sample, typically of $150
+\times 150$ lattice sites, with two leads attached both on the left and on the
 right, on for spin up, one for spin down.
 
 To simulate an interface of an arbitrary angle $\phi$, we calculate the Rashba
