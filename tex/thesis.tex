@@ -21,10 +21,16 @@
 \newcommand{\cross}{\times}
 \newcommand{\dell}{\partial}
 
+% make things shorter:
+\newcommand{\lso}{\ensuremath{L_{\textnormal{SO}}}}
+\newcommand{\tso}{\ensuremath{t_{\textnormal{SO}}}}
+
+
 \usepackage{array}
 \setlength{\extrarowheight}{.2mm}
 \usepackage{hyperref}
 \usepackage{graphics,graphicx,fancyvrb}
+
 %Raender einstellen
 %\usepackage[a4paper, margin=15mm, top=30mm]{geometry}
 \usepackage[a4paper]{geometry}
@@ -340,6 +346,7 @@ discretize the sample into sites and assume that electrons only travel from
 one site to an immediate neighbor. This allows us to represent the
 Hamiltonian and other differential operators by a finite matrix.
 
+% TODO: remove bullshit
 % TODO: references
 The nearest neighbor approximation is quite common in transport calculations,
 and comes from the linear combination of atomic orbits (LCAO) ansatz, where
@@ -366,12 +373,12 @@ strength $\alpha$) the Hamiltonian is
     \frac{\alpha}{\hbar} \inp{p_y\sigma_x - p_x\sigma_y}
 \end{equation}
 
-To map this to a discrete lattice we substitute the derivation by a discrete
+To map this to a discrete lattice we substitute the derivative by a discrete
 difference, so $\dell_x f(x)|_{x_0}$ becomes $(f(x_0+a) - f(x_0))/a$. $a$ is
 the lattice constant. For the
-second derivation we chose the symmetric difference $\dell_x^2 f(x)_{x_0} =
+second derivative we chose the symmetric difference $\dell_x^2 f(x)_{x_0} =
 (f(x_0+a) - f(x_0-a))/2a$. In the continuum limit $a \mapsto 0$ both reproduce
-the derivation exactly.
+the derivative exactly.
 
 Written in terms of creation and destruction operators we obtain
 
@@ -392,7 +399,7 @@ $\downarrow$, and $a_x$ and $a_y$ denote the shift to the nearest neighbor in
 $x$ and $y$ direction, respectively. (Note that we assume that the lattice is
 equally spaced in $x$ and $y$ direction, $+a_x$ just means "go to the next
 neighbor in $x$ direction"). $t = \frac{\hbar^2}{2ma}$ is the so-called hopping term, and denotes the
-probability of an electron traveling to its nearest neighbor. $r$ is the
+probability of an electron traveling to its nearest neighbor. $\tso$ is the
 Rashba hopping term, and corresponds to a nearest neighbor hop with spin
 flip.
 
@@ -432,15 +439,15 @@ described by $H_{i, j+N^2} = H_{1, 13}$.
         %
         H_{spin} &= \inp{
             \begin{array}{ccccccccc}
-                0 & -ir &  & ir\\
-                ir & 0 & -ir &  & ir &  &  & 0\\
-                & ir & 0 & 0 &  & ir\\
-                -ir &  & 0 & 0 & -ir &  & ir\\
-                & -ir &  & ir & 0 & -ir &  & ir\\
-                &  & -ir &  & ir & 0 & 0 &  & ir\\
-                &  &  & -ir &  & 0 & 0 & -ir\\
-                & 0 &  &  & -ir &  & ir & 0 & -ir\\
-                &  &  &  &  & -ir &  & ir & 0
+                0 & -i\tso &  & i\tso\\
+                i\tso & 0 & -i\tso &  & i\tso &  &  & 0\\
+                & i\tso & 0 & 0 &  & i\tso\\
+                -i\tso &  & 0 & 0 & -i\tso &  & i\tso\\
+                & -i\tso &  & i\tso & 0 & -i\tso &  & i\tso\\
+                &  & -i\tso &  & i\tso & 0 & 0 &  & i\tso\\
+                &  &  & -i\tso &  & 0 & 0 & -i\tso\\
+                & 0 &  &  & -i\tso &  & i\tso & 0 & -i\tso\\
+                &  &  &  &  & -i\tso &  & i\tso & 0
             \end{array}
         }
     \end{align*}

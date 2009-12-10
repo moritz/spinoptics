@@ -33,7 +33,7 @@ using namespace std;
 #include "math-utils.h"
 typedef int idx_t;
 
-const int Nx               = 100;
+const int Nx               = 150;
 const int Ny               = Nx;
 const int Spin_idx         = Nx * Ny;
 
@@ -267,7 +267,7 @@ esm* hamiltonian(const num rashb, const num B) {
 //            cout << "y" << x << " " << y-1 << endl;
             // Rashba terms
             // "11 and 101"
-            h = cnum(0, 1) * b * r;
+            h = cnum(1, 0) * b * r;
             Hnn(IDX(x, y,   0), IDX(x, y-1  , 1)) = conj(h);
             Hnn(IDX(x, y-1, 1), IDX(x, y  , 0)) = h;
             // "1 and 111"
