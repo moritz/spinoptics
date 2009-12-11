@@ -6,7 +6,7 @@ use Parallel::ForkManager;
 use Data::Dumper;
 
 
-my @hosts = glob "wvbh07{0,1,2,3,3,4,6,8,9} wvbh06{6,9} wthp009 wthp010 wthp10{4,4,5,5,6,6}";
+my @hosts = glob "wvbh07{0,1,2,3,3,4,6,8,9} wvbh06{6,9} wthp009 wthp01{0,1,2,3,4} wthp10{4,4,4,5,5,5,6,6,6}";
 my $parallel_jobs = @hosts;
 my $revoke;
 $revoke = 1 if $ARGV[0] && $ARGV[0] eq 'revoke';
@@ -27,8 +27,8 @@ if (@ARGV) {
 
 my %defaults = (
     -b => 0,
-    -e => 2.0,
-    -r => 0.02,
+    -e => 1.5,
+    -r => 0.03,
     -p => 29,
     -n => 21,
 );

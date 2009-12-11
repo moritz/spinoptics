@@ -103,7 +103,9 @@ Complex conjugation and transposition of $X_p^\dagger$ finally gives us the
 matrix which we need evaluating the Fischer-Lee relation.
 
 \begin{figure}
-    \includegraphics[angle=270,width=0.7\textwidth]{numeric-errors.pdf}
+    \begin{center}
+    \includegraphics[angle=270,width=0.8\textwidth]{numeric-errors.pdf}
+    \end{center}
     \caption{Numerical errors in $T_{pq}$ as a function of system size.}
     \label{fig:numeric-errors}
 \end{figure}
@@ -145,7 +147,7 @@ to ensure that no simple errors slipped in.
 \section{Convergence}
 \begin{figure}
     \begin{center}
-        \includegraphics[angle=270,width=0.7\textwidth]{convergence.pdf}
+        \includegraphics[width=0.8\textwidth]{convergence.pdf}
     \end{center}
     \caption{$T_S = T_{2\uparrow,1\uparrow}-T_{2\downarrow,1\downarrow}$ as a
         function of spin-orbit coupling strength, for the setup described in
@@ -263,11 +265,18 @@ The chiral spin bases as introduced in chapter \ref{sec:analytica} are very
 natural for the analytical calculation, because the
 base vectors are also eigenstates to the Hamiltonian.
 
-However for the numerical simulation they are not suited, because they are
-dependent on the direction (in real space) in which the wave travels. This
-is not known before the simulation runs, and because there can be several
-waves with different directions in one place, it is not possible to calculate
-the self-energy of the leads in these bases.
+One might think that the easiest way to compare analytical and numerical
+results is to simply use the chiral bases in the leads, but that is a
+misconception. The chiral spin bases depend on the real space direction
+of the waves, and in the SO regime that is not known a priori --
+rather it's an intermediate
+result of the numerical calculation\footnote{but one we're not really
+interested in, and by using the Fisher-Lee relation we shortcut the path and
+never explicitly calculate it}.
+
+So since one can't match the bases between SO region and right lead, one has
+to project onto the bases of the leads. We use the $\uparrow,\downarrow$ bases
+in the leads, because they are easier to handle.
 
 \begin{figure}
     \begin{center}
@@ -294,17 +303,17 @@ right is a smooth continuation of the wave function in the lead:
 
 \begin{align*}
     \mathbf{\Psi^\uparrow}(x=x_1) &=
-        a e^{i p_x x_1}e^{i p_z z} \chi_N^+
-        + b e^{i p_x x_1}e^{i p_z z} \chi_N^-\\
+        a\cdot e^{i p_x x_1}e^{i p_z z} \chi_N^+
+        + b\cdot e^{i p_x x_1}e^{i p_z z} \chi_N^-\\
     \mathbf{\Psi^\downarrow}(x=x_1) &=
-        c e^{i p_x x_1}e^{i p_z z} \chi_N^+
-        + d e^{i p_x x_1}e^{i p_z z} \chi_N^-
+        c\cdot e^{i p_x x_1}e^{i p_z z} \chi_N^+
+        + d\cdot e^{i p_x x_1}e^{i p_z z} \chi_N^-
 \end{align*}
 
 Where $x_1$ is the location where the left lead is connected to the sample, the
 interface is at $x = 0$ and the right lead is connected at $x = x_2$.
 Each of these equations has two components, which allows us to determine
-$a, b, c$ and $d$ unambiguously.
+the coefficients $a, b, c$ and $d$ unambiguously.
 
 
 We can then look at the connection to the right lead, and obtain the 
@@ -354,7 +363,7 @@ the density of states in two dimensions.
 
 \begin{figure}
     \begin{center}
-        \includegraphics[width=0.8\textwidth]{a-n-matching-over-alpha.pdf}
+        \includegraphics[width=0.8\textwidth]{comparison-over-alpha.pdf}
     \end{center}
     \caption{$T_S = T_{2\uparrow,1\uparrow} - T_{2\downarrow,1\downarrow}$ as
         a function of $\ta$. Bold curves show the results from the analytical

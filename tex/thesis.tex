@@ -386,24 +386,24 @@ discretize the sample into sites and assume that electrons only travel from
 one site to an immediate neighbor. This allows us to represent the
 Hamiltonian and other differential operators by a finite matrix.
 
-% TODO: remove bullshit
-% TODO: references
-The nearest neighbor approximation is quite common in transport calculations,
-and comes from the linear combination of atomic orbits (LCAO) ansatz, where
-one assumes that the overlap between localized electron orbitals decreases
-exponentially with distance.
-
-In a two-dimensional square lattice the distance to the next nearest
-neighbors is $\sqrt{2} a$ (where $a$ is the lattice constant), so one can
-approximate that the overlap is $e^{-\sqrt{2}} \approx 0.24$. For a simulation
-that tries to reproduce exact physical behavior of a sample one would have to
-include the next-nearest neighbor hopping, and maybe even one further step
-($e^{-2} \approx 0.14$).
-
-But since our model is an effective one, we have to give up that claim
-anyway, and instead ask ourselves if next-nearest neighbor hopping or higher
-orders contribute any new physics, in terms of symmetries. To the best of our
-knowledge that is not the case, so we keep the nearest neighbor approximation.
+%% TODO: remove bullshit
+%% TODO: references
+%The nearest neighbor approximation is quite common in transport calculations,
+%and comes from the linear combination of atomic orbits (LCAO) ansatz, where
+%one assumes that the overlap between localized electron orbitals decreases
+%exponentially with distance.
+%
+%In a two-dimensional square lattice the distance to the next nearest
+%neighbors is $\sqrt{2} a$ (where $a$ is the lattice constant), so one can
+%approximate that the overlap is $e^{-\sqrt{2}} \approx 0.24$. For a simulation
+%that tries to reproduce exact physical behavior of a sample one would have to
+%include the next-nearest neighbor hopping, and maybe even one further step
+%($e^{-2} \approx 0.14$).
+%
+%But since our model is an effective one, we have to give up that claim
+%anyway, and instead ask ourselves if next-nearest neighbor hopping or higher
+%orders contribute any new physics, in terms of symmetries. To the best of our
+%knowledge that is not the case, so we keep the nearest neighbor approximation.
 
 For a two-dimensional electron gas with Rashba spin-orbit coupling (of
 strength $\alpha$) the Hamiltonian is
