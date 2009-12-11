@@ -289,13 +289,16 @@ that the wave functions are plain waves
     \mathbf{\Psi^\downarrow} &=  e^{i p_x x} e^{i p_z z} |\downarrow> \\
 \end{align*}
 
-and that the wave functions are continuous at the interface:
+and that the part of wave function in the sample which travels from left to
+right is a smooth continuation of the wave function in the lead:
 
 \begin{align*}
     \mathbf{\Psi^\uparrow}(x=x_1) &=
-        a \mathbf{\Psi^+_U}(x=x_1) + b  \mathbf{\Psi^-_U}(x=x_1)\\
+        a e^{i p_x x_1}e^{i p_z z} \chi_N^+
+        + b e^{i p_x x_1}e^{i p_z z} \chi_N^-\\
     \mathbf{\Psi^\downarrow}(x=x_1) &=
-        c \mathbf{\Psi^+_U}(x=x_1) + d  \mathbf{\Psi^-_U}(x=x_1)
+        c e^{i p_x x_1}e^{i p_z z} \chi_N^+
+        + d e^{i p_x x_1}e^{i p_z z} \chi_N^-
 \end{align*}
 
 Where $x_1$ is the location where the left lead is connected to the sample, the
@@ -303,35 +306,51 @@ interface is at $x = 0$ and the right lead is connected at $x = x_2$.
 Each of these equations has two components, which allows us to determine
 $a, b, c$ and $d$ unambiguously.
 
-With $\mathbf{\Psi^\pm_U}$ we mean the wave functions introduced in
-\ref{eq:chiral-wafe-function}, normalized to 1 at the
-left hand side of the interface, so for example
-$|\mathbf{\Psi^\pm_U}(x=x_1)|=1$. For $x>0$ the amplitude of the wave function
-is generally smaller than 1, because not the full beam is transmitted.
 
 We can then look at the connection to the right lead, and obtain the 
 elements of the transmission matrix in the $\uparrow, \downarrow$ bases:
 
 \begin{align}
     T_{2\uparrow,1\uparrow} = \left| \left( 
-        a \mathbf{\Psi^+_U}(x=x_2) + b  \mathbf{\Psi^-_U}(x=x_2)
+        a \mathbf{\Psi^+}(x=x_2) + b  \mathbf{\Psi^-}(x=x_2)
     \right)^\dagger \cdot \mathbf{\Psi}^\uparrow(x=x_2) \right|^2\\
     T_{2\downarrow,1\uparrow} = \left| \left( 
-        a \mathbf{\Psi^+_U}(x=x_2) + b  \mathbf{\Psi^-_U}(x=x_2)
+        a \mathbf{\Psi^+}(x=x_2) + b  \mathbf{\Psi^-}(x=x_2)
     \right)^\dagger \cdot \mathbf{\Psi}^\downarrow(x=x_2) \right|^2\\
     T_{2\uparrow,1\downarrow} = \left| \left( 
-        c \mathbf{\Psi^+_U}(x=x_2) + d  \mathbf{\Psi^-_U}(x=x_2)
+        c \mathbf{\Psi^+}(x=x_2) + d  \mathbf{\Psi^-}(x=x_2)
     \right)^\dagger \cdot \mathbf{\Psi}^\uparrow(x=x_2) \right|^2\\
     T_{2\downarrow,1\downarrow} = \left| \left( 
-        c \mathbf{\Psi^+_U}(x=x_2) + d  \mathbf{\Psi^-_U}(x=x_2)
+        c \mathbf{\Psi^+}(x=x_2) + d  \mathbf{\Psi^-}(x=x_2)
     \right)^\dagger \cdot \mathbf{\Psi}^\downarrow(x=x_2) \right|^2
 \end{align}
 
-Since the analytical model looks at a single mode, but the numerical
-calculation allows one mode per spin-dependent lead (and thus two modes in
-sum) to propagate, we have to multiply the results from the analytical
-calculation by a factor of 2 when comparing with results from the numerical
-simulation.
+Where $\mathbf{\Psi^\pm}$ are the wave functions introduced in
+\ref{eq:chiral-wafe-function}. Note that these are wave functions are not
+normalized in the usual sense. Rather on the left of the interface ($x < 0$)
+they consist of a part traveling left to right, and a part traveling right to
+left. The left-to-right part is normalized the same way as
+$\mathbf{\Psi^\uparrow}$
+is.
+
+Both the right-to-left part of $\mathbf{\Psi^\pm}(x < 0)$ and the whole of
+$\mathbf{\Psi^\pm}(x > 0)$ are not normalized, and in magnitude generally
+smaller than 1, which allows us to determine the transmission matrix elements
+by looking at the amplitudes.
+
+For comparing the analytical and numeric results one final step is missing:
+$\tso$ and $\ta$ are not the same, but it's easy to get a relation between the
+two:
+
+\begin{align}
+    \tso &= \frac{\alpha\hbar}{2a}\\
+    t    &= \frac{\hbar^2}{2 m a^2}\\
+    \frac{\tso}{t} &= \frac{\alpha m a}{\hbar} = \frac{\ta v_F m a}{\hbar} \\
+    \Rightarrow \frac{\tso}{t \ta} &= a k_F = a \sqrt{2 \pi n_{2D}}
+\end{align}
+
+Where $k_F$ is the Fermi wave vector and $n_{2D} \approx 10^{11} cm^{-2}$ is
+the density of states in two dimensions.
 
 \begin{figure}
     \begin{center}
