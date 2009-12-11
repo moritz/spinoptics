@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\documentclass[11pt]{report}
+\documentclass[11pt,twoside]{book}
 \usepackage{parskip}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -54,7 +54,46 @@
 \title{Ballistic Transport of Spin-Polarized Electron Beams in Mesoscopic
 Systems}
 \begin{document}
-\maketitle
+
+\begin{titlepage}
+% \maketitle 
+\begin{center}
+    \begin{center}~\\ \vspace{2cm}
+    \end{center}
+    \begin{huge}
+    \textbf{Ballistic Transport of Spin-Polarized\\[0.2em]
+        Electron Beams in Mesoscopic Systems}
+    \end{huge}
+\par
+\vspace{3 cm}
+
+\large Diploma thesis by  
+\\[1.5em]
+{
+\LARGE\sc Moritz Andreas Lenz
+}
+\par
+\vspace{1 cm}
+\large Supervised by \\[1em]
+{
+    \sc
+Prof. Dr. Ewelina Hankiewicz
+}
+
+\vspace{4 cm}
+
+\normalsize A.G. Mesoskopische Physik, Institut f\"ur Theoretische Physik und Astrophysik, \\
+Universit\"at W\"urzburg, D-97074 W\"urzburg, Germany
+
+\vspace{2 cm}
+~\\ December 18, 2009 % \today
+~\\
+ 
+\end{center}
+\end{titlepage} 
+
+~\newpage
+
 
 \input{intro.tex}
 
@@ -290,7 +329,8 @@ phenomena we're looking at.
 
 The Dirac equation from relativistic quantum theory describes an electron
 coupled to a positron. Since the gap $\Delta = 2 m_e c^2$ is quite large, the
-effect of the positron on the electron very small at low energies, and can be
+effect of the positron on the electron is very small (at low energies at
+least), and can be
 taken into account by folding the $4\times4$ Hamiltonian (two dimension to
 take spin into account, two for electron and positron) to an effective
 $2\times 2$ Hamiltonian.
@@ -388,9 +428,9 @@ Written in terms of creation and destruction operators we obtain
            - \sum_{n,\delta,\sigma} t c^\dagger_{n\sigma} c_{n,\sigma} +
            \textnormal{H.c.}\\
     H_r &= \frac{-\alpha}{2 a_0} \sum_m
-        -i( c^\dagger_{m,\uparrow|} c_{m+a_y,\downarrow}
+        -i( c^\dagger_{m,\uparrow} c_{m+a_y,\downarrow}
             + c^\dagger_{m,\downarrow} c_{m+a_y,\uparrow})
-         + c^\dagger_{m,\uparrow|} c_{m+a_x,\downarrow}
+         + c^\dagger_{m,\uparrow} c_{m+a_x,\downarrow}
             + c^\dagger_{m,\downarrow} c_{m+a_x,\uparrow}
 \end{align}
 
@@ -399,7 +439,8 @@ $\downarrow$, and $a_x$ and $a_y$ denote the shift to the nearest neighbor in
 $x$ and $y$ direction, respectively. (Note that we assume that the lattice is
 equally spaced in $x$ and $y$ direction, $+a_x$ just means "go to the next
 neighbor in $x$ direction"). $t = \frac{\hbar^2}{2ma}$ is the so-called hopping term, and denotes the
-probability of an electron traveling to its nearest neighbor. $\tso$ is the
+probability of an electron traveling to its nearest neighbor.
+$\tso = \frac{\alpha \hbar}{2a}$ is the
 Rashba hopping term, and corresponds to a nearest neighbor hop with spin
 flip.
 
