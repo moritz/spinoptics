@@ -372,11 +372,36 @@ the density of states in two dimensions.
     }
     \label{fig:a-n-matching-alpha}
 \end{figure}
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=0.8\textwidth]{comparison-over-phi.pdf}
+    \end{center}
+    \caption{$T_S = T_{2\uparrow,1\uparrow} - T_{2\downarrow,1\downarrow}$ as
+        a function of the interface angle $\phi$ (in radians). The bold curve
+            show the result from the analytical calculations, the thin line
+            from the numerical calculation. $\tso = 0.02$, $E_F = 1.5t$
+    }
+    \label{fig:a-n-matching-phi}
+
+\end{figure}
 
 Figure \ref{fig:a-n-matching-alpha} shows the signal for two different
 angles of the interface. For weak spin-orbit coupling the theory and the
 numerical results agree well, for stronger coupling both the oscillation
 period and the amplitude start to disagree.
+
+Figure \ref{fig:a-n-matching-phi} shows the effect of the interface angle
+$\phi$ as for a fixed spin-orbit coupling strength. The signal from the
+numerical simulation is quite noisy, because
+a small variation of $\phi$ moves the steps that are used to emulate a smooth
+interface.
+
+In order to get one propagating mode in most of the sample, a rather
+high Fermi energy was chosen ($E_F = 1.5t$), which means that $k_F$ is
+actually quite large. The tight binding simulation only works well for small
+wave vectors, where the parabolic band can be well approximated with the
+cosine form that the tight binding model implies. This explains why there's a
+shift between the two curves in figure \ref{fig:a-n-matching-phi}.
 
 
 % vim: ts=4 sw=4 expandtab spell spelllang=en_us tw=78
