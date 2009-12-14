@@ -1,17 +1,19 @@
 \chapter{Analytical Calculations}
 \label{sec:analytical}
 \newcommand{\ta}{\ensuremath{\tilde \alpha}}
-In ref. \cite{khodas} Khodas et.~al. write about the effects of an
+In ref. \cite{khodas}, Khodas et.~al. write about the effects of an
 interface between regions of different strengths of Rashba spin-orbit
 coupling. We take up their approach and expand on it.
 
 Note that
-we use a coordinate system here that differs from the one used in the
-rest of this thesis. In particular we assume the 2DEG in the $x-z$
+we use a coordinate system here which differs from the one used in the
+rest of this thesis. In particular, we assume the 2DEG in the $x-z$
 plane (instead of $x-y$ plane), both for consistency with
-Ref. \cite{khodas}, and because it makes the spinors real vectors and
+ref. \cite{khodas} and because it makes the spinors real vectors and
 thus simpler to handle. The results for the $T$ matrix in the end are
-the same in both coordinate systems are isomorphic.
+the same in both coordinate systems.
+
+\section{Interface Between Normal and Spin-Orbit Coupling Regions}
 
 \begin{figure}
     \begin{center}
@@ -38,16 +40,16 @@ The Hamiltonian looks like this:
     p^2 &= p_x^2 + p_z^2
 \end{align}
 
-With the eigenvalues and the velocities
+with the eigenvalues and the velocities
 
 \begin{align}
     E_{\pm} &= \frac{p^2}{2m} \pm \alpha \\
     v_{\pm} &= \frac{\partial E_{\pm}}{\partial p} = \frac{p}{m} \pm \alpha
 \end{align}
 
-When a wave travels from the N to the SO region its energy doesn't
+When a wave travels from the N to the SO region, its energy does not
 change. Since its dispersion relation changes, the momentum must also
-change. From here on when we write $p$ we mean the momentum in the N
+change. From here on, when we write $p$ we mean the momentum in the N
 region. The momentum in the SO region then follows as
 
 \begin{align}
@@ -71,17 +73,18 @@ The split up of the beams is approximately proportional to $\ta$:
 Solving the eigenvalue equation leads us to the eigenvectors in the SO
 region:
 
-\begin{align*}
+\begin{align}
    \chi_{SO}^{\pm} &= \frac{1}{n_{SO}^{\pm}} 
                       \vect{-p_{x,SO}^{\pm} \pm p_{SO}^\pm}{p_z} \\
-    (n_{SO}^{\pm})^2 &= (-p_{x,SO}^{\pm} \pm p_{SO}^\pm)^2 + p_z^2
-\end{align*}
+    (n_{SO}^{\pm})^2 &= |-p_{x,SO}^{\pm} \pm p_{SO}^\pm|^2 + p_z^2
+    \label{eq:chi-so-pm}
+\end{align}
 
-Where the lower index $x$ means that the value is projected onto the
+where the lower index $x$ means that the value is projected onto the
 $x$ axis. The angle between the $x$ axis and the momentum of the
 incident wave is called $\phi$, so that $p_x = p \cos \phi$.
 
-Note that in the N regime $H$ is a diagonal matrix, and the direction
+Note that, in the N regime, $H$ is a diagonal matrix, and the direction
 of the eigenvectors can be chosen with some freedom. We pick
 $\chi_N^{\pm} = \lim_{\alpha \mapsto 0} \chi_{SO}^{\pm}$ to ensure that
 $<\chi_N^+|\chi_{SO}^+> = 1$ holds true at a vanishing interface.
@@ -89,9 +92,9 @@ $<\chi_N^+|\chi_{SO}^+> = 1$ holds true at a vanishing interface.
 
 
 The overall wave function consists of an incident wave, 
-and reflected and transmitted part. In general the incident wave can
+reflected and transmitted part. In general, the incident wave can
 be decomposed into one with $+$ and one with $-$ chirality, which
-propagate and scatter independently. Let's consider the incident $+$
+propagate and scatter independently. Let us consider the incident $+$
 wave:
 
 \begin{align}
@@ -106,17 +109,17 @@ wave:
 \end{align}
 
 The coefficient $r_{-+}$ is the amplitude with which the incident wave
-of $+$ chirality is reflected into $-$ chirality etc. while $t$
+of $+$ chirality is reflected into $-$ chirality etc., while $t$
 coefficients stand for transmission coefficients.
 
 Analog equations can be found for the incident wave with $-$ chirality
 by changing all signs that appear either as a subscript or
 superscript.
 
-To obtain the values for these coefficients one has to solve the
+To obtain the values for these coefficients, one has to solve the
 boundary conditions at the interface. The wave function is continuous
 and the current is conserved, so $\frac{\partial H}{\partial p_x} \Psi$ is also
-continuous.
+continuous:
 
 \begin{align}
     \Psi_N|_{x = -0}    &= \Psi_{SO}|_{x = +0} \label{eq:continuous}\\
@@ -126,8 +129,8 @@ continuous.
 \end{align}
 
 The second equation can be evaluated with $\hat p_x = -i \partial_x$
-(assuming $\hbar = 1$, as done in the rest of the calculation) and
-carrying out the derivation (and multiplied by $m$), yielding
+(assuming $\hbar = 1$, as done in the rest of the calculation).
+Carrying out the derivative (and multiplying by $m$) yields:
 
 \begin{align}
     p_x \chi_N^+ (1 - r_{++}) - p_x \chi_N^- r_{-+}
@@ -136,7 +139,7 @@ carrying out the derivation (and multiplied by $m$), yielding
                             + \sigma_z \chi_{SO}^- t_{-+} \right)
 \end{align}
 
-Dividing it by  $p_x = p \cos \phi$: 
+and dived by  $p_x = p \cos \phi$: 
 
 \begin{align}
     \chi_N^+ (1 - r_{++}) - \chi_N^- r_{-+}
@@ -147,7 +150,7 @@ Dividing it by  $p_x = p \cos \phi$:
 \end{align}
 
 Equations \ref{eq:continuous} and \ref{eq:j_continuous} have two
-components each, and can be solved unambiguously. 
+components each and can be solved unambiguously. 
 The solutions expanded to the first non-zero order in $\ta$ each are
 
 \begin{align}
@@ -158,7 +161,7 @@ The solutions expanded to the first non-zero order in $\ta$ each are
     r_{-+} &= -\frac{\ta}{2} \tan \phi
 \end{align}
 
-And for the incident wave with $-$ chirality
+and for the incident wave with $-$ chirality
 
 \begin{align}
     t_{--} &= 1 - \frac{\ta}{2} \left( \frac{1}{\cos^2\phi} - 1 \right)\\
@@ -179,13 +182,24 @@ And for the incident wave with $-$ chirality
 Figure \ref{fig:trans-zero} shows the transmission and reflection
 coefficients as a function of the angle $\phi$ of the incident wave.
 
-For increasing $\phi$ the angle of the transmitted beam with $+$
-chirality, $\theta^+$ grows even faster. When $\theta^+ =
-\frac{\pi}{2}$ no current flows anymore with $+$ chirality, and we
-call the corresponding $\phi_c$ a critical angle. (Note that $t_{++}$
-is not zero in that region, but since the wave doesn't propagate, no
-current flows).
+For increasing $\phi$, the angle of the transmitted beam with $+$
+chirality, $\theta^+$, grows even faster. When $\theta^+ >=
+\frac{\pi}{2}$, the momentum $p_{x,SO}^+$ is imaginary and no current flows
+anymore with $+$ chirality. 
 
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=0.7\textwidth]{critical-angle.pdf}
+    \end{center}
+    \caption{Critical angle $\phi_c$ as a function of $\ta$. For $\phi
+        > \phi_c$ the wave associated with $t_{++}$ is evanescent.}
+    \label{fig:critical-angle}
+\end{figure}
+
+The angle $\phi$ for which $\theta^+ =\frac{\pi}{2}$ is called the
+critical angle $\phi_c$.
+
+\clearpage
 With
 
 \begin{align}
@@ -200,13 +214,18 @@ it follows that
     \phi_c          &= -\sin ^{-1}\left(a-\sqrt{a^2+1}\right)
 \end{align}
 
-\clearpage
-\section{Generalization to two Spin-Orbit regions}
+Figure \ref{fig:critical-angle} shows the critical angle as a function
+of the spin-orbit coupling strength.
+
+Since the wave with $-$ chirality is transmitted at smaller angles
+$\theta^- < \phi$, no critical phenomena arise.
+
+\section{Generalization to two Spin-Orbit Regions}
 
 The system can be generalized to two regions with non-zero spin-orbit
-coupling (SO1 and SO2).
+coupling (\emph{SO A} and \emph{SO B}).
 
-\begin{figure}
+\begin{figure}[htb]
     \begin{center}
         \includegraphics{setup-two-so-regions.pdf}
     \end{center}
@@ -217,14 +236,19 @@ coupling (SO1 and SO2).
 
 One just has to remember that the incident beam is split up
 into two beams of different chirality, which propagate at different
-angles. In general each beam is split up into two beams at the
-interface, so there are up to four beams in SO2 region, two of each
-chirality.
+angles. In general, each beam is split up into two beams at the
+interface, so there are up to four beams in \emph{SO B} region,
+two of each chirality.
+
+Figure \ref{fig:setup-nonzero} gives an overview of the beams and how
+we name them and the associated angles. We will focus our discussion
+on the wave with $+$ chirality in the \emph{SO A} region, and the
+resulting waves in the \emph{SO B} region.
 
 \begin{figure}
     \begin{center}
-        \includegraphics{nonzero-plus.pdf}
-        \includegraphics{nonzero-minus.pdf}
+        \includegraphics[width=\textwidth]{nonzero-plus.pdf}
+        \includegraphics[width=\textwidth]{nonzero-minus.pdf}
     \end{center}
     \caption{Transmission and reflection coefficients for the
         incident $+$ (top) and $-$ (bottom) wave, with
@@ -236,6 +260,33 @@ As before, equations \ref{eq:continuous} and \ref{eq:j_continuous}
 apply and can be solved unambiguously. Figure \ref{fig:plots-nonzero}
 shows the transmission coefficients as a function of $\phi$ as a
 result from these equations.
+
+As before we can identify a critical angle above which the $+$ wave
+does not propagate. Instead of using the condition $\theta^+_+ =
+\frac{\pi}{2}$ it is easier to look at the momentum directly:
+
+\begin{align}
+    p_{x,B}^+ = \sqrt{ p_B^2 - p_z^2} = p \sqrt{(\sqrt(1+\ta_B^2) -
+            \ta_B)^2 - \sin^2 \phi^+}
+\end{align}
+
+For $p_B^2 < p_z^2$ the mode is evanescent because $p_{x,B}$ is
+imaginary. For $p_B^2 = p_z^2$ the angle $\phi^+$ reaches its critical
+value, which is only dependent on the strength of the spin-orbit
+coupling strength in the right regime:
+
+\begin{align}
+    \phi^+_{B,c} = -\sin^{-1}(\ta_B - \sqrt{1+\ta_B^2})
+\end{align}
+
+This is the first gray vertical line in figure
+\ref{fig:plots-nonzero}, and in the region $\phi < \phi+_{B,c}$ the various transmission and reflection
+coefficients look very similar to the case with $\ta_A = 0$.
+
+The second gray line is critical angle associated with $\ta_A$. For
+$\phi > \phi^+_{A,c}$ the momentum in $x$ direction $p_{x,A}$ is again
+imaginary, just like if we had another interface to a normal region
+left of the $A$ region.
 
 %
 %\begin{figure}

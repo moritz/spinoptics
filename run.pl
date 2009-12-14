@@ -6,7 +6,7 @@ use Parallel::ForkManager;
 use Data::Dumper;
 
 
-my @hosts = glob "wvbh07{0,1,2,3,3,4,6,8,9} wvbh06{6,9} wthp009 wthp01{0,1,2,3,4} wthp10{4,4,4,5,5,5,6,6,6}";
+my @hosts = glob "wvbh07{0,1,2,3,3,4,6,8,9} wvbh06{6,9} wthp009 wthp01{0,2,3,4} wthp10{4,4,4,5,5,5,6,6,6}";
 my $parallel_jobs = @hosts;
 my $revoke;
 $revoke = 1 if $ARGV[0] && $ARGV[0] eq 'revoke';
@@ -27,8 +27,8 @@ if (@ARGV) {
 
 my %defaults = (
     -b => 0,
-    -e => 1.5,
-    -r => 0.03,
+    -e => 2.0,
+    -r => 0.2,
     -p => 29,
     -n => 21,
 );
@@ -44,7 +44,7 @@ my %vars = (
     phi => {
         from    => 0,
         to      => 90,
-        step    => 0.2,
+        step    => 0.1,
         format  => 'phi%04.1f',
         option  => '-p',
     },
@@ -92,7 +92,7 @@ if ($revoke) {
                  ."You need to re-run it later on yourself\n";
         } else {
             my $diff = time - $ts_before;
-            sleep($diff/1.5);
+            sleep($diff);
         }
         $pm->finish;
     }

@@ -128,7 +128,7 @@ num rashba_for_site(idx_t x, idx_t y) {
     // Interface at angle stripe_angle
 
     float r = tan(stripe_angle);
-    num scale = 0.0;
+    num scale = 0.5;
 //    int x_offset = (Nx - lead_sites) / 5;
     int x_offset = 0.0;
 

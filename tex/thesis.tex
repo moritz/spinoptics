@@ -32,18 +32,18 @@
 \usepackage{graphics,graphicx,fancyvrb}
 
 %Raender einstellen
-%\usepackage[a4paper, margin=15mm, top=30mm]{geometry}
-\usepackage[a4paper]{geometry}
-\usepackage{lastpage}
-\usepackage{fancyhdr}
-	\lhead{Moritz Lenz}
-	\chead{\bfseries{-- \thepage\ --}}
-	\rhead{\thetitle}
-	\lfoot{}
-	\rfoot{}
-	\cfoot{}
-	\pagestyle{fancy}
-\pagestyle{empty}
+\usepackage[a4paper, inner=35mm, outer=25mm,top=30mm]{geometry}
+%\usepackage[a4paper]{geometry}
+%\usepackage{lastpage}
+%\usepackage{fancyhdr}
+%	\lhead{Moritz Lenz}
+%	\chead{\bfseries{-- \thepage\ --}}
+%	\rhead{\thetitle}
+%	\lfoot{}
+%	\rfoot{}
+%	\cfoot{}
+%	\pagestyle{fancy}
+%\pagestyle{empty}
 
 \sffamily
 
@@ -95,6 +95,7 @@ Universit\"at W\"urzburg, D-97074 W\"urzburg, Germany
 ~\newpage
 
 
+\tableofcontents
 \input{intro.tex}
 
 \chapter{Theory}
@@ -128,7 +129,7 @@ take into account both the sample and the leads.
 
 The following explanations are mostly taken from \cite{datta}.
 
-\subsection*{Landauer Formula}
+\section{Landauer Formula}
 
 \begin{figure}
     \begin{center}
@@ -164,7 +165,7 @@ The conductance is
     G = \frac{I |e|}{\mu_1 - \mu_2} = \frac{2 e^2}{h} MT
 \end{align}
 
-\subsection*{Transmission and Green's Functions}
+\section{Transmission and Green's Functions}
 
 To calculate the matrix $T$, one can make use of the so-called \emph{Green's
 functions}. A Green's function $G$ is, loosely speaking, an inverse of a
@@ -174,15 +175,15 @@ operator $G$, for
 which the equation $R = G \delta$ holds, is called a Green's function.
 
 To calculate the wave function $\psi$ in response to an excitation $\delta$ at a
-given energy $E$ we can use the inhomogeneous Schrödinger Equation
+given energy $E$, we can use the inhomogeneous Schrödinger Equation
 
 \begin{align}
     \label{eq:green-define}
     (E - H) \psi = \delta
 \end{align}
 
-Where $H$ is the Hamiltonian operator. In a one-dimensional wire oriented
-along the $x$ axis we expect an excitation of the form
+where $H$ is the Hamiltonian operator. In a one-dimensional wire oriented
+along the $x$ axis, we expect an excitation of the form
 $\delta = \delta(x - x_0)$ to result in two waves propagating away from $x_0$,
 so our ansatz is
 
@@ -208,14 +209,14 @@ From the boundary conditions
         &= \frac{2m}{\hbar^2}
 \end{align}
 
-(where by $+0$ we mean \emph{evaluated from the right} and by $-0$ we mean
+(where, by $+0$, we mean \emph{evaluated from the right} and by $-0$ we mean
 \emph{evaluated from the left}).
 
 We obtain $A^+ = A^- = -\frac{i}{\hbar v}$ where $v := \frac{\hbar k}{m} $.
 
 We call this particular solution the \emph{retarded Green's function} $G^R$,
-to distinguish it from a second solution with opposite sign both in the $A$s
-and in the exponent, which we call the \emph{advanced} Green's function $G^A$.
+to distinguish it from a second solution with opposite sign, both in the $A$s
+and in the exponent which we call the \emph{advanced} Green's function $G^A$.
 
 In a wire with finite width multiple modes can propagate, but since we can
 separate the $x$ and $y$ components, the Green's functions become only
@@ -228,8 +229,8 @@ marginally more complex:
 where the transverse wave functions $\chi_m(y)$ satisfy the Schrödinger
 Equation in $y$ direction with eigenvalue $\epsilon_m$.
 
-Orthogonality of the different $\chi_m(y)$ functions and boundary conditions
-give us an expression for the amplitudes:
+The orthogonality of the different $\chi_m(y)$ functions and the boundary
+conditions give us an expression for the amplitudes:
 
 \begin{align}
     A^\pm = - \frac{i}{\hbar v_m} \chi_m(y_0)
@@ -264,7 +265,7 @@ can couple adjacent lattice points in the sample and a lead as shown in Fig.
 
 The overall Green's function for both sample and lead can be partitioned into
 a Green's function for the sample $G_s$, for the lead $G_p$ and two coupling
-Green's functions $G_{sp}, G_{ps}$
+Green's functions $G_{sp}$ and  $G_{ps}$
 
 \begin{align}
 \left(
@@ -283,7 +284,7 @@ Green's functions $G_{sp}, G_{ps}$
 \label{eq:coupling-green}
 \end{align}
 
-Where $\tau_p$ is the coupling matrix for lead $p$, and contains only non-zero
+where $\tau_p$ is the coupling matrix for lead $p$ and contains only non-zero
 entries $t$ for matrix elements connecting adjacent sites in lead and sample.
 
 From \ref{eq:coupling-green} we can find an expression for $G_s$:
@@ -292,7 +293,7 @@ From \ref{eq:coupling-green} we can find an expression for $G_s$:
     G_s = (E\mathbf1 - H_s - \tau^\dagger g_p^R \tau_p )^{-1}
 \end{align}
 
-Where $g_p^R$ is the retarded Green's function for the isolated lead $p$,
+where $g_p^R$ is the retarded Green's function for the isolated lead $p$,
 
 \begin{align}
     g_p^R = ((E+i\eta)\mathbf1 - H_p)^{-1}
@@ -321,50 +322,50 @@ $q$ through the sample into lead $p$ is
 
 This is called the Fischer-Lee-Relation.
 
-This allows numeric calculation of transmission coefficients for
+It allows numeric calculation of transmission coefficients for
 arbitrary Hamiltonian operators, and is thus independent of the individual
-phenomena we're looking at.
+phenomena which we are looking at.
 
-\subsection*{Rashba Spin-Orbit Coupling}
+\section{Rashba Spin-Orbit Coupling}
 
 The Dirac equation from relativistic quantum theory describes an electron
 coupled to a positron. Since the gap $\Delta = 2 m_e c^2$ is quite large, the
 effect of the positron on the electron is very small (at low energies at
-least), and can be
+least) and can be
 taken into account by folding the $4\times4$ Hamiltonian (two dimension to
 take spin into account, two for electron and positron) to an effective
 $2\times 2$ Hamiltonian.
 
 One of the terms in the Pauli equation resulting from this folding is the
-\emph{Pauli Spin-Orbit coupling} term\cite{winkler2003}
+\emph{Pauli Spin-Orbit coupling} term \cite{winkler2003}
 
 \begin{align}
-    \left( \ldots - \frac{e\hbar \vec\sigma \cdot \vec p \times \vec E}
+    \left( H_0 - \frac{e\hbar \vec\sigma \cdot \vec p \times \vec E}
                     {2\Delta} \ldots\right)\Psi = E \Psi
 \end{align}
 
 where $\vec E$ is the electric field and $\vec \sigma$ is the vector
 which contains the Pauli matrices.
 
-In solids the coupling takes place between holes and electrons. Since the
+In solids, the coupling takes place between holes and electrons. Since the
 energy difference between the bands can be in the order of meV or eV
 (as opposed to $\Delta \approx 1GeV$ for electrons in vacuum), the spin orbit
-coupling strength can as much as one million times higher (TODO: citation)
+coupling strength can be as much as one million times higher (TODO: citation)
 than in vacuum.
 
-In a solid in equilibrium any electric field is either part of the band
-structure (and thus taken care of by folding down to a reduced Hamiltonian),
+In a solid in equilibrium, any electric field is either part of the band
+structure (and thus taken care of by folding down to a reduced Hamiltonian)
 or is induced by a structural asymmetry.
 
-In solid state physics the spin-orbit coupling term due to structural
+In solid state physics, the spin-orbit coupling term due to structural
 inversion asymmetry is called \emph{Bychkov-Rashba} term or simply
-\emph{Rashba} term (after \cite{rashba}), and is usually written as
+\emph{Rashba} term (after \cite{rashba}) and is usually written as
 
 \begin{align}
     H = \frac{\vec p ^2}{2m^*} + \alpha \inp{\vec I \times  \vec \sigma} \cdot \vec p
 \end{align}
 
-Where $\vec I$ is a unit vector pointing into the direction of the asymmetry,
+where $\vec I$ is a unit vector pointing into the direction of the asymmetry,
 $m^*$ is the effective mass
 and $\alpha$ denotes the strength of the spin-orbit coupling.
 
@@ -377,12 +378,12 @@ $k \not= 0$:
 TODO: illustrative explanation.
 
 
-\subsection*{Tight Binding Hamiltonian}
+\section{Tight Binding Hamiltonian}
 \label{sec:tight-binding}
 
 
 In order to numerically evaluate the Green's function, we
-discretize the sample into sites and assume that electrons only travel from
+discretize the sample into sites, and assume that electrons only travel from
 one site to an immediate neighbor. This allows us to represent the
 Hamiltonian and other differential operators by a finite matrix.
 
@@ -406,21 +407,21 @@ Hamiltonian and other differential operators by a finite matrix.
 %knowledge that is not the case, so we keep the nearest neighbor approximation.
 
 For a two-dimensional electron gas with Rashba spin-orbit coupling (of
-strength $\alpha$) the Hamiltonian is
+strength $\alpha$), the Hamiltonian is
 
 \begin{equation}
     H = \frac{1}{2 m^*} (p_x^2 + p_y^2) +
     \frac{\alpha}{\hbar} \inp{p_y\sigma_x - p_x\sigma_y}
 \end{equation}
 
-To map this to a discrete lattice we substitute the derivative by a discrete
+To map this to a discrete lattice, we substitute the derivative by a discrete
 difference, so $\dell_x f(x)|_{x_0}$ becomes $(f(x_0+a) - f(x_0))/a$. $a$ is
 the lattice constant. For the
-second derivative we chose the symmetric difference $\dell_x^2 f(x)_{x_0} =
-(f(x_0+a) - f(x_0-a))/2a$. In the continuum limit $a \mapsto 0$ both reproduce
+second derivative, we chose the symmetric difference $\dell_x^2 f(x)_{x_0} =
+(f(x_0+a) - f(x_0-a))/2a$. In the continuum limit $a \mapsto 0$, both reproduce
 the derivative exactly.
 
-Written in terms of creation and destruction operators we obtain
+Written in terms of creation and destruction operators, we obtain
 
 \begin{align}
     H   &= H_0 + H_r\\
@@ -445,13 +446,13 @@ Rashba hopping term, and corresponds to a nearest neighbor hop with spin
 flip.
 
 Assume we have a quadratic system of $N \times N$ lattice sites.
-For a two-dimensional system we enumerate all lattice sites row by row, and
+For a two-dimensional system, we enumerate all lattice sites row by row and
 use the result as the index to the Hamiltonian. To incorporate spin, we
-identify the indexes that were assigned so far with spin-up, and add $N^2$ to
+identify the indexes that were assigned so far with spin-up and add $N^2$ to
 each index to obtain the matrix index for spin-down.
 
-For example if our system were of size $3 \times 3$, the left-most site in the
-first row has index $i = 1$, and the left-most site in the second row has
+For example, if our system were of size $3 \times 3$, the left-most site in the
+first row has index $i = 1$ and the left-most site in the second row has
 index $j = N + 1 = 4$ (both spin down). The interaction term (without spin
 flip) between these two sites can thus be found at $H_{i,j} = H_{1,4}$. The
 interaction that involves a spin flip from $\uparrow$ to $\downarrow$ is
