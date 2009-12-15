@@ -98,6 +98,7 @@ const num g_factor   = 20.0;
 num global_gauge     = 1.0;
 
 num stripe_angle     = pi / 4;
+num scale            = 0.0;
 
 // XXX is the +1 correct?
 const num a_sample   = width_sample / (num) (Nx + 1);
@@ -520,10 +521,13 @@ int main (int argc, char** argv) {
     int opt;
     ofstream *fout = new ofstream();
     int n;
-    while ((opt = getopt(argc, argv, "qr:b:e:o:p:n:")) != -1) {
+    while ((opt = getopt(argc, argv, "qr:s:b:e:o:p:n:")) != -1) {
        switch (opt) {
             case 'r':
                 alpha = atof(optarg);
+                break;
+            case 's':
+                scale = atof(optarg);
                 break;
             case 'b':
                 Bz = atof(optarg);

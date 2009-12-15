@@ -25,7 +25,7 @@ for my $d (@ARGV) {
 
     my $i = 0;
     for my $fn (@files) {
-        $fn =~ /(energy|alpha|phi)([\d.]+)\.dat/ or die "can't work with file name `$fn'";
+        $fn =~ /(energy|alpha|phi|scale)([\d.]+)\.dat/ or die "can't work with file name `$fn'";
         state $what //= $1;
         my $datapoint = $2;
         if ($what ne $1) {

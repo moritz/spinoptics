@@ -28,9 +28,10 @@ if (@ARGV) {
 my %defaults = (
     -b => 0,
     -e => 2.0,
-    -r => 0.2,
+    -r => 0.1,
     -p => 29,
     -n => 21,
+    -s => 0.5,
 );
 
 my %vars = (
@@ -41,10 +42,17 @@ my %vars = (
         option  => '-r',
         format  => 'alpha%.4f',
     },
+    scale => {
+        from    => 0,
+        to      => 1.0,
+        step    => 0.02,
+        option  => '-s',
+        format  => 'scale%.4f',
+    },
     phi => {
         from    => 0,
         to      => 90,
-        step    => 0.1,
+        step    => 0.2,
         format  => 'phi%04.1f',
         option  => '-p',
     },
