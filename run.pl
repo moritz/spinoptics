@@ -29,7 +29,7 @@ my %defaults = (
     -b => 0,
     -e => 2.0,
     -r => 0.1,
-    -p => 29,
+    -p => 10,
     -n => 21,
     -s => 0.5,
 );
@@ -45,7 +45,7 @@ my %vars = (
     scale => {
         from    => 0,
         to      => 1.0,
-        step    => 0.02,
+        step    => 0.002,
         option  => '-s',
         format  => 'scale%.4f',
     },
