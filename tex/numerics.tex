@@ -42,7 +42,7 @@ complexity approaches $O(n^3)$ \cite{rgfschmelcher}. However, this is payed by
 a significantly increased implementation complexity, and the algorithm is tied
 to the specific form of the Hamiltonian.
 
-\begin{figure}
+\begin{figure}[htb]
     \begin{center}
     \includegraphics[angle=270,width=0.7\textwidth]{scaling.pdf}
     \end{center}
@@ -102,7 +102,7 @@ upper triangular matrix), and directly solve the equation by elimination.
 Complex conjugation and transposition of $X_p^\dagger$ finally gives us the
 matrix which we need evaluating the Fischer-Lee relation.
 
-\begin{figure}
+\begin{figure}[htb]
     \begin{center}
     \includegraphics[angle=270,width=0.8\textwidth]{numeric-errors.pdf}
     \end{center}
@@ -145,7 +145,7 @@ We checked these symmetries and the sum rule (eq. \ref{eq:sumrule}) regularly
 to ensure that no simple errors slipped in.
 
 \section{Convergence}
-\begin{figure}
+\begin{figure}[htb]
     \begin{center}
         \includegraphics[width=0.8\textwidth]{convergence.pdf}
     \end{center}
@@ -171,7 +171,7 @@ following simulations.
 \section{Setup}
 \label{sec:numeric-setup}
 
-\begin{figure}
+\begin{figure}[htb]
     \begin{center}
         \includegraphics[width=0.5\textwidth]{sample-lead-interface.pdf}%
         \hspace{0.1\textwidth}%
@@ -198,7 +198,7 @@ hopping elements separately for each lattice site and install them for
 hopping to the right and upper neighbor each. Fig. \ref{fig:interface-setup}
 shows how such an interface looks.
 
-\begin{figure}
+\begin{figure}[htb]
     \begin{center}
         \includegraphics[width=0.4\textwidth]{lead-tilted-1.pdf}
         \hspace{0.1\textwidth}
@@ -228,7 +228,7 @@ that idea aside.
 
 \section{Interface Between Normal and Spin-Orbit Coupling Region}
 
-\begin{figure}
+\begin{figure}[htb]
     \begin{center}
     \includegraphics[angle=270,width=0.7\textwidth]{interface-precession.pdf}
     \end{center}
@@ -461,7 +461,7 @@ hides a significant part of this effect.
 
 \section{Interface Between Two Spin-Orbit Coupling Regions}
 
-\begin{figure}
+\begin{figure}[htb]
     \begin{center}
         \includegraphics[width=0.8\textwidth]{relative-polarization-so-so.pdf}
     \end{center}
@@ -488,6 +488,25 @@ of the interface angle $\phi$, for $\ta_B = 2 \ta_A$. Again a spin
 polarization of $20\%$ can be observed, with some few spikes going up as high
 as $40\%$ (but with stronger SO interaction on the right-hand side than in the
 case of the N-SO interface).
+
+\begin{figure}[htb]
+    \begin{center}
+        \includegraphics[width=0.7\textwidth]{polarization-so-so-rel.pdf}
+    \end{center}
+    \caption{Relative spin polarization $T_s^{rel}$ as function of $q 
+=\frac{\ta_A}{\ta_B}$ (ratio of spin-orbit coupling strength) for a fixed
+    $\phi=80^\circ$ and $\tso{}_B = 0.1$.}
+    \label{fig:pol-so-so-rel}
+\end{figure}
+
+To find out how much the spin polarization depends on the relative strength of
+spin-orbit coupling in the two regimes, we plot $T_S^{rel}$ over $q
+=\frac{\ta_A}{\ta_B}$ for a fixed $\ta_B$ (see fig.~\ref{fig:pol-so-so-rel}).
+
+You can see that for $q = 0$ the spin polarization is about $15\%$, and shows
+the usual spin precession effects that come with changing $\tso$. Additionally
+the envelope function decreases for $q \mapsto 1$, because the regions become
+similar and thus the effect of the interface less pronounced.
 
 %For $\phi > \phi_c$, the wave $\exp{i p_x^+ x}\exp{i p_z z} t_{++}\chi_{SO}^+$
 %does not propagate, because $p_x^+$ is imaginary. That means that the relative
