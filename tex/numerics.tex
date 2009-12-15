@@ -305,14 +305,15 @@ that the wave functions are plain waves
 and that the part of wave function in the sample which travels from left to
 right is a smooth continuation of the wave function in the lead:
 
-\begin{align*}
+\begin{align}
     \mathbf{\Psi^\uparrow}(x=x_1) &=
         a\cdot e^{i p_x x_1}e^{i p_z z} \chi_N^+
-        + b\cdot e^{i p_x x_1}e^{i p_z z} \chi_N^-\\
+        + b\cdot e^{i p_x x_1}e^{i p_z z} \chi_N^-\nonumber\\
     \mathbf{\Psi^\downarrow}(x=x_1) &=
         c\cdot e^{i p_x x_1}e^{i p_z z} \chi_N^+
         + d\cdot e^{i p_x x_1}e^{i p_z z} \chi_N^-
-\end{align*}
+        \label{eq:a-n-left}
+\end{align}
 
 where $x_1$ is the location where the left lead is connected to the sample, the
 interface is at $x = 0$ and the right lead is connected at $x = x_2$.
@@ -326,16 +327,17 @@ elements of the transmission matrix in the $\uparrow, \downarrow$ bases:
 \begin{align}
     T_{2\uparrow,1\uparrow} = \left| \left( 
         a \mathbf{\Psi^+}(x=x_2) + b  \mathbf{\Psi^-}(x=x_2)
-    \right)^\dagger \cdot \mathbf{\Psi}^\uparrow(x=x_2) \right|^2\\
+    \right)^\dagger \cdot \mathbf{\Psi}^\uparrow(x=x_2) \right|^2\nonumber\\
     T_{2\downarrow,1\uparrow} = \left| \left( 
         a \mathbf{\Psi^+}(x=x_2) + b  \mathbf{\Psi^-}(x=x_2)
-    \right)^\dagger \cdot \mathbf{\Psi}^\downarrow(x=x_2) \right|^2\\
+    \right)^\dagger \cdot \mathbf{\Psi}^\downarrow(x=x_2) \right|^2\nonumber\\
     T_{2\uparrow,1\downarrow} = \left| \left( 
         c \mathbf{\Psi^+}(x=x_2) + d  \mathbf{\Psi^-}(x=x_2)
-    \right)^\dagger \cdot \mathbf{\Psi}^\uparrow(x=x_2) \right|^2\\
+    \right)^\dagger \cdot \mathbf{\Psi}^\uparrow(x=x_2) \right|^2\nonumber\\
     T_{2\downarrow,1\downarrow} = \left| \left( 
         c \mathbf{\Psi^+}(x=x_2) + d  \mathbf{\Psi^-}(x=x_2)
     \right)^\dagger \cdot \mathbf{\Psi}^\downarrow(x=x_2) \right|^2
+%    \label{eq:an-right}
 \end{align}
 
 where $\mathbf{\Psi^\pm}$ are the wave functions introduced in
@@ -387,6 +389,18 @@ the density of states in two dimensions.
     }
     \label{fig:a-n-matching-phi}
 \end{figure}
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=0.8\textwidth]{relative-polarization-n-so.pdf}
+    \end{center}
+    \caption{$T_S^{rel} = \frac{T_{2\uparrow,1\uparrow} - T_{2\downarrow,1\downarrow}}
+        {T_{2\uparrow,1\uparrow} + T_{2\downarrow,1\downarrow}}$ as
+        a function of the interface angle $\phi$ (in degrees), and otherwise
+        identical parameters as in fig. \ref{fig:a-n-matching-phi}.
+        We observe a maximal spin polarization of about $20\%$.
+        }
+    \label{fig:n-so-rel}
+\end{figure}
 
 Figure \ref{fig:a-n-matching-alpha} shows the signal for two different
 angles of the interface. For weak spin-orbit coupling, the theory and the
@@ -405,6 +419,75 @@ actually quite large. The tight binding simulation only works well for small
 wave vectors where the parabolic band can be well approximated with the
 cosine form that the tight binding model implies. This explains why there is a
 shift between the two curves in figure \ref{fig:a-n-matching-phi}.
+
+For a rather small spin-orbit coupling strength of $\frac{\tso}{2 t a} = 0.02$
+we already get a quite respectable relative spin-polarization of $20\%$.
+
+To understand better why we don't get a very clear picture of the critical
+angle the numerical results, we look at \ref{eq:a-n-left} and for a moment
+ignore the global phases that the $\exp$ functions provide, and obtain a
+simplified expression for $a$ and $b$.
+
+\begin{align}
+   a &= \frac{1-\sin \phi}{1 + \sin\phi} \nonumber\\
+   b &= \sqrt{1-a^2}
+\end{align}
+
+Since $t_{-+}$ and $t_{+-}$ are rather small, we also neglect them, as well as
+the $exp$ functions in $\mathbf{\Psi^\pm}$, which only contribute phases for
+$\phi < \phi_c$. Thus we obtain approximate, 
+simplified expression for our matrix elements:
+
+\begin{align}
+    T_{2\uparrow,1\uparrow}     &\approx \left|a \chi_{SO}^{+U} t_{++}
+            + b \chi_{SO}^{-U} t_{--} \right|^2\\
+    T_{2\downarrow,1\downarrow} &\approx \left|c \chi_{SO}^{-D} t_{--}
+            + d \chi_{SO}^{+D} t_{--} \right|^2
+\end{align}
+
+where the superscript index $U$ means \emph{upper component of}, and $D$ means
+\emph{lower component of}.
+
+When $\phi$ is varied in the range of 0 to $\pi/2$, the coefficients $a, b, c,
+d$ and the absolute values of the spinor components cover the range of 0 to 1.
+The critical phenomena and the variation of $t_{++}$ and $t_{--}$ drown in
+eight parameters which oscillate roughly with the same frequency and
+magnitude, washing out a clear signature from the chiral waves.
+
+Or speaking more in terms of physical quantities, the interface efficiently
+selects waves of $-$ chirality over waves of $+$ chirality (for large angles),
+but injecting and measuring the waves in the $\uparrow,\downarrow$ bases
+hides a significant part of this effect.
+
+\section{Interface Between Two Spin-Orbit Coupling Regions}
+
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=0.8\textwidth]{relative-polarization-so-so.pdf}
+    \end{center}
+    \caption{$T_S^{rel} = \frac{T_{2\uparrow,1\uparrow} - T_{2\downarrow,1\downarrow}}
+        {T_{2\uparrow,1\uparrow} + T_{2\downarrow,1\downarrow}}$ as
+        a function of the interface angle $\phi$ (in degrees), for an
+        interface of two non-zero spin-orbit coupling regions. $t_{SO,B} =
+        \frac{0.1}{2 a t}$, $t_{SO,A} = 0.5 t_{SO,B}$. As in the case of
+        a N and SO region, we can observe a spin polarization of about $20\%$,
+          with additional peaks going up to about $40\%$.
+        ($150 \times 150$ sample of $100~nm \times 100~nm$ at $E_F = 2 t$)
+        }
+    \label{fig:n-so-rel}
+\end{figure}
+
+When a sample contains a 2-dimensional electron gas with Rashba spin-orbit
+coupling, it is very hard to create a region without any spin-orbit coupling.
+While it is hard to switch it off entirely, it is quite possible to tune the
+strength of an individual region by using a gate electrode on top of the
+sample to apply an electric field.
+
+Figure \ref{fig:n-so-rel} shows the relative spin polarization as a function
+of the interface angle $\phi$, for $\ta_B = 2 \ta_A$. Again a spin
+polarization of $20\%$ can be observed, with some few spikes going up as high
+as $40\%$ (but with stronger SO interaction on the right-hand side than in the
+case of the N-SO interface).
 
 %For $\phi > \phi_c$, the wave $\exp{i p_x^+ x}\exp{i p_z z} t_{++}\chi_{SO}^+$
 %does not propagate, because $p_x^+$ is imaginary. That means that the relative
