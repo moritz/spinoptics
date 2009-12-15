@@ -340,17 +340,17 @@ One of the terms in the Pauli equation resulting from this folding is the
 \emph{Pauli Spin-Orbit coupling} term \cite{winkler2003}
 
 \begin{align}
-    \left( H_0 - \frac{e\hbar \vec\sigma \cdot \vec p \times \vec E}
-                    {2\Delta} \ldots\right)\Psi = E \Psi
+    \left( \frac{\vec p^2}{2m}- \frac{e\hbar \ \vec\sigma \cdot (\vec p \times \vec E)}
+                    {2\Delta} +\ldots\right)\Psi = E \Psi
 \end{align}
 
 where $\vec E$ is the electric field and $\vec \sigma$ is the vector
 which contains the Pauli matrices.
 
 In solids, the coupling takes place between holes and electrons. Since the
-energy difference between the bands can be in the order of meV or eV
+energy difference between the bands $G$ can be in the order of meV or eV
 (as opposed to $\Delta \approx 1GeV$ for electrons in vacuum), the spin orbit
-coupling strength can be as much as one million times higher (TODO: citation)
+coupling strength can be as much as one million times higher
 than in vacuum.
 
 In a solid in equilibrium, any electric field is either part of the band
@@ -375,7 +375,15 @@ $k \not= 0$:
 \begin{align}
     E(k) = \frac{\hbar^2}{2 m^*} k^2 \pm \alpha k
 \end{align}
-TODO: illustrative explanation.
+
+So the Rashba spin-orbit coupling splits the spin bands similarly as the Zeeman
+effect of a
+magnetic field, but it depends on the wave vector and does not come with the
+something that is equivalent to the Lorentz force of the magnetic field.
+
+Since in equilibrium the same number of charge carries have the wave vectors
+$k$ and $-k$, the Rashba spin-orbit coupling does not introduce a spin
+imbalance, and therefor also no magnetization.
 
 
 \section{Tight Binding Hamiltonian}
