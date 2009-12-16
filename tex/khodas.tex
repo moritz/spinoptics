@@ -76,7 +76,8 @@ region:
 \begin{align}
    \chi_{SO}^{\pm} &= \frac{1}{n_{SO}^{\pm}} 
                       \vect{-p_{x,SO}^{\pm} \pm p_{SO}^\pm}{p_z} \\
-    (n_{SO}^{\pm})^2 &= |-p_{x,SO}^{\pm} \pm p_{SO}^\pm|^2 + p_z^2
+    n_{SO}^{\pm}   &= \sqrt{|-p_{x,SO}^{\pm} \pm p_{SO}^\pm|^2 +
+        p_z^2}
     \label{eq:chi-so-pm}
 \end{align}
 
@@ -84,11 +85,22 @@ where the lower index $x$ means that the value is projected onto the
 $x$ axis. The angle between the $x$ axis and the momentum of the
 incident wave is called $\phi$, so that $p_x = p \cos \phi$.
 
+If one wants to expand $\chi_{SO}^\pm$ in powers of $\ta$, it is
+important to ensure that the normalization condition
+$\chi_{SO}^{\pm\dagger} \cdot \chi_{SO}^\pm$ still holds after the
+expansion. However, the following results have been derived for the
+full (and not expanded) form of $\chi_{SO}^\pm$.
+
 Note that, in the N regime, $H$ is a diagonal matrix, and the direction
 of the eigenvectors can be chosen with some freedom. We pick
 $\chi_N^{\pm} = \lim_{\ta \mapsto 0} \chi_{SO}^{\pm}$ to ensure that
 $<\chi_N^+|\chi_{SO}^+> = 1$ holds true at a vanishing interface.
 
+\begin{align}
+   \chi_N^{\pm} &= \frac{1}{n^{\pm}} 
+                      \vect{-p_x \pm p}{p_z} \\
+    n^{\pm} &= \sqrt{(-p_x \pm p)^2 + p_z^2}
+\end{align}
 
 
 The overall wave function consists of an incident wave, 
