@@ -434,7 +434,8 @@ shift between the two curves in figure \ref{fig:a-n-matching-phi}.
 \end{figure}
 
 For a rather small spin-orbit coupling strength of $\frac{\tso}{2 t a} = 0.02$
-we already get a quite respectable relative spin-polarization of $20\%$.
+we already get a quite respectable relative spin-polarization of $20\%$
+(figure \ref{fig:n-so-rel}).
 
 To understand better why we don't get a very clear picture of the critical
 angle the numerical results, we look at \ref{eq:a-n-left} and for a moment
@@ -490,7 +491,7 @@ hides a significant part of this effect.
           with additional peaks going up to about $40\%$.
         ($150 \times 150$ sample of $100~nm \times 100~nm$ at $E_F = 2 t$)
         }
-    \label{fig:n-so-rel}
+    \label{fig:so-so-rel}
 \end{figure}
 
 When a sample contains a two-dimensional electron gas with Rashba spin-orbit
@@ -499,7 +500,7 @@ While it is hard to switch it off entirely, it is quite possible to tune the
 strength of an individual region by using a gate electrode on top of the
 sample to apply an electric field.
 
-Figure \ref{fig:n-so-rel} shows the relative spin polarization as a function
+Figure \ref{fig:so-so-rel} shows the relative spin polarization as a function
 of the interface angle $\phi$, for $\ta_B = 2 \ta_A$. Again a spin
 polarization of $20\%$ can be observed, with some few spikes going up as high
 as $40\%$ (but with stronger SO interaction on the right-hand side than in the
@@ -525,6 +526,39 @@ You can see that for $q = 0$ the spin polarization is about $15\%$, and shows
 the usual spin precession effects that come with changing $\tso$. Additionally
 the envelope function decreases for $q \mapsto 1$, because the regions become
 similar and thus the effect of the interface less pronounced.
+
+\section{Relation to experiments}
+
+\begin{figure}[htb]
+    \begin{center}
+        \includegraphics[width=0.7\textwidth]{beamsplitter2.jpg}
+    \end{center}
+    \caption{Experimental realization of a beam splitter, with two
+        collimating quantum point contact on top and bottom. In the middle
+        there is a strip at angle $\phi = 45^\circ$ where an electric field
+        can be applied by a gate. Image courtesy of M. Mühlbauer,
+        Physikalisches Institut Universität Würzburg}
+    \label{fig:experiment}
+\end{figure}
+
+It is possible to realize interfaces between two spin-orbit coupling regimes
+in experiments. Figure \ref{fig:experiment} shows such a sample as produced
+by the group of H. Buhmann in our department.
+
+It has two wide contacts on the left and right side, and two collimating point
+contacts on the top and bottom. At an angle of $45^{\circ}$ there is a stripe
+across the sample. Inside the strip the electric field, and thus the strength
+of the spin-orbit coupling strength can be tuned by a gate electrode that is
+located above the sample.
+
+In this experimental setup two things disagree with our model, which
+means we can't compare experimental results directly with ours: firstly the
+electron sees two interfaces (one on entering the stripe, one on leaving) and
+secondly the electric field also introduces a potential barrier, which
+scatters electrons too.
+
+The spin polarization can be measured via the Inverse Spin-Hall Effect
+\cite{ISHE} as an electrical current.
 
 %For $\phi > \phi_c$, the wave $\exp{i p_x^+ x}\exp{i p_z z} t_{++}\chi_{SO}^+$
 %does not propagate, because $p_x^+$ is imaginary. That means that the relative
