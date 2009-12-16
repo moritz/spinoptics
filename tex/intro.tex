@@ -64,20 +64,34 @@ are transported coherently (i.e.~without dephasing) and ballistically
 experimentally accessible in quantum wells at heterojunctions in GaAs,
 HgTe and other semiconductors.
 
-We present both analytical calculations and numerical simulations based on
-tight-binding approximation. The analytical calculations show an analogy to
-light optics:  an interface between two media with different optical densities
-can result in polarized light, and polarization-dependent reflection. In
-analogy, an interface between two regions of different spin-orbit coupling
-strength splits up an electron beam into two beams of defined chirality.
+In chapter \ref{sec:theory} we present the basic theoretical underpinning for
+the calculations to come: the Landauer Formula which relates conductance to
+the transmission matrix $T$, the Fisher-Lee relation which allows calculation
+of $T$ based on the Green's function in sample and lead, the Rashba-Bychkov
+spin-orbit coupling which causes all the interesting effects discussed in this
+thesis, and finally we present a tight binding model which allows numerical
+calculation of the Green's functions and thus $T$.
 
-The fact that the beams are of different chirality -- as opposed to
-linear polarization, as in the case of light optics -- makes it much hard to
-build an efficient spin polarizer.
+In chapter \ref{sec:analytical} we present an analytical model of an electron
+wave traveling from a normal region to a region with spin-orbit coupling. The
+wave is decomposed into two parts of opposite chirality, and we 
+analyze the transmission and reflection coefficients resolved by chirality.
+We expand this model to a system where both sides of the interface have
+non-zero (but different) spin-orbit interaction.
 
-The numerical results show that a certain degree of spin separation can be
-achieved for appropriate interface angles and spin-orbit strengths, even in
-the new case where there is non-zero spin-orbit interaction on both sides of
+Chapter \ref{sec:numerics} explains the numerical calculations in depth. We
+present the used algorithm and possible alternatives, considerations regarding
+the run time performance and numerical errors, and of course results from
+these calculations. We find that decent spin polarizations can be achieved
+for appropriate interface angles and spin-orbit strengths, even in the new
+case where there is non-zero spin-orbit interaction on both sides of
 the interface.
+
+We also explain how the results of the analytical calculations can be compared
+to the numerical results, and how projection from the chiral bases to the
+spin-up/spin-down bases diminishes some of effects of the interfaces.
+
+Chapter \ref{sec:summary} finally summarizes our achievements, and shows up
+possible directions in which our models could be expanded.
 
 % vim: spell

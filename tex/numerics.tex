@@ -1,4 +1,5 @@
 \chapter{Numerical Calculations and Results}
+\label{sec:numerics}
 
 Numerical transport calculations have a huge advantage over the analytical
 calculation: once a formalism is implemented, it works for arbitrary
@@ -420,6 +421,18 @@ wave vectors where the parabolic band can be well approximated with the
 cosine form that the tight binding model implies. This explains why there is a
 shift between the two curves in figure \ref{fig:a-n-matching-phi}.
 
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=0.45\textwidth]{parameters-abcd.pdf}%
+        \hspace{0.05\textwidth}%
+        \includegraphics[width=0.45\textwidth]{parameters-chi.pdf}
+    \end{center}
+    \caption{The parameters appearing in eq. \ref{eq:simplfied-t} as function
+        of $\phi$. \textbf{Left: } $a, b, c, d$ \textbf{Right: } components of
+            $\chi_{SO}^+$ and $\chi_{SO}^-$ for $\ta = 0.1$.}
+    \label{fig:simplfieid-parmas}
+\end{figure}
+
 For a rather small spin-orbit coupling strength of $\frac{\tso}{2 t a} = 0.02$
 we already get a quite respectable relative spin-polarization of $20\%$.
 
@@ -427,6 +440,7 @@ To understand better why we don't get a very clear picture of the critical
 angle the numerical results, we look at \ref{eq:a-n-left} and for a moment
 ignore the global phases that the $\exp$ functions provide, and obtain a
 simplified expression for $a$ and $b$.
+
 
 \begin{align}
    a &= \frac{1-\sin \phi}{1 + \sin\phi} \nonumber\\
@@ -440,16 +454,18 @@ simplified expression for our matrix elements:
 
 \begin{align}
     T_{2\uparrow,1\uparrow}     &\approx \left|a \chi_{SO}^{+U} t_{++}
-            + b \chi_{SO}^{-U} t_{--} \right|^2\\
+            + b \chi_{SO}^{-U} t_{--} \right|^2\nonumber\\
     T_{2\downarrow,1\downarrow} &\approx \left|c \chi_{SO}^{-D} t_{--}
             + d \chi_{SO}^{+D} t_{--} \right|^2
+    \label{eq:simplfied-t}
 \end{align}
 
 where the superscript index $U$ means \emph{upper component of}, and $D$ means
 \emph{lower component of}.
 
 When $\phi$ is varied in the range of 0 to $\pi/2$, the coefficients $a, b, c,
-d$ and the absolute values of the spinor components cover the range of 0 to 1.
+d$ and the absolute values of the spinor components cover the range of 0 to 1
+(compare figure \ref{fig:simplfieid-parmas}).
 The critical phenomena and the variation of $t_{++}$ and $t_{--}$ drown in
 eight parameters which oscillate roughly with the same frequency and
 magnitude, washing out a clear signature from the chiral waves.
@@ -477,7 +493,7 @@ hides a significant part of this effect.
     \label{fig:n-so-rel}
 \end{figure}
 
-When a sample contains a 2-dimensional electron gas with Rashba spin-orbit
+When a sample contains a two-dimensional electron gas with Rashba spin-orbit
 coupling, it is very hard to create a region without any spin-orbit coupling.
 While it is hard to switch it off entirely, it is quite possible to tune the
 strength of an individual region by using a gate electrode on top of the
@@ -493,9 +509,11 @@ case of the N-SO interface).
     \begin{center}
         \includegraphics[width=0.7\textwidth]{polarization-so-so-rel.pdf}
     \end{center}
-    \caption{Relative spin polarization $T_s^{rel}$ as function of $q 
-=\frac{\ta_A}{\ta_B}$ (ratio of spin-orbit coupling strength) for a fixed
-    $\phi=80^\circ$ and $\tso{}_B = 0.1$.}
+    \caption{Relative spin polarization $T_s^{rel}$ as function of
+        $ \frac{\tso{}_A}{\tso{}_B} =\frac{\ta_A}{\ta_B}$ (ratio of spin-orbit
+        coupling strengths) for a fixed
+        $\phi=80^\circ$ and $\tso{}_B = 0.1$.
+    }
     \label{fig:pol-so-so-rel}
 \end{figure}
 
