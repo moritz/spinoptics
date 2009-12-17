@@ -2,3 +2,6 @@
 *.log
 *.dvi
 thesis.pdf
+thesis.bbl
+thesis.blg
+thesis.toc
