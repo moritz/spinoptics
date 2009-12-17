@@ -222,7 +222,7 @@ With
 it follows that
 
 \begin{align}
-    \phi_c          &= -\sin ^{-1}\left(a-\sqrt{a^2+1}\right)
+    \phi_c          &= -\sin ^{-1}\left(\ta-\sqrt{\ta^2+1}\right)
 \end{align}
 
 Figure \ref{fig:critical-angle} shows the critical angle as a function
@@ -307,14 +307,22 @@ This is the first gray vertical line in figure
 \ref{fig:plots-nonzero}, and in the region $\phi < \phi+_{B,c}$ the various transmission and reflection
 coefficients look very similar to the case with $\ta_A = 0$.
 
-The second gray line is critical angle $\phi^+_{c2}$ associated with
+The second gray line is the critical angle $\phi^+_{c2}$ associated with
 $\ta_A$. For
 $\phi > \phi^+_{A,c}$ the momentum in $x$ direction $p_{x,A}$ is again
 imaginary, just like if we had another interface to a normal region
 left of the $A$ region. 
 
-It follows the same $\ta$ dependency, namely $\phi^+_{c2} =
--\sin^{-1}(\ta_A - \sqrt{1+\ta_A^2})$.
+$p_{x,A}$ has the same structural dependence on $\ta_A$ as $p_{x,B}$
+has on $\ta_B$:
+
+\begin{align}
+    p_{x,A}^+ = \sqrt{ p_A^2 - p_z^2} = p \sqrt{(\sqrt{1+\ta_A^2} -
+            \ta_A)^2 - \sin^2 \phi^+}
+\end{align}
+
+It follows that $\phi^+_{c2}$ has a similar form as $\phi^+_{c1}$,
+namely $\phi^+_{c2} = -\sin^{-1}(\ta_A - \sqrt{1+\ta_A^2})$.
 
 %
 %\begin{figure}

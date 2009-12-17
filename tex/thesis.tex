@@ -188,8 +188,6 @@ along the $x$ axis with Hamiltonian $H =
 $\delta = \delta(x - x_0)$ to result in two waves propagating away from $x_0$,
 so our ansatz is
 
-% TODO: explicit form of $H$
-
 \begin{align}
     G(x, x_0) = \begin{cases}
         A^+ e^{i k(x-x_0) } \qquad \textnormal{ for } x > x_0 \\
@@ -370,6 +368,17 @@ where $\vec I$ is a unit vector pointing into the direction of the asymmetry,
 $m^*$ is the effective mass
 and $\alpha$ denotes the strength of the spin-orbit coupling.
 
+\begin{figure}[tb]
+    \begin{center}
+        \includegraphics[height=0.5\textwidth]{rashba-dispersion.jpg}
+    \end{center}
+    \caption{The Rashba spin-orbit coupling lifts the spin degeneracy of the
+        dispersion relation $E(k)$for $k != 0$. 
+        Image courtesy by M. Mühlbauer \cite{mathias}.
+    }
+    \label{fig:rashba-dispersion}
+\end{figure}
+
 This effect lifts the degeneracy of spin-up and spin-down electrons for
 $k \not= 0$:
 
@@ -380,7 +389,8 @@ $k \not= 0$:
 So the Rashba spin-orbit coupling splits the spin bands similarly as the Zeeman
 effect of a
 magnetic field, but it depends on the wave vector and does not come with the
-something that is equivalent to the Lorentz force of the magnetic field.
+something that is equivalent to the Lorentz force of the magnetic field (see
+figure \ref{fig:rashba-dispersion}) .
 
 Since in equilibrium the same number of charge carries have the wave vectors
 $k$ and $-k$, the Rashba spin-orbit coupling does not introduce a spin
