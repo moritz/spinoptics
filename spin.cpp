@@ -100,7 +100,6 @@ num global_gauge     = 1.0;
 num stripe_angle     = pi / 4;
 num scale            = 0.0;
 
-// XXX is the +1 correct?
 const num a_sample   = width_sample / (num) (Nx + 1);
 const int size       = Nx * Ny * 2;      // total number of indices
 const num V          = 1.0;              // hopping term
@@ -115,6 +114,7 @@ num alpha = 0.02; // / a_sample / 2.0;
 ostream *out = &cout;
 bool quiet = false;
 
+// boring accounting
 void log_tick(const char* desc) {
     if (quiet) {
         return;
@@ -125,6 +125,7 @@ void log_tick(const char* desc) {
     prev = t;
 }
 
+// spin-orbit coupling strength depending on position in the sample
 num rashba_for_site(idx_t x, idx_t y) {
     // Interface at angle stripe_angle
 
