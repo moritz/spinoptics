@@ -134,4 +134,8 @@ parameter and same values:
 
     perl plot.pl 266rel 1234diff
 
+=head1 Source code management
 
+This file, the program code and the TeX code for my thesis are under version
+control with I<git, the stupid content tracker>. See L<http://git-scm.com/>
+for more information on git.

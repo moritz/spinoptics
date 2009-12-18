@@ -350,14 +350,18 @@ elements of the transmission matrix in the $\uparrow, \downarrow$ bases:
 
 where $\mathbf{\Psi^\pm}$ are the wave functions introduced in
 \ref{eq:chiral-wafe-function}. Note that these wave functions are not
-normalized in the usual sense. Rather on the left of the interface ($x < 0$),
-they consist of a part traveling left to right, and a part traveling right to
-left. The left-to-right part is normalized the same way as
-$\mathbf{\Psi^\uparrow}$
-is.
+normalized in the usual sense. Rather it consists of several parts,
+which have fixed relative amplitudes. 
 
-Both the right-to-left part of $\mathbf{\Psi^\pm}(x < 0)$ and the whole of
-$\mathbf{\Psi^\pm}(x > 0)$ are not normalized, and in magnitude generally
+On the left of the interface ($x < 0$), the wave consists of a 
+of a part traveling left to right $\exp(i p_x x)$ which is normalized to 1,
+because the interface between the left lead and the $N$-region is assumed
+to be perfect, and has no physical effect at all. Also on the left of the
+interface there is a reflected part which travels right to left, and is not normalized, but
+rather its amplitude is determined by the reflection coefficients
+$r_{\pm\pm}$ and $r_{\pm\mp}$.
+
+Likewise $\mathbf{\Psi^\pm}(x > 0)$ are not normalized, and in magnitude generally
 smaller than 1 which allows us to determine the transmission matrix elements
 by looking at the amplitudes.
 
@@ -481,7 +485,9 @@ magnitude, washing out a clear signature from the chiral waves.
 Or speaking more in terms of physical quantities, the interface efficiently
 selects waves of $-$ chirality over waves of $+$ chirality (for large angles),
 but injecting and measuring the waves in the $\uparrow,\downarrow$ bases
-hides a significant part of this effect.
+hides this effect partially. Still we obtain a decent spin polarization in $z$
+direction, which could be measured optically or electronically (as discussed
+briefly in section \ref{sec:experiment}).
 
 \section{Interface Between Two Spin-Orbit Coupling Regions}
 
@@ -535,6 +541,7 @@ the envelope function decreases for $q \mapsto 1$, because the regions become
 similar and thus the effect of the interface less pronounced.
 
 \section{Relation to experiments}
+\ref{sec:experiment}
 
 \begin{figure}[htb]
     \begin{center}
