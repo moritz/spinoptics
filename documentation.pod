@@ -9,11 +9,12 @@ For compiling C<spin.cpp> you need
 
 =item C<make> and C<g++> 4.1 or later
 
-=item the C<superlu> shared library and header files
+=item the C<superlu> shared library and header files (C<libsuperlu3-dev> in Debian)
 
 =item the C<eigen> linear algebra library from L<http://eigen.tuxfamily.org/>,
 either the development track leading to 3.0, or the 3.0 stable branch (when it
-exists).
+exists). If you have problems building the program, revert eigen to revision
+2223.
 
 =back
 
@@ -92,6 +93,8 @@ Additionally to C<alpha> you can run over C<phi> (interface angle), C<scale>
 (ratio of spin-orbit interactions left and right) and C<energy> (Fermi
 energy).
 
+=over
+
 =item Plotting the results
 
 You can plot a data series with the command
@@ -100,8 +103,6 @@ You can plot a data series with the command
 
 where C<266> is the number of the dataset, and C<diff> is the data selector.
 The following selectors are available:
-
-=over
 
 =item  uu
 
@@ -139,3 +140,25 @@ parameter and same values:
 This file, the program code and the TeX code for my thesis are under version
 control with I<git, the stupid content tracker>. See L<http://git-scm.com/>
 for more information on git.
+
+=head1 Source files
+
+The following C++ source files are of interest:
+
+=over
+
+=item spin.cpp
+
+Main program; contains all the things that are of interest to a physicist.
+
+=item math-utils.h
+
+Contains some auxiliary functions for converting between BLAS implementations
+and solving mathematical problems.
+
+=item Makefile
+
+Controls the how the program is built, and contains paths to the various
+components (Eigen, SuperLU)
+
+=back
