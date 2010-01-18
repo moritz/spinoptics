@@ -301,6 +301,8 @@ esm** self_energy(const num flux, const num gauge) {
     gl.setZero();
 
 
+    // Calcualte analytical Green's function in the leads
+    // and store it in matrix gl
     for (int r = 0; r < lead_sites; r++) {
         cnum theta = theta_from_energy(e_tot, mode_energy(r, lead_sites));
 
@@ -330,8 +332,6 @@ esm** self_energy(const num flux, const num gauge) {
     ers** s = new ers*[N_leads];
 
     for (int i = 0; i < N_leads; i++) {
-        // XXX not so easy for Nx != Ny
-//        assert(lead_sites + lead_offset[i] <= Nx);
         e[i]  = new esm(size, size);
         s[i]  = new ers( *e[i] );
     }
@@ -352,11 +352,10 @@ esm** self_energy(const num flux, const num gauge) {
             (*s[3])(IDX(Nx-1, i+lead_offset[3], 1),
                     IDX(Nx-1, j+lead_offset[3], 1))   = g;
 
-//            /* bottom */
-//            (*s[2])(IDX(i+lead_offset[2], Ny-1, 0),
-//                    IDX(j+lead_offset[2], Ny-1, 0))   = g;
-//            (*s[3])(IDX(i+lead_offset[3], Ny-1, 1),
-//                    IDX(j+lead_offset[3], Ny-1, 1))   = g;
+
+            // if you want to activate additional leads, you need to uncomment
+            // some of the lines below here, and set N_leads at the start of
+            // the file to a higher value
 
 //            /* top */
 //            (*s[4])(IDX(i+lead_offset[4], 0, 0),
@@ -448,6 +447,7 @@ ub::matrix<num>* transmission(esm *H, const num flux, const num gauge) {
 
 
         assert(V * V == 1);
+        // go from Sigma to Gamma, but still store in sigma_r[i] to safe space
         *sigma_r[i] = (-2) * sigma_r[i]->imag();
 
         esm m1(size, size);
@@ -501,6 +501,7 @@ ub::matrix<num>* transmission(esm *H, const num flux, const num gauge) {
     delete[] gamma_g_adv;
     delete[] gamma_g_ret;
 
+    // correction for diagonal elements
     for (int i = 0; i < lead_sites; i++){
         if (mode_energy(i, lead_sites) < e_tot) {
             for (int j = 0; j < N_leads; j++){
@@ -518,6 +519,7 @@ ub::matrix<num>* transmission(esm *H, const num flux, const num gauge) {
 int main (int argc, char** argv) {
     num Bz = 0;
 
+    // parse command line options
     int opt;
     ofstream *fout = new ofstream();
     int n;
@@ -561,12 +563,15 @@ int main (int argc, char** argv) {
     e_tot *= -1;
     log_tick("start");
 
+    // place the leads relative to corners of the sample
     for (int i = 0; i < 4; i++) {
         lead_offset[i] = 0;
     }
     for (int i = 5; i < N_leads; i++) {
         lead_offset[i] = (Nx - lead_sites) / 2;
     }
+
+    // write parameters
 
     *out << "PID:        " << getpid() << endl;
     *out << "Size:       " << Nx << "x" << Ny << endl;
@@ -610,6 +615,7 @@ int main (int argc, char** argv) {
     }
 #endif
 
+    // check sum rules
     num flux = flux_from_field(Bz);
     ub::matrix<num> *tpq = transmission(H, flux, global_gauge);
     *out << "final tpq" << *tpq << endl;
