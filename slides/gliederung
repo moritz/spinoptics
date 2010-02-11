@@ -1,0 +1,50 @@
+1. Motivation
+    What for?
+        quantum computations
+        low-power transistor
+    Why spins?
+        low decay rates
+        little power consumption
+        intrinsic QM property
+    Prior art
+        ferromagnetic materials
+        + very good spin separation
+# TODO: picture of hard disk; Giant magneto resistance
+        - hard to handle technologically
+        - metals => unwanted Schottky junctions
+        - not tunable
+        => unusable in CPUs 
+
+2. Basics
+    Rashba Spin-Orbit Interaction
+        From Dirac equation
+        in solids: gap smaller => larger effect
+        k-dependent SO-coupling
+    Fisher-Lee relation
+        Green's Functions
+# TODO: picture excitation + response
+        Fisher-Lee relation
+        discretization
+
+3. Setup: Interface at an angle
+    Analytical calculations
+        Khodas' approach
+        critical effects
+        but only in chiral basis
+        adapting to z-direction
+    Numeric calculations
+        enumerating sites
+        matrix sizes
+        interfaces
+
+4. Results
+    Rough agreement simulation <=>  analytical calculation
+        difference: number of modes, effective model
+    Some spin separation survives (20% max)
+
+5. Summary
+    Spins are very interesting for quantum comptuation
+    Non-magnetic materials necessary for future scaling
+    Rashba SO-coupling: critical filtration in chiral basis
+    Up to 20% survive in non-chiral basis
+

@@ -1,0 +1,232 @@
+\documentclass{beamer}
+
+\mode<presentation>
+{
+  \usetheme{Montpellier}
+  % oder ...
+
+  \setbeamercovered{transparent}
+  % oder auch nicht
+}
+
+\usepackage{array}
+\usepackage[normalem]{ulem}
+\usepackage{fancyvrb,verbatim}
+\setlength{\extrarowheight}{2mm}
+
+%\usepackage[german]{babel}
+%%\usepackage{ngerman}
+% oder was auch immer
+
+\usepackage[utf8]{inputenc}
+% oder was auch immer
+
+\usepackage{multicol}
+
+\usepackage{times}
+\usepackage[T1]{fontenc}
+% Oder was auch immer. Zu beachten ist, das Font und Encoding passen
+% müssen. Falls T1 nicht funktioniert, kann man versuchen, die Zeile
+% mit fontenc zu löschen.
+
+\usepackage{calc}
+
+\title{Ballistic Transport of Spin-Polarized Electron Beams in Mesoscopic
+Systems}
+
+%\subtitle
+%{Untertitel nur angeben, wenn es einen im Tagungsband gibt}
+
+\author{Moritz Lenz}
+\institute{Institut für Theoretische Physik und Astrophysik, Universität
+Würzburg}
+\date{Max Planck Institut, 2010-02-foo}
+
+\subject{Physics}
+
+
+% Falls eine Logodatei namens "university-logo-filename.xxx" vorhanden
+% ist, wobei xxx ein von latex bzw. pdflatex lesbares Graphikformat
+% ist, so kann man wie folgt ein Logo einfügen:
+
+% \pgfdeclareimage[height=2.0cm]{university-logo}{Heriot-Watt_University}
+% \logo{\pgfuseimage{university-logo}}
+
+
+
+% Folgendes sollte gelöscht werden, wenn man nicht am Anfang jedes
+% Unterabschnitts die Gliederung nochmal sehen möchte.
+%\AtBeginSubsection[]
+%{
+%  \begin{frame}<beamer>
+%    \frametitle{Gliederung}
+%    \tableofcontents[currentsection,currentsubsection]
+%  \end{frame}
+%}
+
+
+% Falls Aufzählungen immer schrittweise gezeigt werden sollen, kann
+% folgendes Kommando benutzt werden:
+
+%\beamerdefaultoverlayspecification{<+->}
+
+
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+
+  \begin{center}
+{ 	
+	\large Diploma Thesis\\[2em]
+}
+    Supervisor: Prof. Ewelina Hankiewicz
+
+\end{center}
+
+%  \begin{multicols}{2}
+%  \includegraphics[width=0.4\textwidth]{setup-79_reduced.jpg}
+%
+%{  \tiny Graphics from 
+%	http://www.quantumlah.org/images/
+%	setup-79\_800x600.jpg}
+%  \end{multicols}
+
+\end{frame}
+
+\section{Motivation}
+
+\begin{frame}
+    \frametitle{Motivation - Why spin manipulation}
+
+	\begin{itemize}
+		\item Spin states can encode information
+		\item Spin states stay coherent much longer than charge states
+        \item Now moving required to change state
+        \item Less heat dissipation
+	\end{itemize}
+
+\end{frame}
+
+\subsection{Prior Art}
+
+\begin{frame}{Motivation - Prior Art}
+    \textbf{Spin manipulation with ferromagnetic materials}
+
+	\begin{itemize}
+		\item Very successful (GMR)
+		\item Good ideas (Datta-Das spin transistor)
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Motivation - Prior Art}
+    \textbf{Why investigate alternatives?}
+
+	\begin{itemize}
+		\item Technologically hard to handle
+        \item Limits in scaling down
+        \item Static effects only
+		\item Ferromagnetic materials are metals
+            $\Rightarrow$ Schottky junctions when mixing with semiconductors
+	\end{itemize}
+\end{frame}
+
+\subsection{Non-magnetic semiconductors}
+\begin{frame}{Motivation - Alternatives}
+    \textbf{Spin manipulation in non-magnetic semiconductors}
+
+	\begin{itemize}
+		\item Well-known techniques applicable
+        \item Asymmetry tunable by electric fields
+        \item Analogy to optics
+	\end{itemize}
+\end{frame}
+
+\section{Theory}
+\subsection{Relativistic quantum theory}
+\begin{frame}{Theory: Pauli Equation}
+    Relativistic QM in vacuum
+
+    \begin{align*}
+        \left( \frac{\vec p^2}{2m}- \frac{e\hbar \ \vec\sigma \cdot (\vec p \times \vec E)}
+                        {2\Delta} +\ldots\right)\Psi = E \Psi
+    \end{align*}
+
+    \begin{align*}
+        \Delta\qquad       & 2m_e c^2\\
+        \vec \sigma \qquad & \textnormal{Pauli matrices}\\
+        \vec p      \qquad & \textnormal{momentum}\\
+        \vec E      \qquad & \textnormal{electric field}\\
+    \end{align*}
+
+\end{frame}
+
+\subsection{Rasbha spin-orbit coupling}
+
+\begin{frame}{Theory:  Bychkov-Rashba term}
+    In Solids
+
+    \begin{align*}
+        H = \frac{\vec p^2}{2 m^*} + \alpha (\vec I \times \vec \sigma) \cdot
+        \vec p
+    \end{align*}
+
+    \begin{align*}
+        \alpha  \qquad & \textnormal{SO-coupling strength}\\
+        \vec I  \qquad & \textnormal{Unit vector of asymmetry}
+    \end{align*}
+
+\end{frame}
+
+\begin{frame}{Theory: Dispersion relation and Rashba}
+
+    \begin{multicols}{2}
+        \includegraphics[height=6cm]{rashba-dispersion.jpg}
+
+        \begin{align*}
+            E(k) = \frac{\hbar^2}{2 m^*} k^2 \pm \alpha k
+        \end{align*}
+
+        Energy depends on spin and momentum $\Rightarrow$ manipulable\\[1em]
+
+        $\alpha$ tunable through external electric field.
+\end{multicols}
+\end{frame}
+
+\subsection{Landauer Formula}
+
+\begin{frame}{Theory: Landauer Formula}
+    \begin{multicols}{2}
+        \includegraphics[width=6cm]{sample-leads}
+
+        \begin{align*}
+            G = \frac{2 e^2}{h} MT
+        \end{align*}
+
+        \begin{align*}
+            G \qquad& \textnormal{conductance}\\
+            M \qquad& \textnormal{number of modes}\\
+            T \qquad& \textnormal{transmission propability}
+        \end{align*}
+    \end{multicols}
+\end{frame}
+
+\begin{frame}{Theory: Green's Function formalism}
+    \begin{multicols}{2}
+        \includegraphics[width=6cm]{sample-leads}
+
+        \begin{align*}
+            G = \frac{2 e^2}{h} MT
+        \end{align*}
+
+        \begin{align*}
+            G \qquad& \textnormal{conductance}\\
+            M \qquad& \textnormal{number of modes}\\
+            T \qquad& \textnormal{transmission propability}
+        \end{align*}
+    \end{multicols}
+\end{frame}
+
+
+\end{document}
