@@ -14,6 +14,9 @@
 \usepackage{fancyvrb,verbatim}
 \setlength{\extrarowheight}{2mm}
 
+\newcommand{\vect}[2]{\ensuremath{\inp{\hspace{-.8ex}\begin{array}{c}#1\\#2\end{array}\hspace{-.4ex}}}}
+\newcommand{\inp}[1]{\ensuremath{\left(#1\right)}}
+
 %\usepackage[german]{babel}
 %%\usepackage{ngerman}
 % oder was auch immer
@@ -31,7 +34,7 @@
 
 \usepackage{calc}
 
-\title{Ballistic Transport of Spin-Polarized Electron Beams in Mesoscopic
+\title{Achieving Spin Polarization with non-magnetic Materials in Mesoscopic
 Systems}
 
 %\subtitle
@@ -79,7 +82,7 @@ Würzburg}
 
   \begin{center}
 { 	
-	\large Diploma Thesis\\[2em]
+	 Diploma Thesis\\[1.5em]
 }
     Supervisor: Prof. Ewelina Hankiewicz
 
@@ -109,15 +112,22 @@ Würzburg}
 
 \end{frame}
 
-\subsection{Prior Art}
+\subsection{Ferromagentic materials}
 
-\begin{frame}{Motivation - Prior Art}
-    \textbf{Spin manipulation with ferromagnetic materials}
+\begin{frame}{Motivation - Achievements of Spintronics}
+        \textbf{Giant Magnetoresistance}
 
-	\begin{itemize}
-		\item Very successful (GMR)
-		\item Good ideas (Datta-Das spin transistor)
-	\end{itemize}
+    \includegraphics[width=75mm]{storage-density.png}
+
+    \footnotesize DOI: 10.1081/E-ENN-120006100
+\end{frame}
+
+% TODO frame with Datta-Das transistor
+\begin{frame}{Motivation - Achievements of Spintronics}
+    \textbf{Datta-Das Transistor}
+
+    TODO
+
 \end{frame}
 
 \begin{frame}{Motivation - Prior Art}
@@ -228,5 +238,94 @@ Würzburg}
     \end{multicols}
 \end{frame}
 
+\begin{frame}{Theory: Green's Functions}
+    \begin{center}
+        Inhomogeneous Schrödinger equation
+        \begin{align*}
+            (E-H) \Psi &= \delta(x-x_0)\\
+            \Psi       &= \underbrace{(E-H)^{-1}}_{G} \delta(x-x_0)
+        \end{align*}
+        \pause
+        \begin{align*}
+            G^R = ((E + i \eta) -H)^{-1}\quad & \textnormal{wave moving away from exitation}\\
+            G^A = ((E - i \eta) -H)^{-1}\quad & \textnormal{wave moving
+            towards exitation}
+        \end{align*}
+
+        \begin{align*}
+        \end{align*}
+   \end{center}
+\end{frame}
+
+\begin{frame}{Theory: Coupling}
+    Problem: $(E\pm i\eta-H)$ is an operator, and not easily invertible\\[1em]
+
+    \pause
+    Solution: discretize derivative into finite differences\\[1em]
+
+    \pause
+    Leads: Analytical Green's functions known\\[1em]
+
+    \pause
+    Describe coupling between leads and sample by matrices $\Sigma_p$
+\end{frame}
+
+\begin{frame}{Theory: Fisher-Lee Relation}
+    \huge
+    \begin{align*}
+        T_{pq} = \textnormal{Trace}( \Sigma_p G^R \Sigma_q G^A )
+    \end{align*}
+\end{frame}
+
+\section{Work done}
+\begin{frame}{Setup}
+    \begin{itemize}
+        \item 2D electron gas in quantum well
+        \item 2 bands considered
+        \item $T = 0$
+        \item size: about 200nm
+        \item ballistic transport
+        \item coherent transport
+        \item Interface between SO and normal regimes
+    \end{itemize}
+\end{frame}
+
+\subsection{Analytical calculations}
+
+\begin{frame}{Analytical calculations}
+    \begin{multicols}{2}
+        \includegraphics[width=55mm]{setup-simple}
+
+    \begin{align*}
+        H_r &= \frac{p^2}{2m} + (-\vec y \times \vec \sigma) \cdot
+                \alpha(x) \vec p\\ 
+        E_{\pm} &= \frac{p^2}{2m} \pm \alpha \\
+        v_{\pm} &= \frac{\partial E_{\pm}}{\partial p} = \frac{p}{m} \pm \alpha
+    \end{align*}
+
+    \end{multicols}
+\end{frame}
+
+
+\begin{frame}{Analytical calculations - Wave functions}
+    \begin{align*}
+    \chi_{SO}^{\pm} &= \frac{1}{n_{SO}^{\pm}} 
+                        \vect{-p_{x,SO}^{\pm} \pm p_{SO}^\pm}{p_z} \\
+        n_{SO}^{\pm}   &= \sqrt{|-p_{x,SO}^{\pm} \pm p_{SO}^\pm|^2 +
+            p_z^2}
+    \end{align*}
+    \pause
+    \begin{align*}
+        \Psi^+ = e^{i p_z z} * \left\{
+            \begin{array}{ll}
+                e^{i p_x x} \chi_N^+ + e^{- i p_x x} (\chi_N^+ r_{++} +
+                        \chi_N^- r_{-+})    & x < 0\\
+                e^{i p_x^+ x} \chi_{SO}^+ t_{++} + e^{i p_x^- x}
+                \chi_{SO}^- t_{-+}          & x > 0
+            \end{array} \right.
+    \end{align*}
+
+
+\end{frame}
 
 \end{document}
