@@ -16,6 +16,7 @@
 
 \newcommand{\vect}[2]{\ensuremath{\inp{\hspace{-.8ex}\begin{array}{c}#1\\#2\end{array}\hspace{-.4ex}}}}
 \newcommand{\inp}[1]{\ensuremath{\left(#1\right)}}
+\newcommand{\ta}{\ensuremath{\tilde\alpha}}
 
 %\usepackage[german]{babel}
 %%\usepackage{ngerman}
@@ -124,9 +125,14 @@ Würzburg}
 
 % TODO frame with Datta-Das transistor
 \begin{frame}{Motivation - Achievements of Spintronics}
+    \begin{center}
     \textbf{Datta-Das Transistor}
 
-    TODO
+    \includegraphics[width=8cm]{SpinFET.png}
+
+    \vfill
+    \footnotesize http://www.nims.go.jp/apfim/SpinFET.html
+    \end{center}
 
 \end{frame}
 
@@ -325,7 +331,21 @@ Würzburg}
             \end{array} \right.
     \end{align*}
 
-
 \end{frame}
 
+\begin{frame}{Transmission coefficients}
+    \includegraphics[width=7.0cm]{zero-plus.pdf}
+
+    \includegraphics[width=7.0cm]{zero-minus.pdf}
+\end{frame}
+
+\begin{frame}{Critical angle for $+$ wave}
+    \begin{center}
+        \begin{align*}
+            \phi_c          &= -\sin ^{-1}\left(\ta-\sqrt{\ta^2+1}\right)
+        \end{align*}
+
+        \includegraphics[width=0.7\textwidth]{critical-angle.pdf}
+    \end{center}
+\end{frame}
 \end{document}
