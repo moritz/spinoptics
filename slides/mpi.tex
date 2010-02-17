@@ -12,6 +12,8 @@
 \usepackage{array}
 \usepackage[normalem]{ulem}
 \usepackage{fancyvrb,verbatim}
+\usepackage{amsmath}
+\usefonttheme{professionalfonts}
 \setlength{\extrarowheight}{2mm}
 
 \newcommand{\vect}[2]{\ensuremath{\inp{\hspace{-.8ex}\begin{array}{c}#1\\#2\end{array}\hspace{-.4ex}}}}
@@ -263,11 +265,11 @@ Würzburg}
    \end{center}
 \end{frame}
 
-\begin{frame}{Theory: Coupling}
+\begin{frame}{Theory: Discretization}
     Problem: $(E\pm i\eta-H)$ is an operator, and not easily invertible\\[1em]
 
     \pause
-    Solution: discretize derivative into finite differences\\[1em]
+    Solution: discretize derivatives into finite differences\\[1em]
 
     \pause
     Leads: Analytical Green's functions known\\[1em]
@@ -348,4 +350,24 @@ Würzburg}
         \includegraphics[width=0.7\textwidth]{critical-angle.pdf}
     \end{center}
 \end{frame}
+
+\begin{frame}{Adapting to $\uparrow, \downarrow$ bases}
+    \begin{center}
+        \includegraphics[width=\textwidth]{adapting-pic.pdf}
+        \begin{align*}
+            T_{2\uparrow,1\uparrow} = \left| \left( 
+                a \mathbf{\Psi^+}(x=x_2) + b  \mathbf{\Psi^-}(x=x_2)
+            \right)^\dagger \cdot \mathbf{\Psi}^\uparrow(x=x_2) \right|^2\nonumber\\
+            T_{2\downarrow,1\uparrow} = \left| \left( 
+                a \mathbf{\Psi^+}(x=x_2) + b  \mathbf{\Psi^-}(x=x_2)
+            \right)^\dagger \cdot \mathbf{\Psi}^\downarrow(x=x_2) \right|^2\nonumber
+        \end{align*}
+    \end{center}
+
+\end{frame}
+
+\begin{frame}{What survives...}
+    \includegraphics[width=\textwidth]{comparison-over-phi.pdf}
+\end{frame}
+
 \end{document}
