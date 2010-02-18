@@ -13,12 +13,18 @@
 \usepackage[normalem]{ulem}
 \usepackage{fancyvrb,verbatim}
 \usepackage{amsmath}
+\usepackage{bbm}
+\usepackage{array}
+
 \usefonttheme{professionalfonts}
 \setlength{\extrarowheight}{2mm}
 
 \newcommand{\vect}[2]{\ensuremath{\inp{\hspace{-.8ex}\begin{array}{c}#1\\#2\end{array}\hspace{-.4ex}}}}
 \newcommand{\inp}[1]{\ensuremath{\left(#1\right)}}
 \newcommand{\ta}{\ensuremath{\tilde\alpha}}
+\newcommand{\lso}{\ensuremath{L_{\textnormal{SO}}}}
+\newcommand{\tso}{\ensuremath{t_{\textnormal{SO}}}}
+
 
 %\usepackage[german]{babel}
 %%\usepackage{ngerman}
@@ -46,7 +52,7 @@ Systems}
 \author{Moritz Lenz}
 \institute{Institut für Theoretische Physik und Astrophysik, Universität
 Würzburg}
-\date{Max Planck Institut, 2010-02-foo}
+\date{Max Planck Institut, 2010-02-24}
 
 \subject{Physics}
 
@@ -109,8 +115,11 @@ Würzburg}
 	\begin{itemize}
 		\item Spin states can encode information
 		\item Spin states stay coherent much longer than charge states
-        \item Now moving required to change state
+        \item $\Rightarrow$ Quantum Computations
+            \pause
+        \item No need to move charges for changing state
         \item Less heat dissipation
+        \item $\Rightarrow$ Advantages for classical Computers
 	\end{itemize}
 
 \end{frame}
@@ -126,7 +135,7 @@ Würzburg}
 \end{frame}
 
 % TODO frame with Datta-Das transistor
-\begin{frame}{Motivation - Achievements of Spintronics}
+\begin{frame}{Motivation - Perspectives of Spintronics}
     \begin{center}
     \textbf{Datta-Das Transistor}
 
@@ -138,8 +147,7 @@ Würzburg}
 
 \end{frame}
 
-\begin{frame}{Motivation - Prior Art}
-    \textbf{Why investigate alternatives?}
+\begin{frame}{Disadvantages of Ferromagnetic Materials}
 
 	\begin{itemize}
 		\item Technologically hard to handle
@@ -172,7 +180,7 @@ Würzburg}
     \end{align*}
 
     \begin{align*}
-        \Delta\qquad       & 2m_e c^2\\
+        \Delta\qquad       & m_e c^2\\
         \vec \sigma \qquad & \textnormal{Pauli matrices}\\
         \vec p      \qquad & \textnormal{momentum}\\
         \vec E      \qquad & \textnormal{electric field}\\
@@ -230,21 +238,21 @@ Würzburg}
     \end{multicols}
 \end{frame}
 
-\begin{frame}{Theory: Green's Function formalism}
-    \begin{multicols}{2}
-        \includegraphics[width=6cm]{sample-leads}
-
-        \begin{align*}
-            G = \frac{2 e^2}{h} MT
-        \end{align*}
-
-        \begin{align*}
-            G \qquad& \textnormal{conductance}\\
-            M \qquad& \textnormal{number of modes}\\
-            T \qquad& \textnormal{transmission propability}
-        \end{align*}
-    \end{multicols}
-\end{frame}
+%\begin{frame}{Theory: Green's Function formalism}
+%    \begin{multicols}{2}
+%        \includegraphics[width=6cm]{sample-leads}
+%
+%        \begin{align*}
+%            G = \frac{2 e^2}{h} MT
+%        \end{align*}
+%
+%        \begin{align*}
+%            G \qquad& \textnormal{conductance}\\
+%            M \qquad& \textnormal{number of modes}\\
+%            T \qquad& \textnormal{transmission propability}
+%        \end{align*}
+%    \end{multicols}
+%\end{frame}
 
 \begin{frame}{Theory: Green's Functions}
     \begin{center}
@@ -368,6 +376,156 @@ Würzburg}
 
 \begin{frame}{What survives...}
     \includegraphics[width=\textwidth]{comparison-over-phi.pdf}
+\end{frame}
+
+\subsection{Numerical calculations}
+\begin{frame}{Numerical Calculations - The Plan}
+    \begin{center}
+    \begin{itemize}
+        \item set up the Hamiltonian $H$
+        \item calculate the self-energy matrices $\Sigma_p$
+        \item calculate the Green's functions $G^A$ and $G^R$ by inverting
+            $H + \sum_p \Sigma_p$
+        \item use the Fisher-Lee relation to calculate the transmission matrix $T$
+                from $G^R$, $G^A$ and $\Sigma_p$
+    \end{itemize}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Enumerating sites}
+    \begin{multicols}{2}
+        \includegraphics[width=0.4\textwidth]{hopping.pdf}
+        \bf
+
+        Gray: nearest neighbor hopping\\[1.5em]
+
+        Red: next-nearest neighbor hopping (Rashba)\\[1.5em]
+
+        Discretization lattice is \emph{not} the crystal lattice
+    \end{multicols}
+\end{frame}
+
+\begin{frame}{Hamiltonian (1/3)}
+    \small
+    \begin{align*}
+        H_{kin} &= \inp{
+            \begin{array}{ccccccccc}
+                -4t & t &  & t\\
+                t & -4t & t &  & t &  &  & 0\\
+                & t & -4t & 0 &  & t\\
+                t &  & 0 & -4t & t &  & t\\
+                & t &  & t & -4t & t &  & t\\
+                &  & t &  & t & -4t & 0 &  & t\\
+                &  &  & t &  & 0 & -4t & t\\
+                & 0 &  &  & t &  & t & -4t & t\\
+                &  &  &  &  & t &  & t & -4t\end{array}
+        } \\
+    \end{align*}
+\end{frame}
+\begin{frame}{Hamiltonian (2/3)}
+    \footnotesize
+    \begin{align*}
+        H_{spin} &= \inp{
+            \begin{array}{ccccccccc}
+                0 & -\tso &  & i\tso\\
+                \tso & 0 & -\tso &  & i\tso &  &  & 0\\
+                & \tso & 0 & 0 &  & i\tso\\
+                -i\tso &  & 0 & 0 & -\tso &  & i\tso\\
+                & -i\tso &  & \tso & 0 & -\tso &  & i\tso\\
+                &  & -i\tso &  & \tso & 0 & 0 &  & i\tso\\
+                &  &  & -i\tso &  & 0 & 0 & -\tso\\
+                & 0 &  &  & -i\tso &  & \tso & 0 & -\tso\\
+                &  &  &  &  & -i\tso &  & \tso & 0
+            \end{array}
+        }
+    \end{align*}
+\end{frame}
+
+\begin{frame}{Hamiltonian (3/3)}
+    \begin{center}
+        \begin{align*}
+            H &= \inp{
+            \begin{array}{cc}
+                    H_{kin}  & H_{spin} \\
+                    H_{spin}^\dagger & H_{kin} \\
+            \end{array}}
+        \end{align*}
+    \end{center}
+
+    System size: $n \times n$
+
+    Matrix size: $2n^2 \times 2n^2$
+
+    System: $150 \times 150 \Rightarrow 2.025 \cdot 10^9$ matrix entries.
+
+    Double precision floating point number: 64 bit = 8 byte
+
+    $\Rightarrow \approx 16$GB memory per matrix
+
+\end{frame}
+
+\begin{frame}{Interface}
+    \begin{center}
+        \includegraphics[width=0.5\textwidth]{sample-lead-interface.pdf}%
+        \hspace{0.1\textwidth}%
+        \includegraphics[width=0.2\textwidth]{hopping.png}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Results - Rashba Precession}
+    \begin{center}
+        \includegraphics[width=0.8\textwidth]{interface-precession.png}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Results - Spin Polarization}
+    \includegraphics[width=0.8\textwidth]{comparison-over-phi.pdf}
+\end{frame}
+
+\begin{frame}{Results - Comparison}
+    \begin{multicols}{2}
+    \includegraphics[width=0.5\textwidth]{comparison-over-phi.pdf}
+
+    Rough interface leads to noise\\[1em]
+
+    Number of modes varies in simulation\\[1em]
+
+    Angle between beams and leads leads to reflection
+
+    \end{multicols}
+\end{frame}
+
+\begin{frame}{Results - Two non-zero SO Strengths}
+    \begin{center}
+        \includegraphics[width=0.7\textwidth]{polarization-so-so-rel.pdf}
+
+   Relative spin polarization $T_s^{rel}$ as function of
+        $ \frac{\tso{}_A}{\tso{}_B} =\frac{\ta_A}{\ta_B}$
+
+        For a fixed $\phi=80^\circ$ and $\tso{}_B = 0.1$.
+
+    \end{center}
+\end{frame}
+
+\begin{frame}{Experimental Realisation}
+    \begin{center}
+        \includegraphics[width=0.7\textwidth]{beamsplitter2.jpg}
+
+        M. Mühlbauer, Institut für Experimentelle Physik, Würzburg
+    \end{center}
+\end{frame}
+
+\section{Summary}
+
+\begin{frame}{Summary}
+    \begin{itemize}
+        \item Spintronics is a successful and interesting field (GMR,
+            Datta-Das transistor)
+        \item Non-magnetic materials necessary for scaling
+        \item Rashba SO-Coupling: filtering with critical phenomena
+        \item Up to $20\%$ spin separation
+    \end{itemize}
+
 \end{frame}
 
 \end{document}
