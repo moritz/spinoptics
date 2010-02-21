@@ -17,6 +17,7 @@
 \usepackage{array}
 
 \usefonttheme{professionalfonts}
+\setbeamertemplate{footline}[page number]
 \setlength{\extrarowheight}{2mm}
 
 \newcommand{\vect}[2]{\ensuremath{\inp{\hspace{-.8ex}\begin{array}{c}#1\\#2\end{array}\hspace{-.4ex}}}}
@@ -52,7 +53,7 @@ Systems}
 \author{Moritz Lenz}
 \institute{Institut für Theoretische Physik und Astrophysik, Universität
 Würzburg}
-\date{Max Planck Institut, 2010-02-24}
+\date{Max Planck Institut, 2010-02-22}
 
 \subject{Physics}
 
@@ -89,14 +90,6 @@ Würzburg}
 \begin{frame}
   \titlepage
 
-  \begin{center}
-{ 	
-	 Diploma Thesis\\[1.5em]
-}
-    Supervisor: Prof. Ewelina Hankiewicz
-
-\end{center}
-
 %  \begin{multicols}{2}
 %  \includegraphics[width=0.4\textwidth]{setup-79_reduced.jpg}
 %
@@ -105,6 +98,10 @@ Würzburg}
 %	setup-79\_800x600.jpg}
 %  \end{multicols}
 
+\end{frame}
+
+\begin{frame}{Outline}
+    \tableofcontents
 \end{frame}
 
 \section{Motivation}
@@ -127,7 +124,7 @@ Würzburg}
 \subsection{Ferromagentic materials}
 
 \begin{frame}{Motivation - Achievements of Spintronics}
-        \textbf{Giant Magnetoresistance}
+        \textbf{Giant Magnetoresistance} used in reading heads of hard discs
 
     \includegraphics[width=75mm]{storage-density.png}
 
@@ -263,9 +260,12 @@ Würzburg}
         \end{align*}
         \pause
         \begin{align*}
-            G^R = ((E + i \eta) -H)^{-1}\quad & \textnormal{wave moving away from exitation}\\
-            G^A = ((E - i \eta) -H)^{-1}\quad & \textnormal{wave moving
-            towards exitation}
+            G^R = ((E + i \eta) -H)^{-1}\quad & \textnormal{Retarded Green's
+            function}\\
+            \qquad & \textnormal{wave moving away from exitation}\\
+            G^A = ((E - i \eta) -H)^{-1}\quad & \textnormal{Adveanced Green's
+            function}\\
+            \qquad & \textnormal{wave moving towards exitation}
         \end{align*}
 
         \begin{align*}
@@ -287,22 +287,29 @@ Würzburg}
 \end{frame}
 
 \begin{frame}{Theory: Fisher-Lee Relation}
-    \huge
+    {
+        \huge
+        \begin{align*}
+            T_{pq} = \textnormal{Trace}( \Sigma_p G^R \Sigma_q G^A )
+        \end{align*}
+    }
     \begin{align*}
-        T_{pq} = \textnormal{Trace}( \Sigma_p G^R \Sigma_q G^A )
+        \Sigma_p\qquad &\textnormal{Self-Energy matrix for lead $p$}\\
+        G^R     \qquad &\textnormal{Retarded Green's function}\\ 
+        G^A     \qquad &\textnormal{Advanced Green's function}\\ 
     \end{align*}
 \end{frame}
 
 \section{Work done}
-\begin{frame}{Setup}
+\begin{frame}{Model}
     \begin{itemize}
         \item 2D electron gas in quantum well
         \item 2 bands considered
-        \item $T = 0$
+        \item $T = 0K$
         \item size: about 200nm
         \item ballistic transport
         \item coherent transport
-        \item Interface between SO and normal regimes
+        \item Interface between "normal" (N) and Spin-orbit  coupling (SO) regimes
     \end{itemize}
 \end{frame}
 
@@ -312,6 +319,11 @@ Würzburg}
     \begin{multicols}{2}
         \includegraphics[width=55mm]{setup-simple}
 
+        \begin{minipage}{0.5\textwidth}
+            \textbf{N}: Normal regime, $\alpha = 0$\\
+            \textbf{SO}: Spin-orbit coupling regime, $\alpha \not= 0$
+        \end{minipage}
+
     \begin{align*}
         H_r &= \frac{p^2}{2m} + (-\vec y \times \vec \sigma) \cdot
                 \alpha(x) \vec p\\ 
@@ -319,18 +331,20 @@ Würzburg}
         v_{\pm} &= \frac{\partial E_{\pm}}{\partial p} = \frac{p}{m} \pm \alpha
     \end{align*}
 
+    $\vec \sigma$ is the vector of Pauli matrices and describes the Spin
+
     \end{multicols}
 \end{frame}
 
 
-\begin{frame}{Analytical calculations - Wave functions}
+\begin{frame}{Analytical calculations - Eigenstates}
     \begin{align*}
-    \chi_{SO}^{\pm} &= \frac{1}{n_{SO}^{\pm}} 
-                        \vect{-p_{x,SO}^{\pm} \pm p_{SO}^\pm}{p_z} \\
-        n_{SO}^{\pm}   &= \sqrt{|-p_{x,SO}^{\pm} \pm p_{SO}^\pm|^2 +
-            p_z^2}
+    \chi_{SO}^{\pm} &= \frac{1}{n^{\pm}} 
+                        \vect{-p_{x}^{\pm} \pm p^\pm}{p_z} \\
+        n_{SO}^{\pm}   &= \sqrt{|-p_{x}^{\pm} \pm p^\pm|^2 + p_z^2}
     \end{align*}
-    \pause
+\end{frame}
+\begin{frame}{Analytical calculations - Wave Function}
     \begin{align*}
         \Psi^+ = e^{i p_z z} * \left\{
             \begin{array}{ll}
@@ -341,12 +355,19 @@ Würzburg}
             \end{array} \right.
     \end{align*}
 
+    \begin{align*}
+        r_{\pm+} \qquad & \textnormal{Reflection coefficients}\\
+        t_{\pm+} \qquad & \textnormal{Transmission coefficients}
+    \end{align*}
+
 \end{frame}
 
 \begin{frame}{Transmission coefficients}
-    \includegraphics[width=7.0cm]{zero-plus.pdf}
+    \begin{center}
+        \includegraphics[width=10.0cm]{zero-plus.pdf}
 
-    \includegraphics[width=7.0cm]{zero-minus.pdf}
+        For $\phi > \phi_C$ the $e^{i p_{x,SO}^+ x }$ part vanishes
+    \end{center}
 \end{frame}
 
 \begin{frame}{Critical angle for $+$ wave}
@@ -357,6 +378,23 @@ Würzburg}
 
         \includegraphics[width=0.7\textwidth]{critical-angle.pdf}
     \end{center}
+\end{frame}
+
+\begin{frame}{Figure of merit: Spin polarization}
+    Each lead is assumed to consist of a spin-up ($\uparrow$) and a
+    spin-down ($\downarrow$) sub-lead\\[2em]
+
+    {
+        \huge
+        \begin{align*}
+            T_S = T_{2\uparrow, 1\uparrow} + T_{2\uparrow, 1\downarrow}
+            - T_{2\downarrow, 1\uparrow} - T_{2\downarrow, 1\downarrow}\\
+        \end{align*}
+    }
+
+    $T_S$: Spin polarization perpendicular to the plane of 2-dimensional
+    electron gas
+
 \end{frame}
 
 \begin{frame}{Adapting to $\uparrow, \downarrow$ bases}
@@ -376,6 +414,19 @@ Würzburg}
 
 \begin{frame}{What survives...}
     \includegraphics[width=\textwidth]{comparison-over-phi.pdf}
+\end{frame}
+
+\begin{frame}{Limits of analytical calculations}
+
+    \begin{center}
+    \begin{itemize}
+        \item Limited to a single mode (typically 8 to 12 in experiment)
+        \item Limited to simple geometry
+        \item Hard to incorporate scattering centers, boundary conditions,
+            finite size effects
+    \end{itemize}
+    \end{center}
+
 \end{frame}
 
 \subsection{Numerical calculations}
@@ -521,9 +572,10 @@ Würzburg}
     \begin{itemize}
         \item Spintronics is a successful and interesting field (GMR,
             Datta-Das transistor)
-        \item Non-magnetic materials necessary for scaling
-        \item Rashba SO-Coupling: filtering with critical phenomena
+        \item Rashba SO-Coupling: spin filtering with critical phenomena
         \item Up to $20\%$ spin separation
+        \item rough agreement between analytical and numeric calculations
+        \item Generalization to two different SO regions
     \end{itemize}
 
 \end{frame}
